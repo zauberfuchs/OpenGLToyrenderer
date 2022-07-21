@@ -1,0 +1,8 @@
+Package: glfw3
+Version: 3.3.4
+Architecture: x86-windows
+Multi-Arch: same
+Abi: b6ddf0d224eb3ba4383ce105dca2fea3df04c8869309f7b2a79c71173f787654
+Description: GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development. It provides a simple, platform-independent API for creating windows, contexts and surfaces, reading input, handling events, etc.
+Type: Port
+Status: install ok half-installed

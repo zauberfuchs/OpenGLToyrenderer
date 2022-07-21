@@ -1,0 +1,16 @@
+x64-windows/
+x64-windows/debug/
+x64-windows/debug/lib/
+x64-windows/debug/lib/GlU32.Lib
+x64-windows/debug/lib/OpenGL32.Lib
+x64-windows/include/
+x64-windows/include/gl/
+x64-windows/include/gl/GL.h
+x64-windows/include/gl/GLU.h
+x64-windows/lib/
+x64-windows/lib/GlU32.Lib
+x64-windows/lib/OpenGL32.Lib
+x64-windows/share/
+x64-windows/share/opengl/
+x64-windows/share/opengl/copyright
+x64-windows/share/opengl/vcpkg_abi_info.txt

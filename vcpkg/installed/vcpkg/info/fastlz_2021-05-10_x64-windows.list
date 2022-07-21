@@ -1,0 +1,12 @@
+x64-windows/
+x64-windows/debug/
+x64-windows/debug/lib/
+x64-windows/debug/lib/fastlz.lib
+x64-windows/include/
+x64-windows/include/fastlz.h
+x64-windows/lib/
+x64-windows/lib/fastlz.lib
+x64-windows/share/
+x64-windows/share/fastlz/
+x64-windows/share/fastlz/copyright
+x64-windows/share/fastlz/vcpkg_abi_info.txt
