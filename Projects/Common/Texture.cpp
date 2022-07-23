@@ -13,6 +13,11 @@ Texture::Texture()
 
 }
 
+Texture::~Texture()
+{
+	//glDeleteTextures(1, &m_ID);
+}
+
 void Texture::Load()
 {
 	stbi_set_flip_vertically_on_load(1); // flipt die Texture damit es von unten anfängt
@@ -97,10 +102,7 @@ void Texture::LoadModelTexture(const std::string& path, ETextureChannels type)
 	}
 }
 
-Texture::~Texture()
-{
-	glDeleteTextures(1, &m_ID);
-}
+
 
 void Texture::Bind(unsigned int slot /*= 0*/) const
 {
@@ -135,6 +137,18 @@ void Texture::RenderPre()
 		break;
 	case ETextureChannels::AmbientOcclusionMap:
 		glActiveTexture(GL_TEXTURE0 + 4);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
+		break;
+	case ETextureChannels::IrradianceMap:
+		glActiveTexture(GL_TEXTURE0 + 5);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
+		break;
+	case ETextureChannels::PrefilterMap:
+		glActiveTexture(GL_TEXTURE0 + 6);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
+		break;
+	case ETextureChannels::BrdfLookUpTexture:
+		glActiveTexture(GL_TEXTURE0 + 7);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
 	default:

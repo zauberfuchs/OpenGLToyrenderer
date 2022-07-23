@@ -11,6 +11,8 @@ public:
 	~Skybox() = default;
 
 	void Render();
+	inline unsigned int GetId() { return m_ID; }
+	inline void SetId(const unsigned int& id) { m_ID = id; }
 
 private:
 	std::string m_Name;
@@ -24,14 +26,19 @@ private:
 
 	std::vector<std::string> m_Faces
 	{
-			"../Data/Textures/Skybox/right.png",
-			"../Data/Textures/Skybox/left.png",
-			"../Data/Textures/Skybox/top.png",
-			"../Data/Textures/Skybox/bottom.png",
-			"../Data/Textures/Skybox/front.png",
-			"../Data/Textures/Skybox/back.png"
+			"../Data/Textures/Skybox/darkish/right.png",
+			"../Data/Textures/Skybox/darkish/left.png",
+			"../Data/Textures/Skybox/darkish/top.png",
+			"../Data/Textures/Skybox/darkish/bottom.png",
+			"../Data/Textures/Skybox/darkish/front.png",
+			"../Data/Textures/Skybox/darkish/back.png"
 	};
 	
 	void Load();
 	void SetupSkybox();
 };
+
+
+
+
+

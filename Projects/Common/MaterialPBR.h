@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 
+#include "ReflectionProbe.h"
 
 
 class MaterialPBR : public IMaterial
@@ -28,6 +29,8 @@ public:
 	void SetName(const std::string name) override;
 	std::string GetName() override;
 
+	void SetReflectionProbe(ReflectionProbe* probe);
+
 	void RenderPre() override;
 	void Render() override;
 	void RenderPost() override;
@@ -41,7 +44,7 @@ public:
 	inline void SetAo(const float& ambientOcclusion) { m_Ao = ambientOcclusion; }
 
 
-protected:
+private:
 	glm::vec3 m_Color;
 	glm::vec3 m_Albedo;
 	float m_Metallic;
@@ -53,6 +56,11 @@ protected:
 	ITexture* m_TextureRoughness = nullptr;
 	ITexture* m_TextureNormal = nullptr;
 	ITexture* m_TextureAmbienOcclusion = nullptr;
+	ITexture* m_TextureIrradiance = nullptr;
+	ITexture* m_TexturePrefilter = nullptr;
+	ITexture* m_TextureBrdfLookUp = nullptr;
+
+	ReflectionProbe* m_Probe = nullptr;
 
 	IShader* m_Shader;
 

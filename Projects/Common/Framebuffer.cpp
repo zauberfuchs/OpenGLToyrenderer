@@ -8,7 +8,7 @@ Framebuffer::Framebuffer(const int& width, const int& height)
 
 Framebuffer::~Framebuffer()
 {
-	//glDeleteFramebuffers(1, &m_ID);
+	glDeleteFramebuffers(1, &m_ID);
 }
 
 void Framebuffer::Bind() const
@@ -16,12 +16,12 @@ void Framebuffer::Bind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 }
 
-GLuint Framebuffer::getColorTextureID() 
+GLuint Framebuffer::GetColorTextureId() 
 {
 	return m_ColorTextureID;
 }
 
-GLuint Framebuffer::getID()
+GLuint Framebuffer::GetId()
 {
 	return m_ID;
 }
@@ -31,14 +31,14 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::createColorTexture(bool isMultisampled)
+void Framebuffer::CreateColorTexture(bool isMultisampled)
 {
 	Bind();
 	if (isMultisampled) {
 		glGenTextures(1, &m_ColorTextureID);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID);
 
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleSize, GL_RGB, m_Width, m_Height, GL_TRUE);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_SampleSize, GL_RGB, m_Width, m_Height, GL_TRUE);
 		//glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		//glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
@@ -57,7 +57,7 @@ void Framebuffer::createColorTexture(bool isMultisampled)
 	}
 }
 
-void Framebuffer::createDepthView()
+void Framebuffer::CreateDepthView()
 {
 	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 	glGenTextures(1, &m_DepthTextureID);
@@ -78,12 +78,13 @@ void Framebuffer::createDepthView()
 
 }
 
-    void Framebuffer::attachRenderBuffer(GLuint rbo_ID)
-{
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_ID);
-}
-
-	void Framebuffer::setSampleSize(unsigned int samples)
+    void Framebuffer::AttachRenderBuffer(const GLuint& rbo_ID,const FramebufferAttachment& attachment)
 	{
-		sampleSize = samples;
+		Bind();
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, static_cast<GLenum>(attachment), GL_RENDERBUFFER, m_ID);
+	}
+
+	void Framebuffer::SetSampleSize(unsigned int samples)
+	{
+		m_SampleSize = samples;
 	}

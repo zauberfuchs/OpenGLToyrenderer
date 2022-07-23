@@ -99,10 +99,20 @@ std::string MaterialPBR::GetName()
 	return m_Name;
 }
 
+void MaterialPBR::SetReflectionProbe(ReflectionProbe* probe)
+{
+	m_Probe = probe;
+	m_TextureBrdfLookUp = m_Probe->GetBrdfLookUpTexture();
+	m_TexturePrefilter = m_Probe->GetPrefilterTexture();
+	m_TextureIrradiance = m_Probe->GetIrradianceTexture();
+}
+
+
 void MaterialPBR::RenderPre()
 {
-	if (m_Shader != nullptr)
+	if (m_Shader != nullptr) {
 		m_Shader->Bind();
+	}
 
 	if (m_TextureAlbedo != nullptr) {
 		m_TextureAlbedo->RenderPre();
@@ -124,6 +134,19 @@ void MaterialPBR::RenderPre()
 		m_TextureAmbienOcclusion->RenderPre();
 		m_Shader->SetUniform1i("material.aoMap", 4);
 	}
+	if (m_TextureIrradiance != nullptr) {
+		m_TextureIrradiance->RenderPre();
+		m_Shader->SetUniform1i("material.irradianceMap", 5);
+	}
+	if (m_TexturePrefilter != nullptr) {
+		m_TexturePrefilter->RenderPre();
+		m_Shader->SetUniform1i("material.prefilterMap", 6);
+	}
+	if (m_TextureBrdfLookUp != nullptr) {
+		m_TextureBrdfLookUp->RenderPre();
+		m_Shader->SetUniform1i("material.brdfLUT", 7);
+	}
+
 }
 
 void MaterialPBR::Render()

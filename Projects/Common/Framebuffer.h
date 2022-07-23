@@ -1,13 +1,33 @@
-#ifndef FRAMEBUFFER_CLASS_H
-#define FRAMEBUFFER_CLASS_H
+#pragma once
+
 
 #include <GL/glew.h>
 #include <vector>
 #include <glm/glm.hpp>
 #include "Renderbuffer.h"
 
+
+enum class FramebufferAttachment
+{
+	Depth = GL_DEPTH_ATTACHMENT,
+	DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
+};
+
 class Framebuffer
 {
+public:
+	Framebuffer(const int& width, const int& height);
+	~Framebuffer();
+
+	void Bind() const;
+	void Unbind() const;
+	void CreateColorTexture(bool isMultisampled);
+	void CreateDepthView();
+	GLuint GetColorTextureId();
+	GLuint GetId();
+	void AttachRenderBuffer(const GLuint& rbo_ID, const FramebufferAttachment& attachment);
+	void SetSampleSize(unsigned int samples);
+
 private:
 	GLuint m_ID;
 	GLuint m_ColorTextureID;
@@ -15,18 +35,5 @@ private:
 
 	unsigned int m_Width;
 	unsigned int m_Height;
-	unsigned int sampleSize = 1;
-public:
-	Framebuffer(const int& width, const int& height);
-	~Framebuffer();
-
-	void Bind() const;
-	void Unbind() const;
-	void createColorTexture(bool isMultisampled);
-	void createDepthView();
-	GLuint getColorTextureID();
-	GLuint getID();
-	void attachRenderBuffer(GLuint rbo_ID);
-	void setSampleSize(unsigned int samples);
+	unsigned int m_SampleSize = 1;
 };
-#endif

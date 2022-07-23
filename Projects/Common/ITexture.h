@@ -16,7 +16,9 @@ enum class ETextureChannels {
 	MetallicMap,
 	RoughnessMap,
 	AlbedoMap,
-	EmissiveMap
+	EmissiveMap,
+	BrdfLookUpTexture,
+	PrefilterMap
 };
 
 class ITexture

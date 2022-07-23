@@ -1,17 +1,22 @@
 #include <thread>
 #include <chrono>
+#include <filesystem>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
+#include <iostream>
 #include "Mesh.h"
 #include "Plane.h"
 #include "Aufgabe1/StudentCube.h"
 #include "Skybox.h"
 #include "SceneObject.h"
 #include "Window.h"
+#include "Framebuffer.h"
+#include "Renderbuffer.h"
 #include "Scene.h"
 #include "Model.h"
+#include "ReflectionProbe.h"
 #include "Sphere.h"
 #include "World.h"
 
@@ -25,6 +30,8 @@ int main() {
 	World::Get().SetActiveScene(new Scene("Main Scene"));
 
 	Scene* activeScene = World::Get().GetActiveScene();
+	activeScene->SetSceneCamera(g_Camera);
+
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials / Lights
@@ -34,19 +41,45 @@ int main() {
 	auto skyboxShader = new Shader("skyboxShader", "../Data/skyboxShader.vert", "../Data/skyboxShader.frag");
 	auto simpleMeshShader = new Shader("simpleMeshShader", "../Data/simpleMeshShader.vert", "../Data/simpleMeshShader.frag");
 	auto simpleMaterialShader = new Shader("simpleMaterialShader", "../Data/simpleMaterialShader.vert", "../Data/simpleMaterialShader.frag");
-	auto BRDFMaterialShader = new Shader("BRDFMaterialShader", "../Data/BRDFMaterialShader.vert", "../Data/BRDFMaterialShader.frag");
-	auto PbrTextureShader = new Shader("PbrTextureShader", "../Data/PbrTextureShader.vert", "../Data/PbrTextureShader.frag");
-
+	auto BRDFMaterialShader = new Shader("brdfMaterialShader", "../Data/BRDFMaterialShader.vert", "../Data/BRDFMaterialShader.frag");
+	auto PbrTextureShader = new Shader("pbrTextureShader", "../Data/PbrTextureShader.vert", "../Data/PbrTextureShader.frag");
+	auto IrradianceConvolutionShader = new Shader("irradianceConvolutionShader", "../Data/cubemap.vert", "../Data/irradianceConvolution.frag");
+	auto BRDFShader = new Shader("brdfShader", "../Data/brdf.vert", "../Data/brdf.frag");
+	auto PrefilterShader = new Shader("prefilterShader", "../Data/cubemap.vert", "../Data/prefilter.frag");
+	//TODO load pbr texture
 	auto albedo = new Texture("../Data/Textures/Materials/rustediron/albedo.png", ETextureChannels::AlbedoMap);
 	auto normal = new Texture("../Data/Textures/Materials/rustediron/normal.png", ETextureChannels::NormalMap);
 	auto metallic = new Texture("../Data/Textures/Materials/rustediron/metallic.png", ETextureChannels::MetallicMap);
 	auto roughness = new Texture("../Data/Textures/Materials/rustediron/roughness.png", ETextureChannels::RoughnessMap);
 	auto ao = new Texture("../Data/Textures/Materials/rustediron/ao.png", ETextureChannels::AmbientOcclusionMap);
 
+	auto albedoGold = new Texture("../Data/Textures/Materials/gold/albedo.png", ETextureChannels::AlbedoMap);
+	auto normalGold = new Texture("../Data/Textures/Materials/gold/normal.png", ETextureChannels::NormalMap);
+	auto metallicGold = new Texture("../Data/Textures/Materials/gold/metallic.png", ETextureChannels::MetallicMap);
+	auto roughnessGold = new Texture("../Data/Textures/Materials/gold/roughness.png", ETextureChannels::RoughnessMap);
+	auto aoGold = new Texture("../Data/Textures/Materials/gold/ao.png", ETextureChannels::AmbientOcclusionMap);
+
+	auto albedoAluminium = new Texture("../Data/Textures/Materials/aluminium/albedo.png", ETextureChannels::AlbedoMap);
+	auto normalAluminium = new Texture("../Data/Textures/Materials/aluminium/normal.png", ETextureChannels::NormalMap);
+	auto metallicAluminium = new Texture("../Data/Textures/Materials/aluminium/metallic.png", ETextureChannels::MetallicMap);
+	auto roughnessAluminium = new Texture("../Data/Textures/Materials/aluminium/roughness.png", ETextureChannels::RoughnessMap);
+	auto aoAluminium = new Texture("../Data/Textures/Materials/aluminium/ao.png", ETextureChannels::AmbientOcclusionMap);
+
 	World::Get().AddShader(lightShader);
 	World::Get().AddShader(skyboxShader);
 	World::Get().AddShader(simpleMaterialShader);
 	World::Get().AddShader(simpleMeshShader);
+	World::Get().AddShader(IrradianceConvolutionShader);
+	World::Get().AddShader(BRDFShader);
+	World::Get().AddShader(PrefilterShader);
+
+	Skybox skybox("universe");
+	skybox.Render();
+	
+	ReflectionProbe probeOne(512, 512);
+	probeOne.SetReflectionMap(skybox.GetId());
+	probeOne.Create();
+
 
 	auto materialPBR = new MaterialPBR("PBR");
 	materialPBR->SetColor(glm::vec3(0.3f, 0.3f, 0.3f));
@@ -57,11 +90,12 @@ int main() {
 	materialPBR->SetShader(BRDFMaterialShader);
 
 	auto materialTexturePBR = new MaterialPBR("PBRTexture");
-	materialTexturePBR->SetTexture(albedo);
-	materialTexturePBR->SetTexture(normal);
-	materialTexturePBR->SetTexture(metallic);
-	materialTexturePBR->SetTexture(roughness);
-	materialTexturePBR->SetTexture(ao);
+	materialTexturePBR->SetTexture(albedoAluminium);
+	materialTexturePBR->SetTexture(normalAluminium);
+	materialTexturePBR->SetTexture(metallicAluminium);
+	materialTexturePBR->SetTexture(roughnessAluminium);
+	materialTexturePBR->SetTexture(aoAluminium);
+	materialTexturePBR->SetReflectionProbe(&probeOne);
 	materialTexturePBR->SetShader(PbrTextureShader);
 
 	auto whiteMaterial = new Material("white");
@@ -80,6 +114,7 @@ int main() {
 	greyMaterial->m_Color = glm::vec3(0.5f, 0.5f, 0.5f);
 	greyMaterial->SetShader(simpleMeshShader);
 	greyMaterial->SetReflections(ReflectionType::Ambient);
+	
 
 	auto redMaterial = new Material("red");
 	redMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
@@ -101,8 +136,7 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
 	///////////////////////////////////////////////////////////////////////////////
-
-	SceneObject ground("ground");
+	
 	SceneObject cube("cube");
 	SceneObject lightCube("lightCube");
 	SceneObject teapot("teapot");
@@ -112,19 +146,19 @@ int main() {
 	SceneObject sphere("sphere");
 	SceneObject sphere1("sphere1");
 
-	Skybox skybox("universe");
+	
 
-	activeScene->AddRootChild(&ground);
+
+	
 	activeScene->AddRootChild(&lightCube);
 	activeScene->AddRootChild(&cube);
 	activeScene->AddRootChild(&teapot);
 	activeScene->AddRootChild(&sphere);
-	activeScene->AddRootChild(&sphere1);
+	//activeScene->AddRootChild(&sphere1);
 	//activeScene->AddRootChild(&dragon);
 	//activeScene->AddRootChild(&armadillo);
 	//activeScene->AddRootChild(&bunny);
-
-	ground.AddModel(new Model(std::string("ground")));
+	
 	teapot.AddModel(new Model("../Data/Models/test-models/teapot.obj"));
 	//armadillo.AddModel(new Model("../Data/Models/test-models/armadillo.obj"));
 	//dragon.AddModel(new Model("../Data/Models/test-models/dragon.obj"));
@@ -133,19 +167,17 @@ int main() {
 	sphere.AddModel(new Model(std::string("sphere")));
 	sphere1.AddModel(new Model(std::string("sphere1")));
 	lightCube.AddModel(new Model(std::string("lightCube")));
-
-	ground.GetModel().AddMesh(new Plane("ground"));
+	
 	cube.GetModel().AddMesh(new StudentCube("cube"));
 	lightCube.GetModel().AddMesh(new StudentCube("lightCube"));
-	sphere.GetModel().AddMesh(new Sphere("Sphere", 12));
-	sphere1.GetModel().AddMesh(new Sphere("Sphere1", 12));
+	sphere.GetModel().AddMesh(new Sphere("Sphere", 32));
+	sphere1.GetModel().AddMesh(new Sphere("Sphere1", 32));
 	lightCube.AddLight(cubeLight);
-	activeScene->GetSceneObject("ground")->GetModel().GetMesh("ground")->SetMaterial(greyMaterial);
 	activeScene->GetSceneObject("cube")->GetModel().GetMesh("cube")->SetMaterial(redMaterial);
 	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh("lightCube")->SetMaterial(whiteMaterial);
 	activeScene->GetSceneObject("teapot")->GetModel().GetMesh(0)->SetMaterial(materialPBR);
 	activeScene->GetSceneObject("sphere")->GetModel().GetMesh(0)->SetMaterial(materialTexturePBR);
-	activeScene->GetSceneObject("sphere1")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
+	//activeScene->GetSceneObject("sphere1")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
 	//activeScene->GetSceneObject("dragon")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
 	//activeScene->GetSceneObject("armadillo")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
 	//activeScene->GetSceneObject("bunny")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
@@ -161,8 +193,7 @@ int main() {
 	//dragon.GetTransform()->Scale(glm::vec3(0.01f), Space::Local);
 	//teapot.GetTransform()->Scale(glm::vec3(0.5f), Space::Local);
 	//bunny.GetTransform()->Scale(glm::vec3(10.0f), Space::Local);
-
-	ground.GetTransform()->Scale(glm::vec3(20.f), Space::Local);
+	
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Scene
@@ -170,7 +201,6 @@ int main() {
 
 	window->InitImGui();
 
-	activeScene->SetSceneCamera(g_Camera);
 	activeScene->SetSceneSkybox(&skybox);
 	activeScene->AddSceneLight(cubeLight);
 
@@ -238,3 +268,5 @@ int main() {
 	
 	return error;
 }
+
+
