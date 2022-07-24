@@ -49,7 +49,15 @@ void MaterialPBR::SetTexture(ITexture* texture)
 	default:
 		break;
 	}
+}
 
+void MaterialPBR::SetPBRTexture(const std::string& path)
+{
+	m_TextureAlbedo = new Texture(path + "/albedo.png", ETextureChannels::AlbedoMap);
+	m_TextureMetallic = new Texture(path + "/metallic.png", ETextureChannels::MetallicMap);
+	m_TextureNormal = new Texture(path + "/normal.png", ETextureChannels::NormalMap);
+	m_TextureRoughness = new Texture(path + "/roughness.png", ETextureChannels::RoughnessMap);
+	m_TextureAmbienOcclusion = new Texture(path + "/ao.png", ETextureChannels::AmbientOcclusionMap);
 }
 
 ITexture* MaterialPBR::GetTexture(ETextureChannels channelMap)
@@ -159,7 +167,6 @@ void MaterialPBR::Render()
 
 	if(m_TextureAlbedo == nullptr)
 	{
-		m_Shader->SetUniform3f("material.color", m_Color);
 		m_Shader->SetUniform3f("material.albedo", m_Albedo);
 		m_Shader->SetUniform1f("material.metallic", m_Metallic);
 		m_Shader->SetUniform1f("material.roughness", m_Roughness);
@@ -170,42 +177,45 @@ void MaterialPBR::Render()
 	m_Shader->SetUniform3f("camPos", sceneCamera->Position);
 
 	m_Shader->SetUniform1i("numPointlights", (int)lights.size());
+	int i = 0;
 	for (auto& l : lights)
 	{
-		int i = 0;
 		Light* light = l.second;
-		switch (light->Type)
-		{
-		case LightSourceType::PointLight:
-			m_Shader->SetUniform3f("light[0].position", light->Position);
-			m_Shader->SetUniform3f("light[0].color", light->Color);
-			m_Shader->SetUniform3f("pointLights[" + std::to_string(i) + "].position", light->Position);
-			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].constant", light->Constant);
-			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].linear", light->Linear);
-			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].quadratic", light->Quadratic);
-			break;
-
-		case LightSourceType::DirectionalLight:
-			m_Shader->SetUniform3f("light.Position", light->Position);
-			m_Shader->SetUniform3f("light.Color", light->Color);
-			m_Shader->SetUniform3f("dirLight.direction", light->Direction);
-			break;
-		case LightSourceType::SpotLight:
-			break;
-		}
+		
+		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].position", light->Position);
+		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].color", light->Color);
 		i++;
 	}
 }
 
 void MaterialPBR::RenderPost()
 {
-	/*if (m_TextureDiff != nullptr) {
-		m_TextureDiff->Unbind();
-	}
 
-	if (m_TextureSpec != nullptr) {
-		m_TextureSpec->Unbind();
-	}*/
+	//Todo: map von texturen??
+	if (m_TextureAlbedo != nullptr) {
+		m_TextureAlbedo->Unbind();
+	}
+	if (m_TextureMetallic != nullptr) {
+		m_TextureMetallic->Unbind();
+	}
+	if (m_TextureNormal != nullptr) {
+		m_TextureNormal->Unbind();
+	}
+	if (m_TextureRoughness != nullptr) {
+		m_TextureRoughness->Unbind();
+	}
+	if (m_TextureAmbienOcclusion != nullptr) {
+		m_TextureAmbienOcclusion->Unbind();
+	}
+	if (m_TexturePrefilter != nullptr) {
+		m_TexturePrefilter->Unbind();
+	}
+	if (m_TextureIrradiance != nullptr) {
+		m_TextureIrradiance->Unbind();
+	}
+	if (m_TextureBrdfLookUp != nullptr) {
+		m_TextureBrdfLookUp->Unbind();
+	}
 
 	if (m_Shader != nullptr) {
 		m_Shader->Unbind();

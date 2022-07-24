@@ -46,25 +46,7 @@ int main() {
 	auto IrradianceConvolutionShader = new Shader("irradianceConvolutionShader", "../Data/cubemap.vert", "../Data/irradianceConvolution.frag");
 	auto BRDFShader = new Shader("brdfShader", "../Data/brdf.vert", "../Data/brdf.frag");
 	auto PrefilterShader = new Shader("prefilterShader", "../Data/cubemap.vert", "../Data/prefilter.frag");
-	//TODO load pbr texture
-	auto albedo = new Texture("../Data/Textures/Materials/rustediron/albedo.png", ETextureChannels::AlbedoMap);
-	auto normal = new Texture("../Data/Textures/Materials/rustediron/normal.png", ETextureChannels::NormalMap);
-	auto metallic = new Texture("../Data/Textures/Materials/rustediron/metallic.png", ETextureChannels::MetallicMap);
-	auto roughness = new Texture("../Data/Textures/Materials/rustediron/roughness.png", ETextureChannels::RoughnessMap);
-	auto ao = new Texture("../Data/Textures/Materials/rustediron/ao.png", ETextureChannels::AmbientOcclusionMap);
-
-	auto albedoGold = new Texture("../Data/Textures/Materials/gold/albedo.png", ETextureChannels::AlbedoMap);
-	auto normalGold = new Texture("../Data/Textures/Materials/gold/normal.png", ETextureChannels::NormalMap);
-	auto metallicGold = new Texture("../Data/Textures/Materials/gold/metallic.png", ETextureChannels::MetallicMap);
-	auto roughnessGold = new Texture("../Data/Textures/Materials/gold/roughness.png", ETextureChannels::RoughnessMap);
-	auto aoGold = new Texture("../Data/Textures/Materials/gold/ao.png", ETextureChannels::AmbientOcclusionMap);
-
-	auto albedoAluminium = new Texture("../Data/Textures/Materials/aluminium/albedo.png", ETextureChannels::AlbedoMap);
-	auto normalAluminium = new Texture("../Data/Textures/Materials/aluminium/normal.png", ETextureChannels::NormalMap);
-	auto metallicAluminium = new Texture("../Data/Textures/Materials/aluminium/metallic.png", ETextureChannels::MetallicMap);
-	auto roughnessAluminium = new Texture("../Data/Textures/Materials/aluminium/roughness.png", ETextureChannels::RoughnessMap);
-	auto aoAluminium = new Texture("../Data/Textures/Materials/aluminium/ao.png", ETextureChannels::AmbientOcclusionMap);
-
+	//Todo World, load shader folder / add shaders 
 	World::Get().AddShader(lightShader);
 	World::Get().AddShader(skyboxShader);
 	World::Get().AddShader(simpleMaterialShader);
@@ -74,15 +56,12 @@ int main() {
 	World::Get().AddShader(PrefilterShader);
 
 	Skybox skybox("universe");
-	skybox.Render();
-	
+
 	ReflectionProbe probeOne(512, 512);
 	probeOne.SetReflectionMap(skybox.GetId());
 	probeOne.Create();
-
-
+	
 	auto materialPBR = new MaterialPBR("PBR");
-	materialPBR->SetColor(glm::vec3(0.3f, 0.3f, 0.3f));
 	materialPBR->SetAlbedo(glm::vec3(0.5f, 0.0f, 0.0f));
 	materialPBR->SetMetallic(1.0f);
 	materialPBR->SetRoughness(0.05f);
@@ -90,11 +69,7 @@ int main() {
 	materialPBR->SetShader(BRDFMaterialShader);
 
 	auto materialTexturePBR = new MaterialPBR("PBRTexture");
-	materialTexturePBR->SetTexture(albedoAluminium);
-	materialTexturePBR->SetTexture(normalAluminium);
-	materialTexturePBR->SetTexture(metallicAluminium);
-	materialTexturePBR->SetTexture(roughnessAluminium);
-	materialTexturePBR->SetTexture(aoAluminium);
+	materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/aluminium");
 	materialTexturePBR->SetReflectionProbe(&probeOne);
 	materialTexturePBR->SetShader(PbrTextureShader);
 
@@ -114,7 +89,6 @@ int main() {
 	greyMaterial->m_Color = glm::vec3(0.5f, 0.5f, 0.5f);
 	greyMaterial->SetShader(simpleMeshShader);
 	greyMaterial->SetReflections(ReflectionType::Ambient);
-	
 
 	auto redMaterial = new Material("red");
 	redMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);

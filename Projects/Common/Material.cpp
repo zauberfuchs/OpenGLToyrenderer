@@ -161,9 +161,9 @@ void Material::Render()
 	m_Shader->SetUniform3f("camPos", sceneCamera->Position);
 
 	m_Shader->SetUniform1i("numPointlights", (int)lights.size());
+	int i = 0;
 	for (auto& l : lights)
 	{
-		int i = 0;
 		Light* light = l.second;
 
 		switch (light->Type)

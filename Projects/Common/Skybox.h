@@ -26,12 +26,12 @@ private:
 
 	std::vector<std::string> m_Faces
 	{
-			"../Data/Textures/Skybox/darkish/right.png",
-			"../Data/Textures/Skybox/darkish/left.png",
-			"../Data/Textures/Skybox/darkish/top.png",
-			"../Data/Textures/Skybox/darkish/bottom.png",
-			"../Data/Textures/Skybox/darkish/front.png",
-			"../Data/Textures/Skybox/darkish/back.png"
+			"../Data/Textures/Skybox/greenish/right.png",
+			"../Data/Textures/Skybox/greenish/left.png",
+			"../Data/Textures/Skybox/greenish/top.png",
+			"../Data/Textures/Skybox/greenish/bottom.png",
+			"../Data/Textures/Skybox/greenish/front.png",
+			"../Data/Textures/Skybox/greenish/back.png"
 	};
 	
 	void Load();

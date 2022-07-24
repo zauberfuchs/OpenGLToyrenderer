@@ -21,6 +21,7 @@ public:
 	
 
 	void SetTexture(ITexture* texture) override;
+	void SetPBRTexture(const std::string& path);
 	ITexture* GetTexture(ETextureChannels channelMap) override;
 
 	void SetShader(IShader* shader) override;
@@ -37,6 +38,7 @@ public:
 
 	inline glm::vec3 GetColor() override { return m_Color; }
 	inline void SetColor(const glm::vec3& color) override { m_Color = color; }
+
 
 	inline void SetAlbedo(const glm::vec3& albedo) { m_Albedo = albedo; }
 	inline void SetMetallic(const float& metallic) { m_Metallic = metallic; }

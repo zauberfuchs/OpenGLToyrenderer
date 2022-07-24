@@ -7,7 +7,6 @@ precision highp float;
 // Material
 ///////////////////////////////////////////////////////////////////////////////
 struct Material { // Material koeffizenten
-	vec3 color;
 	vec3 albedo;
 	float metallic;
 	float roughness;

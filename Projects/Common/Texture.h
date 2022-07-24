@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "ITexture.h"
+#include <array>
 
 class Texture : public ITexture
 {
