@@ -21,12 +21,13 @@ public:
 	~ReflectionProbe() = default;
 
 	void Create();
-
+	void CreateReflectionMapFromHDR(const std::string& path);
 	void SetReflectionMap(const unsigned int& id);
 
 	inline unsigned int GetIrradianceMap() { return m_IrradianceMap; }
 	inline unsigned int GetPreFilterMap() { return m_PrefilterMap; }
 	inline unsigned int GetBrdfLUT() { return m_BrdfLUT; }
+	inline unsigned int GetReflectionMap() { return m_ReflectionMap; }
 
 	inline ITexture* GetIrradianceTexture() { return &m_IrradianceTexture; }
 	inline ITexture* GetPrefilterTexture() { return &m_PrefilterTexture; }
@@ -62,6 +63,7 @@ private:
 	Shader* m_PrefilterShader;
 	Shader* m_IrradianceShader;
 	Shader* m_PbrShader;
+	Shader* m_EquirectangularToCubemapShader;
 
 	glm::mat4 m_CaptureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 m_CaptureViews[6] =

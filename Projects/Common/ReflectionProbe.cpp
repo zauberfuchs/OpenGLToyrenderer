@@ -8,6 +8,7 @@ ReflectionProbe::ReflectionProbe(const int& width, const int& height)
 	m_IrradianceShader = World::Get().GetShader("irradianceConvolutionShader");
 	m_PrefilterShader = World::Get().GetShader("prefilterShader");
 	m_BrdfShader = World::Get().GetShader("brdfShader");
+	m_EquirectangularToCubemapShader = World::Get().GetShader("equirectangularToCubemap");
 }
 
 void ReflectionProbe::Create()
@@ -15,6 +16,76 @@ void ReflectionProbe::Create()
 	CreateIrradianceMap();
 	CreatePrefilterMap();
 	CreateBRDFLookUpTexture();
+}
+
+void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
+{
+    m_FBO.Bind();
+    m_RBO.Bind();
+    m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
+
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_RBO.GetId());
+
+    // pbr: load the HDR environment map
+    // ---------------------------------
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nrComponents;
+    float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);
+    unsigned int hdrTexture;
+    if (data)
+    {
+        glGenTextures(1, &hdrTexture);
+        glBindTexture(GL_TEXTURE_2D, hdrTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data); // note how we specify the texture's data value to be float
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Failed to load HDR image." << std::endl;
+    }
+
+    // pbr: setup cubemap to render to and attach to framebuffer
+    // ---------------------------------------------------------
+   
+    glGenTextures(1, &m_ReflectionMap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+    // pbr: convert HDR equirectangular environment map to cubemap equivalent
+    // ----------------------------------------------------------------------
+    m_EquirectangularToCubemapShader->Bind();
+    m_EquirectangularToCubemapShader->SetUniform1i("equirectangularMap", 0);
+    m_EquirectangularToCubemapShader->SetUniformMat4f("projection", m_CaptureProjection);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, hdrTexture);
+
+    glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO.GetId());
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        m_EquirectangularToCubemapShader->SetUniformMat4f("view", m_CaptureViews[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_ReflectionMap, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        RenderCube();
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void ReflectionProbe::SetReflectionMap(const unsigned& id)

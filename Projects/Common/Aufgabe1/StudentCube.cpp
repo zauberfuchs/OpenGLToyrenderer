@@ -16,39 +16,39 @@ StudentCube::StudentCube(const std::string& name, const float& w)
 
 		//Top Side
 		{glm::vec3(-w2, w2, w2),		glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//0
-		{glm::vec3(w2, w2, w2),			glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//1
-		{glm::vec3(w2, w2, -w2),		glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)}, //2
-		{glm::vec3(-w2, w2, -w2),		glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)}, //3
+		{glm::vec3(w2, w2, w2),			glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(0.0f, 1.0f)},	//1
+		{glm::vec3(w2, w2, -w2),		glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(1.0f, 1.0f)}, //2
+		{glm::vec3(-w2, w2, -w2),		glm::vec3(0.0f,  1.0f, 0.0f),		glm::vec2(1.0f, 0.0f)}, //3
 
 		//Bottom Side
 		{glm::vec3(-w2, -w2, w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//4
-		{glm::vec3(-w2, -w2, -w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//5
-		{glm::vec3(w2, -w2, -w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//6
-		{glm::vec3(w2, -w2, w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//7
+		{glm::vec3(-w2, -w2, -w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(0.0f, 1.0f)},	//5
+		{glm::vec3(w2, -w2, -w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(1.0f, 1.0f)},	//6
+		{glm::vec3(w2, -w2, w2),		glm::vec3(0.0f,  -1.0f, 0.0f),		glm::vec2(1.0f, 0.0f)},	//7
 
 		//Front Side
 		{glm::vec3(-w2, -w2, w2),		glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(0.0f, 0.0f)},	//8
-		{glm::vec3(w2, -w2, w2),		glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(0.0f, 0.0f)}, //9
-		{glm::vec3(w2, w2, w2),		    glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(0.0f, 0.0f)}, //10
-		{glm::vec3(-w2, w2, w2),		glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(0.0f, 0.0f)}, //11
+		{glm::vec3(w2, -w2, w2),		glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(0.0f, 1.0f)}, //9
+		{glm::vec3(w2, w2, w2),		    glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(1.0f, 1.0f)}, //10
+		{glm::vec3(-w2, w2, w2),		glm::vec3(0.0f,  0.0f, 1.0f),		glm::vec2(1.0f, 0.0f)}, //11
 
 		//Left Side
 		{glm::vec3(-w2, -w2, w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//12
-		{glm::vec3(-w2, w2, w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//13
-		{glm::vec3(-w2, w2, -w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//14
-		{glm::vec3(-w2, -w2, -w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//15
+		{glm::vec3(-w2, w2, w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 1.0f)},	//13
+		{glm::vec3(-w2, w2, -w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(1.0f, 1.0f)},	//14
+		{glm::vec3(-w2, -w2, -w2),		glm::vec3(-1.0f,  0.0f, 0.0f),		glm::vec2(1.0f, 0.0f)},	//15
 
 		//Right Side
 		{glm::vec3(w2, -w2, w2),		glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//16
-		{glm::vec3(w2, -w2, -w2),		glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//17
-		{glm::vec3(w2, w2, -w2),		glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//18
-		{glm::vec3(w2, w2, w2),			glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 0.0f)},	//19
+		{glm::vec3(w2, -w2, -w2),		glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(0.0f, 1.0f)},	//17
+		{glm::vec3(w2, w2, -w2),		glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(1.0f, 1.0f)},	//18
+		{glm::vec3(w2, w2, w2),			glm::vec3(1.0f,  0.0f, 0.0f),		glm::vec2(1.0f, 0.0f)},	//19
 
 		//Back Side
 		{glm::vec3(-w2, -w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)},	//20
-		{glm::vec3(-w2, w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)},	//21
-		{glm::vec3(w2, w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)},	//22
-		{glm::vec3(w2, -w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 0.0f)},	//23
+		{glm::vec3(-w2, w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(0.0f, 1.0f)},	//21
+		{glm::vec3(w2, w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 1.0f)},	//22
+		{glm::vec3(w2, -w2, -w2),		glm::vec3(0.0f,  0.0f, -1.0f),		glm::vec2(1.0f, 0.0f)},	//23
 
 	};
 

@@ -46,6 +46,8 @@ int main() {
 	auto IrradianceConvolutionShader = new Shader("irradianceConvolutionShader", "../Data/cubemap.vert", "../Data/irradianceConvolution.frag");
 	auto BRDFShader = new Shader("brdfShader", "../Data/brdf.vert", "../Data/brdf.frag");
 	auto PrefilterShader = new Shader("prefilterShader", "../Data/cubemap.vert", "../Data/prefilter.frag");
+	auto EquirectangularToCubemap = new Shader("equirectangularToCubemap", "../Data/cubemap.vert", "../Data/equirectangularToCubemap.frag");
+
 	//Todo World, load shader folder / add shaders 
 	World::Get().AddShader(lightShader);
 	World::Get().AddShader(skyboxShader);
@@ -54,11 +56,14 @@ int main() {
 	World::Get().AddShader(IrradianceConvolutionShader);
 	World::Get().AddShader(BRDFShader);
 	World::Get().AddShader(PrefilterShader);
+	World::Get().AddShader(EquirectangularToCubemap);
 
 	Skybox skybox("universe");
 
 	ReflectionProbe probeOne(512, 512);
+	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
 	probeOne.SetReflectionMap(skybox.GetId());
+	//skybox.SetId(probeOne.GetReflectionMap());
 	probeOne.Create();
 	
 	auto materialPBR = new MaterialPBR("PBR");
@@ -69,10 +74,11 @@ int main() {
 	materialPBR->SetShader(BRDFMaterialShader);
 
 	auto materialTexturePBR = new MaterialPBR("PBRTexture");
-	materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/aluminium");
+	//materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/gold");
+	materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/mirror");
 	materialTexturePBR->SetReflectionProbe(&probeOne);
 	materialTexturePBR->SetShader(PbrTextureShader);
-
+	//Todo: phongmaterial
 	auto whiteMaterial = new Material("white");
 	whiteMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
 	whiteMaterial->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -144,10 +150,11 @@ int main() {
 	
 	cube.GetModel().AddMesh(new StudentCube("cube"));
 	lightCube.GetModel().AddMesh(new StudentCube("lightCube"));
-	sphere.GetModel().AddMesh(new Sphere("Sphere", 32));
-	sphere1.GetModel().AddMesh(new Sphere("Sphere1", 32));
+	sphere.GetModel().AddMesh(new Sphere("Sphere", 256));
+	sphere1.GetModel().AddMesh(new Sphere("Sphere1", 2));
 	lightCube.AddLight(cubeLight);
 	activeScene->GetSceneObject("cube")->GetModel().GetMesh("cube")->SetMaterial(redMaterial);
+	activeScene->GetSceneObject("cube")->GetModel().GetMesh("cube")->SetMaterial(materialTexturePBR);
 	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh("lightCube")->SetMaterial(whiteMaterial);
 	activeScene->GetSceneObject("teapot")->GetModel().GetMesh(0)->SetMaterial(materialPBR);
 	activeScene->GetSceneObject("sphere")->GetModel().GetMesh(0)->SetMaterial(materialTexturePBR);
@@ -158,6 +165,7 @@ int main() {
 	
 	lightCube.GetTransform()->Translate(cubeLight->Position, Space::Local);
 	lightCube.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
+	cube.GetTransform()->Translate(glm::vec3(3.0f, 0.0f, 0.0f), Space::Local);
 
 	//armadillo.GetTransform()->Translate(glm::vec3(3.0f, 0.5f, 0.0f), Space::Local);
 	teapot.GetTransform()->Translate(glm::vec3(-3.0f, 0.0f, 0.0f), Space::Local);
