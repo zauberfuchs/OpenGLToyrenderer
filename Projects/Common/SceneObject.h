@@ -6,10 +6,10 @@
 class SceneObject : public ISceneObject
 {
 public:
-	SceneObject(const char* name);
+	SceneObject(std::string name);
 	~SceneObject() override;
 
-	const char* GetName() override;
+	std::string GetName() override;
 
 	void Render() override;
 
@@ -32,7 +32,7 @@ public:
 	IModel& GetModel() override;
 
 private:
-	const char* m_Name;
+	std::string m_Name;
 
 	ISceneObject* m_Parent = nullptr;
 	std::unordered_set<ISceneObject*> m_Children;

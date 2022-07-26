@@ -3,7 +3,7 @@
 #include "World.h"
 
 
-SceneObject::SceneObject(const char* name)
+SceneObject::SceneObject(std::string name)
 	: m_Name(name)
 {
 }
@@ -71,7 +71,7 @@ ISceneObject* SceneObject::GetParent() const
 	return m_Parent;
 }
 
-const char* SceneObject::GetName()
+std::string SceneObject::GetName()
 {
 	return m_Name;
 }

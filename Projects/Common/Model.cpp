@@ -35,11 +35,9 @@ void Model::AddMesh(IMesh* mesh)
 
 IMesh* Model::GetMesh(const int& index)
 {
-
-	for(auto i = m_Meshes.begin(); i != m_Meshes.end(); i++)
-	{
-		return i->second;
-	}
+	auto it = m_Meshes.begin();
+	std::advance(it, index);
+	return it->second;
 }
 
 IMesh* Model::GetMesh(const std::string& name)

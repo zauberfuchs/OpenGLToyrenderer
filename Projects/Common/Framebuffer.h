@@ -16,6 +16,7 @@ enum class FramebufferAttachment
 class Framebuffer
 {
 public:
+	Framebuffer();
 	Framebuffer(const int& width, const int& height);
 	~Framebuffer();
 

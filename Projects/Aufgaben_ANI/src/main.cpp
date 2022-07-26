@@ -61,9 +61,9 @@ int main() {
 	Skybox skybox("universe");
 
 	ReflectionProbe probeOne(512, 512);
-	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	probeOne.SetReflectionMap(skybox.GetId());
-	//skybox.SetId(probeOne.GetReflectionMap());
+	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	//probeOne.SetReflectionMap(skybox.GetId());
+	skybox.SetId(probeOne.GetReflectionMap());
 	probeOne.Create();
 	
 	auto materialPBR = new MaterialPBR("PBR");
@@ -74,10 +74,15 @@ int main() {
 	materialPBR->SetShader(BRDFMaterialShader);
 
 	auto materialTexturePBR = new MaterialPBR("PBRTexture");
-	//materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/gold");
-	materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/mirror");
+	materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/gold");
 	materialTexturePBR->SetReflectionProbe(&probeOne);
 	materialTexturePBR->SetShader(PbrTextureShader);
+
+	auto materialTexturePBR2 = new MaterialPBR("PBRTexture2");
+	materialTexturePBR2->SetPBRTexture("../Data/Textures/Materials/hardwood");
+	materialTexturePBR2->SetReflectionProbe(&probeOne);
+	materialTexturePBR2->SetShader(PbrTextureShader);
+
 	//Todo: phongmaterial
 	auto whiteMaterial = new Material("white");
 	whiteMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
@@ -125,6 +130,7 @@ int main() {
 	SceneObject bunny("bunny");
 	SceneObject sphere("sphere");
 	SceneObject sphere1("sphere1");
+	SceneObject shaderball("shaderball");
 
 	
 
@@ -134,6 +140,7 @@ int main() {
 	activeScene->AddRootChild(&cube);
 	activeScene->AddRootChild(&teapot);
 	activeScene->AddRootChild(&sphere);
+	activeScene->AddRootChild(&shaderball);
 	//activeScene->AddRootChild(&sphere1);
 	//activeScene->AddRootChild(&dragon);
 	//activeScene->AddRootChild(&armadillo);
@@ -146,6 +153,7 @@ int main() {
 	cube.AddModel(new Model(std::string("cube")));
 	sphere.AddModel(new Model(std::string("sphere")));
 	sphere1.AddModel(new Model(std::string("sphere1")));
+	shaderball.AddModel(new Model("../Data/Models/test-models/ShaderballUnreal.obj"));
 	lightCube.AddModel(new Model(std::string("lightCube")));
 	
 	cube.GetModel().AddMesh(new StudentCube("cube"));
@@ -158,6 +166,8 @@ int main() {
 	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh("lightCube")->SetMaterial(whiteMaterial);
 	activeScene->GetSceneObject("teapot")->GetModel().GetMesh(0)->SetMaterial(materialPBR);
 	activeScene->GetSceneObject("sphere")->GetModel().GetMesh(0)->SetMaterial(materialTexturePBR);
+	activeScene->GetSceneObject("shaderball")->GetModel().GetMesh(0)->SetMaterial(materialTexturePBR2);
+	activeScene->GetSceneObject("shaderball")->GetModel().GetMesh(1)->SetMaterial(materialTexturePBR);
 	//activeScene->GetSceneObject("sphere1")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
 	//activeScene->GetSceneObject("dragon")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
 	//activeScene->GetSceneObject("armadillo")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
@@ -166,6 +176,9 @@ int main() {
 	lightCube.GetTransform()->Translate(cubeLight->Position, Space::Local);
 	lightCube.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
 	cube.GetTransform()->Translate(glm::vec3(3.0f, 0.0f, 0.0f), Space::Local);
+	cube.GetTransform()->Scale(glm::vec3(20.0f, 0.25f, 20.0f), Space::Local);
+	shaderball.GetTransform()->Translate(glm::vec3(50.0f, 0.0f, 0.0f), Space::Local);
+	shaderball.GetTransform()->Scale(glm::vec3(0.01f, 0.01f, 0.01f), Space::Local);
 
 	//armadillo.GetTransform()->Translate(glm::vec3(3.0f, 0.5f, 0.0f), Space::Local);
 	teapot.GetTransform()->Translate(glm::vec3(-3.0f, 0.0f, 0.0f), Space::Local);

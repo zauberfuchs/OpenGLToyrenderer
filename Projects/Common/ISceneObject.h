@@ -15,7 +15,7 @@ class ISceneObject
 public:
 	virtual ~ISceneObject() = default;
 
-	virtual const char* GetName() = 0;
+	virtual std::string GetName() = 0;
 
 	virtual void Render() = 0;
 

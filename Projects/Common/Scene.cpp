@@ -21,23 +21,41 @@ Scene::~Scene()
 
 void Scene::UpdateScene()
 {
+	RenderDepthMap();
 }
 
 void Scene::RenderScene()
 {
+
 	if (m_Skybox != nullptr) {
 		m_Skybox->Render();
 	}
-
 	m_RootSO->Render();
 }
+
+void Scene::RenderDepthMap()
+{
+	for (auto l: m_LightSources)
+	{
+		l.second->CreateDepthMap(1024, 1024);
+		
+		glViewport(0, 0, l.second->m_ShadowWidth, l.second->m_ShadowHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, l.second->m_FBO.GetId());
+		glClear(GL_DEPTH_BUFFER_BIT);
+		World::Get().GetShader("shadowMap")->Bind();
+		World::Get().GetShader("shadowMap")->SetUniformMat4f("lightSpaceMatrix", l.second->CreateLightSpaceMatrix());
+		RenderScene();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
 
 void Scene::AddRootChild(SceneObject* s)
 {
 	m_RootSO->AddChildren(s);
 	m_SceneObjects.insert({ s->GetName(), s });
 }
-
+//TOdo ?? redundant
 void Scene::AddSceneObject(ISceneObject* s)
 {
 	m_SceneObjects.insert({ s->GetName(), s });

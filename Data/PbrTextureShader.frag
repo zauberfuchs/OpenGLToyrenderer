@@ -25,6 +25,7 @@ struct Light {
     vec3 color;
 };
 uniform Light light[4];
+uniform sampler2D shadowMap;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Constants
@@ -37,6 +38,7 @@ uniform Light light[4];
 in vec2 texCoord;
 in vec3 normal;
 in vec3 fragPos;
+in vec4 fragPosLightSpace;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input uniform variables
@@ -48,7 +50,41 @@ uniform vec3 camPos;
 ///////////////////////////////////////////////////////////////////////////////
 layout(location = 0) out vec4 fragmentColor;
 
-
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // calculate bias (based on depth map resolution and slope)
+    vec3 normal = normalize(normal);
+    vec3 lightDir = normalize(light[0].position - fragPos);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    // check whether current frag pos is in shadow
+    // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    // PCF
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 9.0;
+    
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+        
+    return shadow;
+}
 
 
 vec3 getNormalFromMap()
@@ -115,6 +151,7 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 // ----------------------------------------------------------------------------
 void main()
 {		
+    float shadow = ShadowCalculation(fragPosLightSpace); 
 
     vec3 albedo     = pow(texture(material.albedoMap, texCoord).rgb, vec3(2.2));
     float metallic  = texture(material.metallicMap, texCoord).r;
@@ -187,9 +224,11 @@ void main()
     vec2 brdf  = texture(material.brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-    vec3 ambient = (kD * diffuse + specular) * ao;
-    
-    vec3 color = ambient + Lo;
+    vec3 ambient = (kD * (diffuse - shadow) + specular) * ao;
+
+     
+
+    vec3 color = (ambient - shadow) + Lo;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

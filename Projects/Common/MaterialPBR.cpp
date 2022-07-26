@@ -46,6 +46,9 @@ void MaterialPBR::SetTexture(ITexture* texture)
 	case ETextureChannels::AmbientOcclusionMap:
 		m_TextureAmbienOcclusion = texture;
 		break;
+	case ETextureChannels::DepthMap:
+		m_TextureShadowDepth = texture;
+		break;
 	default:
 		break;
 	}
@@ -153,6 +156,10 @@ void MaterialPBR::RenderPre()
 	if (m_TextureBrdfLookUp != nullptr) {
 		m_TextureBrdfLookUp->RenderPre();
 		m_Shader->SetUniform1i("material.brdfLUT", 7);
+	}
+	if (m_TextureShadowDepth != nullptr) {
+		m_TextureShadowDepth->RenderPre();
+		m_Shader->SetUniform1i("shadowMap", 8);
 	}
 
 }

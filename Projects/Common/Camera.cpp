@@ -91,6 +91,7 @@ void Camera::UpdateCameraWindow(int& width, int& height)
 void Camera::UpdateMatrix(IShader* shader)
 {
 	shader->Bind();
+	//Todo Redundant?
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
 

@@ -61,6 +61,7 @@ private:
 	ITexture* m_TextureIrradiance = nullptr;
 	ITexture* m_TexturePrefilter = nullptr;
 	ITexture* m_TextureBrdfLookUp = nullptr;
+	ITexture* m_TextureShadowDepth = nullptr;
 
 	ReflectionProbe* m_Probe = nullptr;
 

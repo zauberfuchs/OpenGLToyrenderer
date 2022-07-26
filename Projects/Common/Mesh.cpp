@@ -55,17 +55,30 @@ IMaterial* Mesh::GetMaterial()
 
 void Mesh::Draw(Transform& transform)
 {
-	m_Material->Render();
+	if(m_ShadowPass)
+	{
+		m_VAO->Bind();
+		m_Material->GetShader()->SetUniformMat4f("model", transform.GetTransformMatrix());
+		glDrawElements(m_RenderMode, (GLsizei)m_Indices.size(), GL_UNSIGNED_INT, nullptr);
+		
+		m_VAO->Unbind();
+	}
+	else
+	{
+		m_Material->Render();
+		Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+		m_Material->GetShader()->SetUniformMat4f("model", transform.GetTransformMatrix());
+		m_Material->GetShader()->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix());
+		m_Material->SetTexture(&l->m_DepthMap);
+		m_VAO->Bind();
 
-	m_Material->GetShader()->SetUniformMat4f("model", transform.GetTransformMatrix());
+		glDrawElements(m_RenderMode, (GLsizei)m_Indices.size(), GL_UNSIGNED_INT, nullptr);
 
-	m_VAO->Bind();
+		m_Material->RenderPost();
 
-	glDrawElements(m_RenderMode, (GLsizei)m_Indices.size(), GL_UNSIGNED_INT, nullptr);
+		m_VAO->Unbind();
 
-	m_Material->RenderPost();
-
-	m_VAO->Unbind();
+	}
 }
 
 void Mesh::SetName(const std::string& name)

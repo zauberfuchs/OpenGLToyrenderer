@@ -1,5 +1,10 @@
 #include "Framebuffer.h"
 
+Framebuffer::Framebuffer()
+{
+	glGenFramebuffers(1, &m_ID);
+}
+//TODO move width / height to createColorTexture??
 Framebuffer::Framebuffer(const int& width, const int& height)
 	: m_Width(width), m_Height(height)
 {

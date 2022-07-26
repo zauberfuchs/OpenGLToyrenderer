@@ -31,6 +31,7 @@ protected:
 	IndexBuffer* m_IBO;
 	VertexBuffer* m_VBO;
 
+	bool m_ShadowPass = false;
 	uint16_t m_RenderMode = GL_TRIANGLES;
 
 	IMaterial* m_Material = nullptr;

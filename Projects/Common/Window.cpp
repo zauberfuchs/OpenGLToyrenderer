@@ -213,7 +213,9 @@ void Window::ImGuiRender()
 	glm::vec3 translation(0, 0, 0);
 	glm::vec3 rotation(0, 0, 0);
 	glm::vec3 scale(0, 0, 0);
-	static const char* current_item = NULL;
+	std::string name;
+	//static const char* current_item = NULL;
+	static std::string current_item = "";
 	auto sceneObjects = World::Get().GetActiveScene()->GetSceneObjects();
 
 	ImGui::Text("Scene Objects", 20);
@@ -223,15 +225,15 @@ void Window::ImGuiRender()
 	float spacing = style.ItemInnerSpacing.x;
 	float button_sz = ImGui::GetFrameHeight();
 	ImGui::PushItemWidth(w - spacing * 2.0f - button_sz * 2.0f);
-	if (ImGui::BeginCombo("##Scene Objects", current_item))
+	if (ImGui::BeginCombo("##Scene Objects", current_item.c_str()))
 	{
 		for (const auto [n ,sceneObject]: sceneObjects)
 		{
-			const char* name = sceneObject->GetName();
-			bool is_selected = current_item == name;
-			if (ImGui::Selectable(name, is_selected))
+			name = sceneObject->GetName();
+			bool is_selected = current_item == name.c_str();
+			if (ImGui::Selectable(name.c_str(), is_selected))
 			{
-				current_item = name;
+				current_item = name.c_str();
 			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
@@ -242,7 +244,7 @@ void Window::ImGuiRender()
 
 	ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
-	if (current_item != NULL)
+	if (current_item != "")
 	{
 		auto s = sceneObjects.at(current_item);
 		ImGui::Dummy(ImVec2(20, 20));

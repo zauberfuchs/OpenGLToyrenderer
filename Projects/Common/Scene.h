@@ -15,6 +15,7 @@ public:
 	~Scene();
 
 	void RenderScene();
+	void RenderDepthMap();
 	void UpdateScene();
 
 	void AddSceneLight(Light* l);

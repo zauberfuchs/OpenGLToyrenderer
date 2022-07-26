@@ -13,6 +13,7 @@ layout (location = 2) in vec2 vTex;
 out vec3 fragPos;
 out vec3 normal;
 out vec2 texCoord;
+out vec4 fragPosLightSpace;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input uniform variables
@@ -20,6 +21,7 @@ out vec2 texCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 lightSpaceMatrix;
 // ändern
 //uniform mat4 normalMatrix;
 //uniform mat4 modelViewMatrix;
@@ -32,7 +34,7 @@ void main()
 	fragPos = vec3(model * vec4(vPos, 1.0));
 
 	normal = mat3(transpose(inverse(model))) * vNormal; 
-
+	fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
 	// Assigns the texture coordinates from the Vertex Data to "texCoord"
 	texCoord = vTex;
 
