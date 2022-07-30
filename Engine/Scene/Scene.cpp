@@ -1,6 +1,7 @@
 #include "../../Engine/Utils/pch.h"
 #include "Scene.h"
 
+#include "Renderer.h"
 #include "Skybox.h"
 #include "World.h"
 
@@ -21,7 +22,6 @@ Scene::~Scene()
 
 void Scene::UpdateScene()
 {
-	RenderDepthMap();
 }
 
 void Scene::RenderScene()
@@ -39,12 +39,12 @@ void Scene::RenderDepthMap()
 	{
 		l.second->CreateDepthMap(1024, 1024);
 		
-		glViewport(0, 0, l.second->m_ShadowWidth, l.second->m_ShadowHeight);
-		glBindFramebuffer(GL_FRAMEBUFFER, l.second->m_FBO.GetId());
+		glViewport(0, 0, l.second->GetShadowWidth(), l.second->GetShadowHeight());
+		glBindFramebuffer(GL_FRAMEBUFFER, l.second->GetFramebuffer().GetId());
 		glClear(GL_DEPTH_BUFFER_BIT);
 		World::Get().GetShader("shadowmapShader")->Bind();
 		World::Get().GetShader("shadowmapShader")->SetUniformMat4f("lightSpaceMatrix", l.second->CreateLightSpaceMatrix());
-		RenderScene();
+	
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

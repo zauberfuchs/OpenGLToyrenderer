@@ -19,6 +19,11 @@ public:
 	void SetMaterial(IMaterial* material) override;
 	IMaterial* GetMaterial() override;
 
+	VertexArray* GetVAO() { return m_VAO; }
+	uint16_t GetRenderMode() { return m_RenderMode; }
+	GLsizei GetIndicesSize() { return m_Indices.size(); }
+
+
 
 protected:
 	std::string m_Name;
@@ -28,8 +33,7 @@ protected:
 	VertexArray* m_VAO;
 	IndexBuffer* m_IBO;
 	VertexBuffer* m_VBO;
-
-	bool m_ShadowPass = false;
+	
 	uint16_t m_RenderMode = GL_TRIANGLES;
 
 	IMaterial* m_Material = nullptr;

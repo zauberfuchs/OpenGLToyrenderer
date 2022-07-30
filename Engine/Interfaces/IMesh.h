@@ -22,4 +22,8 @@ public:
 
 	virtual void SetMaterial(IMaterial* material) = 0;
 	virtual IMaterial* GetMaterial() = 0;
+
+	virtual VertexArray* GetVAO() = 0;
+	virtual uint16_t GetRenderMode() = 0;
+	virtual GLsizei GetIndicesSize() = 0;
 };

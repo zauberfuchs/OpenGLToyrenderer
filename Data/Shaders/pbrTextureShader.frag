@@ -224,11 +224,11 @@ void main()
     vec2 brdf  = texture(material.brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-    vec3 ambient = (kD * (diffuse - shadow) + specular) * ao;
+    vec3 ambient = (kD * (diffuse) + specular) * ao;
 
      
 
-    vec3 color = (ambient - shadow) + Lo;
+    vec3 color = (ambient + (1.0 - shadow)) + Lo;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

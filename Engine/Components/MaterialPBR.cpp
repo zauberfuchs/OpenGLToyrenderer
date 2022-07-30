@@ -124,7 +124,6 @@ void MaterialPBR::RenderPre()
 	if (m_Shader != nullptr) {
 		m_Shader->Bind();
 	}
-
 	if (m_TextureAlbedo != nullptr) {
 		m_TextureAlbedo->RenderPre();
 		m_Shader->SetUniform1i("material.albedoMap", 0);
@@ -189,8 +188,8 @@ void MaterialPBR::Render()
 	{
 		Light* light = l.second;
 		
-		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].position", light->Position);
-		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].color", light->Color);
+		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].position", light->GetPosition());
+		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].color", light->GetColor());
 		i++;
 	}
 }

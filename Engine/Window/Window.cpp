@@ -267,13 +267,13 @@ void Window::ImGuiRender()
 		if (s->GetLight() != nullptr)
 		{
 			Light* l = s->GetLight();
-			lightColor = l->Color;
+			lightColor = l->GetColor();
 			ImGui::Dummy(ImVec2(20, 20));
 			ImGui::Text("Light Component", 20);
 			AddUnderLine(ImColor(255, 255, 255, 255));
 			ImGui::ColorEdit3("Light Color", &lightColor.x);
-			l->Color = lightColor;
-			s->GetLight()->Position = translation;
+			l->SetColor(lightColor);
+			s->GetLight()->SetPosition(translation);
 		}
 
 		if (s->GetModel().GetMeshes().size() != 0)

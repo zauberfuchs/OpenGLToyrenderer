@@ -57,30 +57,21 @@ IMaterial* Mesh::GetMaterial()
 
 void Mesh::Draw(Transform& transform)
 {
-	if(m_ShadowPass)
-	{
-		m_VAO->Bind();
-		m_Material->GetShader()->SetUniformMat4f("model", transform.GetTransformMatrix());
-		glDrawElements(m_RenderMode, (GLsizei)m_Indices.size(), GL_UNSIGNED_INT, nullptr);
-		
-		m_VAO->Unbind();
-	}
-	else
-	{
-		m_Material->Render();
-		Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
-		m_Material->GetShader()->SetUniformMat4f("model", transform.GetTransformMatrix());
-		m_Material->GetShader()->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix());
-		m_Material->SetTexture(&l->m_DepthMap);
-		m_VAO->Bind();
+	m_VAO->Bind();
+	m_Material->GetShader()->Bind();
 
-		glDrawElements(m_RenderMode, (GLsizei)m_Indices.size(), GL_UNSIGNED_INT, nullptr);
+	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+	m_Material->SetTexture(l->GetDepthmap());
+	m_Material->GetShader()->SetUniformMat4f("model", transform.GetTransformMatrix());
+	m_Material->GetShader()->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix());
 
-		m_Material->RenderPost();
+	m_Material->Render();
 
-		m_VAO->Unbind();
+	glDrawElements(m_RenderMode, (GLsizei)m_Indices.size(), GL_UNSIGNED_INT, nullptr);
 
-	}
+	m_Material->RenderPost();
+
+	m_VAO->Unbind();
 }
 
 void Mesh::SetName(const std::string& name)

@@ -167,15 +167,15 @@ void Material::Render()
 	{
 		Light* light = l.second;
 
-		switch (light->Type)
+		switch (light->GetType())
 		{
 		case LightSourceType::PointLight:
-			m_Shader->SetUniform3f("light.position", light->Position);
-			m_Shader->SetUniform3f("light.color", light->Color);
-			m_Shader->SetUniform3f("pointLights[" + std::to_string(i) + "].position", light->Position);
-			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].constant", light->Constant);
-			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].linear", light->Linear);
-			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].quadratic", light->Quadratic);
+			m_Shader->SetUniform3f("light.position", light->GetPosition());
+			m_Shader->SetUniform3f("light.color", light->GetColor());
+			m_Shader->SetUniform3f("pointLights[" + std::to_string(i) + "].position", light->GetPosition());
+			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].constant", light->GetConstant());
+			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].linear", light->GetLinear());
+			m_Shader->SetUniform1f("pointLights[" + std::to_string(i) + "].quadratic", light->GetQuadratic());
 			m_Shader->SetUniform3f("pointLights[" + std::to_string(i) + "].ambient", Ambient);
 			m_Shader->SetUniform3f("pointLights[" + std::to_string(i) + "].diffuse", Diffuse);
 			m_Shader->SetUniform3f("pointLights[" + std::to_string(i) + "].specular", Specular);
@@ -183,9 +183,9 @@ void Material::Render()
 			break;
 
 		case LightSourceType::DirectionalLight:
-			m_Shader->SetUniform3f("light.position", light->Position);
-			m_Shader->SetUniform3f("light.color", light->Color);
-			m_Shader->SetUniform3f("dirLight.direction", light->Direction);
+			m_Shader->SetUniform3f("light.position", light->GetPosition());
+			m_Shader->SetUniform3f("light.color", light->GetColor());
+			m_Shader->SetUniform3f("dirLight.direction", light->GetDirection());
 			m_Shader->SetUniform3f("dirLight.ambient", Ambient);
 			m_Shader->SetUniform3f("dirLight.diffuse", Diffuse);
 			m_Shader->SetUniform3f("dirLight.specular", Specular);

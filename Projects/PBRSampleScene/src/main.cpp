@@ -4,19 +4,22 @@
 #include "../../Engine/Scene/StudentCube.h"
 #include "../../Engine/Scene/Skybox.h"
 #include "../../Engine/Scene/Sphere.h"
+#include "../../Engine/Scene/Renderer.h"
 #include "../../Engine/Window/Window.h"
 
 #define FPS 30
 
 int main() {
 
-	auto window = new Window(1250, 680);
+	auto window = new Window(1280, 720);
 	int error = window->InitOpenGLContext();
 
 	World::Get().SetActiveScene(new Scene("Main Scene"));
 
 	Scene* activeScene = World::Get().GetActiveScene();
 	activeScene->SetSceneCamera(g_Camera);
+
+	srand(time(NULL));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials / Lights
@@ -46,12 +49,12 @@ int main() {
 	whiteMaterial->SetShader(World::Get().GetShader("lightShader"));
 
 	auto cubeLight = new Light("cubeLight");
-	cubeLight->Type = LightSourceType::DirectionalLight;
-	cubeLight->Position = glm::vec3(10.2f, 4.0f, 2.0f);
-	cubeLight->Constant = 1.0f;
-	cubeLight->Linear = 0.9f;
-	cubeLight->Quadratic = 0.032f;
-	cubeLight->Color = glm::vec3(1.0f);
+	cubeLight->SetType(LightSourceType::DirectionalLight);
+	cubeLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
+	cubeLight->SetConstant(1.0f);
+	cubeLight->SetLinear(0.9f);
+	cubeLight->SetQuadratic(0.032f);
+	cubeLight->SetColor(glm::vec3(1.0f));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
@@ -83,12 +86,11 @@ int main() {
 			shaderBalls[row][col]->GetTransform()->Scale(glm::vec3(0.01f, 0.01f, 0.01f), Space::Local);
 		}
 	}
-	srand(time(NULL));
+	
 	for(const auto& s : activeScene->GetSceneObjects())
 	{
 		if (s.first.find("shaderball") == 0)
 		{
-
 			s.second->GetModel().GetMesh(0)->SetMaterial(World::Get().GetMaterial(rand() % 17));
 			s.second->GetModel().GetMesh(1)->SetMaterial(World::Get().GetMaterial(rand() % 17));
 		}
@@ -119,9 +121,8 @@ int main() {
 	lightCube.AddLight(cubeLight);
 	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
 
-	lightCube.GetTransform()->Translate(cubeLight->Position, Space::Local);
+	lightCube.GetTransform()->Translate(cubeLight->GetPosition(), Space::Local);
 	lightCube.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
-
 	
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -139,7 +140,12 @@ int main() {
 
 	double lasttime = glfwGetTime();
 
+	//activeScene->RenderDepthMap();
+	
+	Renderer::Init();
 
+	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+	l->CreateDepthMap(1024, 1024);
 
 	while (!glfwWindowShouldClose(window->m_Window)) {
 
@@ -153,9 +159,13 @@ int main() {
 		}
 		lasttime += 1.0 / FPS;
 
-		activeScene->RenderScene();
-		window->ImGuiRender();
+		Renderer::ShadowPrepath();
+		Renderer::GeometryPath();
 
+		//activeScene->RenderScene();
+
+		window->ImGuiRender();
+		
 		glfwSwapBuffers(window->m_Window);
 		glfwPollEvents();
 	}
