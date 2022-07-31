@@ -228,7 +228,7 @@ void main()
 
      
 
-    vec3 color = (ambient) + Lo;
+    vec3 color = (ambient - shadow) + Lo;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));
