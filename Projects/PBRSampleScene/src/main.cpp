@@ -96,6 +96,13 @@ int main() {
 		}
 	}
 
+	//
+	SceneObject cube("cube");
+	activeScene->AddRootChild(&cube);
+	cube.AddModel(new Model(std::string("cube")));
+	cube.GetModel().AddMesh(new StudentCube("cube"));
+	cube.GetTransform()->Translate(glm::vec3(10.0f, 0.5f, 4.0f), Space::Local);
+	activeScene->GetSceneObject("cube")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// ground
@@ -116,8 +123,7 @@ int main() {
 	SceneObject lightCube("lightCube");
 	activeScene->AddRootChild(&lightCube);
 	lightCube.AddModel(new Model(std::string("lightCube")));
-	lightCube.GetModel().AddMesh(new Sphere("Sphere", 256));
-	lightCube.GetModel().AddMesh(new Sphere("Sphere", 256));
+	lightCube.GetModel().AddMesh(new Sphere("Sphere", 32));
 	lightCube.AddLight(cubeLight);
 	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
 
@@ -129,40 +135,41 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
-	window->InitImGui();
-
 	activeScene->SetSceneSkybox(&skybox);
 	activeScene->AddSceneLight(cubeLight);
 
 	///////////////////////////////////////////////////////////////////////////////
-	// main Rendering loop
+	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
 
-	double lasttime = glfwGetTime();
-
-	//activeScene->RenderDepthMap();
+	//todo make static??
+	window->InitImGui();
 	
 	Renderer::Init();
 
 	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
 	l->CreateDepthMap(1024, 1024);
 
+
+	///////////////////////////////////////////////////////////////////////////////
+	// main Rendering loop
+	///////////////////////////////////////////////////////////////////////////////
+	
 	while (!glfwWindowShouldClose(window->m_Window)) {
 
-		activeScene->UpdateScene();
+		//todo brauch zeit bis es aktiviert wird??
+		window->FrameRateLimit(FPS);
 		window->WindowRendering();
 		window->NewImGuiFrame();
 
-		// kann man geschickter machen, man schläft direkt die richtige zeit nur einmal
-		while (glfwGetTime() < lasttime + 1.0 / FPS) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-		lasttime += 1.0 / FPS;
+		activeScene->UpdateScene();
 
-		Renderer::ShadowPrepath();
+		Renderer::DepthPrePath();
+
 		Renderer::GeometryPath();
 
-		//activeScene->RenderScene();
+		//Renderer::SkyboxPath();
+		
 
 		window->ImGuiRender();
 		

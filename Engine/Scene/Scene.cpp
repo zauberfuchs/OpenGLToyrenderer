@@ -40,7 +40,7 @@ void Scene::RenderDepthMap()
 		l.second->CreateDepthMap(1024, 1024);
 		
 		glViewport(0, 0, l.second->GetShadowWidth(), l.second->GetShadowHeight());
-		glBindFramebuffer(GL_FRAMEBUFFER, l.second->GetFramebuffer().GetId());
+		glBindFramebuffer(GL_FRAMEBUFFER, l.second->GetFramebuffer()->GetId());
 		glClear(GL_DEPTH_BUFFER_BIT);
 		World::Get().GetShader("shadowmapShader")->Bind();
 		World::Get().GetShader("shadowmapShader")->SetUniformMat4f("lightSpaceMatrix", l.second->CreateLightSpaceMatrix());

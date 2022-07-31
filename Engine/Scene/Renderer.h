@@ -7,7 +7,8 @@ public:
 	static void Init();
 	static void Shutdown();
 
-	static void ShadowPrepath();
+	static void SkyboxPath();
+	static void DepthPrePath();
 	static void GeometryPath();
 
 	static void DrawMesh();

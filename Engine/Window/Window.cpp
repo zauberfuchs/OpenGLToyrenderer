@@ -168,9 +168,9 @@ void Window::WindowRendering()
 		g_Camera->UpdateCameraWindow(m_Width, m_Height);
 	}
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	/*glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	glFrontFace(GL_CCW);*/
 }
 
 void Window::InitImGui()
@@ -463,6 +463,15 @@ void Window::NewImGuiFrame()
 	ImGui::NewFrame();
 }
 
+void Window::FrameRateLimit(const unsigned& fps)
+{
+	//todo kann man geschickter machen, man schläft direkt die richtige zeit nur einmal
+	while (glfwGetTime() < lasttime + 1.0 / fps) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+	lasttime += 1.0 / fps;
+}
+
 Camera* g_Camera(new Camera(glm::vec3(0.0f, 20.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0));
 
 const char* glsl_version = "#version 330 core";
@@ -476,6 +485,7 @@ double lastY = WIN_HEIGHT / 2.0f;
 // timing
 double deltaTime = 0.0f;
 double lastFrame = 0.0f;
+double lasttime = glfwGetTime();
 
 bool firstMouse = true;
 bool mouseButtonPressed = false;

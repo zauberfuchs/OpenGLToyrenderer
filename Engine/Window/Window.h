@@ -22,6 +22,8 @@ public:
 	void WindowRendering();
 	void ImGuiRender();
 
+	void FrameRateLimit(const unsigned int& fps);
+
 	void NewImGuiFrame();
 	void InitImGui();
 	
@@ -57,6 +59,7 @@ extern double lastY;
 // timing
 extern double deltaTime;
 extern double lastFrame;
+extern double lasttime;
 
 extern bool firstMouse;
 extern bool mouseButtonPressed;

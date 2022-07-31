@@ -25,5 +25,5 @@ public:
 
 	virtual VertexArray* GetVAO() = 0;
 	virtual uint16_t GetRenderMode() = 0;
-	virtual GLsizei GetIndicesSize() = 0;
+	virtual uint32_t GetIndicesSize() = 0;
 };

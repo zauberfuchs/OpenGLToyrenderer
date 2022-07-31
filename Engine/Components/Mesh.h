@@ -19,9 +19,9 @@ public:
 	void SetMaterial(IMaterial* material) override;
 	IMaterial* GetMaterial() override;
 
-	VertexArray* GetVAO() { return m_VAO; }
-	uint16_t GetRenderMode() { return m_RenderMode; }
-	GLsizei GetIndicesSize() { return m_Indices.size(); }
+	VertexArray* GetVAO() override { return m_VAO; }
+	uint16_t GetRenderMode() override { return m_RenderMode; }
+	uint32_t GetIndicesSize() override { return static_cast<uint32_t>(m_Indices.size()); }
 
 
 

@@ -1,6 +1,7 @@
 #include "../../Engine/Utils/pch.h"
 #include "Renderer.h"
 
+#include "Skybox.h"
 #include "../../Engine/Scene/World.h"
 
 struct RendererStorage
@@ -8,9 +9,11 @@ struct RendererStorage
 	Scene* ActiveScene;
 	IShader* ActiveShader;
 
+	Skybox* SceneSkybox;
+
 	VertexArray* MeshVAO;
 
-	uint16_t MeshIndexCount;
+	uint32_t MeshIndexCount;
 	uint16_t MeshRenderMode;
 
 	IMaterial* MeshMaterial;
@@ -23,6 +26,10 @@ static RendererStorage s_Data;
 void Renderer::Init()
 {
 	s_Data.ActiveScene = World::Get().GetActiveScene();
+	if (s_Data.ActiveScene->GetSceneSkybox())
+	{
+		s_Data.SceneSkybox = s_Data.ActiveScene->GetSceneSkybox();
+	}
 }
 
 void Renderer::Shutdown()
@@ -30,7 +37,12 @@ void Renderer::Shutdown()
 
 }
 
-void Renderer::ShadowPrepath()
+void Renderer::SkyboxPath()
+{
+	s_Data.SceneSkybox->Render();
+}
+
+void Renderer::DepthPrePath()
 {
 	//Todo enum class von shadertypen?
 	s_Data.ActiveShader = World::Get().GetShader("shadowmapShader");
@@ -38,7 +50,7 @@ void Renderer::ShadowPrepath()
 	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
 
 	glViewport(0, 0, l->GetShadowWidth(), l->GetShadowHeight());
-	glBindFramebuffer(GL_FRAMEBUFFER, l->GetFramebuffer().GetId());
+	glBindFramebuffer(GL_FRAMEBUFFER, l->GetFramebuffer()->GetId());
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
@@ -56,11 +68,15 @@ void Renderer::ShadowPrepath()
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//RenderScreenQuad();
+
+	/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, 1280, 1024);
+	RenderScreenQuad();*/
 }
 
 void Renderer::GeometryPath()
 {
+	//get windowsize?
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, 1280, 1024);
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
@@ -94,7 +110,7 @@ void Renderer::DrawMesh()
 		s_Data.MeshMaterial->SetTexture(l->GetDepthmap());
 		s_Data.MeshMaterial->Render();
 	}
-
+	
 	glDrawElements(s_Data.MeshRenderMode, s_Data.MeshIndexCount, GL_UNSIGNED_INT, nullptr);
 
 	if (s_Data.MeshMaterial)

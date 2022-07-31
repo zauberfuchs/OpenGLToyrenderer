@@ -54,7 +54,7 @@ public:
 	inline int GetShadowWidth() { return m_ShadowWidth; }
 	inline int GetShadowHeight() { return m_ShadowHeight; }
 
-	inline Framebuffer GetFramebuffer() { return m_FBO; }
+	inline Framebuffer* GetFramebuffer() { return m_FBO; }
 	inline Texture* GetDepthmap() { return m_Depthmap; }
 
 private:
@@ -74,7 +74,7 @@ private:
 	float m_CutOff;
 	float m_OuterCutOff;
 
-	Framebuffer m_FBO;
+	Framebuffer* m_FBO;
 	Texture* m_Depthmap;
 
 
