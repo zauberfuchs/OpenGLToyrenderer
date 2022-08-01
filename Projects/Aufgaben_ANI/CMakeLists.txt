@@ -6,83 +6,56 @@ project(Aufgaben_ANI)
 
 include_directories("../common")
 
+set(DATA_SRC "../../Data")
+set(CORE_SRC "../../Engine")
 
-set(HEADER_FILES 	
-	"../common/Aufgabe1/StudentCube.h"
-	"../common/Sphere.h"
-	"../common/IndexBuffer.h"
-	"../common/FrameBuffer.h"
-	"../common/RenderBuffer.h"
-	"../common/VertexBuffer.h"
-	"../common/VertexBufferLayout.h"
-	"../common/ITexture.h"
-	"../common/Texture.h"
-	"../common/IShader.h"
-	"../common/ReflectionProbe.h"
-	"../common/Shader.h"
-	"../common/VertexArray.h"
-	"../common/Skybox.h"
-	"../common/Window.h"
-	"../common/Plane.h"
-	"../common/Scene.h"
-	"../common/Camera.h"
-	"../common/ICube.h"
-	"../common/IMesh.h"
-	"../common/IMaterial.h"
-	"../common/Material.h"
-	"../common/MaterialPBR.h"
-	"../common/Animation.h"
-	"../common/Mesh.h"
-	"../common/IModel.h"
-	"../common/Model.h"
-	"../common/Transform.h"
-	"../common/ISceneObject.h"
-	"../common/SceneObject.h"
-	"../common/World.h"
+file(GLOB_RECURSE UTIL_FILES
+	"${CORE_SRC}/Utils/*.h"
 	)
 
-set(DATA_SRC "../../Data")
+file(GLOB_RECURSE INTERFACE_FILES
+	"${CORE_SRC}/Interfaces/*.h"
+	)
+
+file(GLOB_RECURSE OPENGL_FILES
+	"${CORE_SRC}/OpenGL/*.h"
+	"${CORE_SRC}/OpenGL/*.cpp"
+	)
+file(GLOB_RECURSE SCENE_FILES
+	"${CORE_SRC}/Scene/*.h"
+	"${CORE_SRC}/Scene/*.cpp"
+	)
+file(GLOB_RECURSE COMPONENT_FILES
+	"${CORE_SRC}/Components/*.h"
+	"${CORE_SRC}/Components/*.cpp"
+	)
+
+file(GLOB_RECURSE WINDOW_FILES
+	"${CORE_SRC}/Window/*.h"
+	"${CORE_SRC}/Window/*.cpp"
+	)
+
+set(APPLICATION
+ 	"src/main.cpp"	
+ 	)
 
 # Find *all* shaders.
 file(GLOB_RECURSE SHADERS
 	"${DATA_SRC}/*.frag"
 	"${DATA_SRC}/*.vert"
 	)
-
-##file(GLOB ROOT_NAT ../util/glm.natvis)
-
+	
 file(MAKE_DIRECTORY "../../bin/")
-# execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "../../bin/")
-
-# Separate filter for shaders.
+	# execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "../../bin/")
+	
+# Separate filters.
 source_group("Shaders" FILES ${SHADERS})
-
-set(SOURCE_FILES
-	"src/main.cpp"	
-	"../common/Aufgabe1/StudentCube.cpp"
-	"../common/Sphere.cpp"
-	"../common/IndexBuffer.cpp"
-	"../common/FrameBuffer.cpp"
-	"../common/RenderBuffer.cpp"
-	"../common/VertexBuffer.cpp"	
-	"../common/ReflectionProbe.cpp"
-	"../common/Skybox.cpp"
-	"../common/Plane.cpp"
-	"../common/Window.cpp"
-	"../common/Scene.cpp"
-	"../common/Animation.cpp"
-	"../common/Texture.cpp"
-	"../common/Transform.cpp"
-	"../common/Mesh.cpp"
-	"../common/Shader.cpp"
-	"../common/Material.cpp"
-	"../common/MaterialPBR.cpp"
-	"../common/VertexArray.cpp"
-	"../common/Camera.cpp"
-	"../common/Model.cpp"
-	"../common/SceneObject.cpp"
-	"../common/World.cpp"
-	)
+source_group("Interfaces" FILES ${INTERFACE_FILES})
+source_group("OpenGL" FILES ${OPENGL_FILES})
+source_group("Scene" FILES ${SCENE_FILES})
+source_group("Components" FILES ${COMPONENT_FILES})
+source_group("Window" FILES ${WINDOW_FILES})
+source_group("Util" FILES ${UTIL_FILES})
 
 set(OPEN_GL_FILES 	
 	glu32
@@ -100,9 +73,14 @@ add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 add_executable(
 	${PROJECT_NAME}
 	${SHADERS}
-	${HEADER_FILES}
-	${SOURCE_FILES}
-	../common/utils/glm.natvis
+	${INTERFACE_FILES}
+	${APPLICATION}
+	${WINDOW_FILES}
+	${SCENE_FILES}
+	${OPENGL_FILES}
+	${COMPONENT_FILES}
+	${UTIL_FILES}
+	../../Engine/utils/glm.natvis
 	)
 
 if(WIN32)

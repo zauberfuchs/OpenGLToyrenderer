@@ -1,24 +1,11 @@
-#include <thread>
-#include <chrono>
-#include <filesystem>
+#include "../../Engine/Utils/pch.h"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include <iostream>
-#include "Mesh.h"
-#include "Plane.h"
-#include "Aufgabe1/StudentCube.h"
-#include "Skybox.h"
-#include "SceneObject.h"
-#include "Window.h"
-#include "Framebuffer.h"
-#include "Renderbuffer.h"
-#include "Scene.h"
-#include "Model.h"
-#include "ReflectionProbe.h"
-#include "Sphere.h"
-#include "World.h"
+#include "../../Engine/Components/Model.h"
+#include "../../Engine/Scene/StudentCube.h"
+#include "../../Engine/Scene/Skybox.h"
+#include "../../Engine/Scene/Sphere.h"
+#include "../../Engine/Scene/Renderer.h"
+#include "../../Engine/Window/Window.h"
 
 #define FPS 30
 
@@ -36,52 +23,12 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials / Lights
 	///////////////////////////////////////////////////////////////////////////////
-
-	auto lightShader = new Shader("lightShader", "../Data/lightShader.vert", "../Data/lightShader.frag");
-	auto skyboxShader = new Shader("skyboxShader", "../Data/skyboxShader.vert", "../Data/skyboxShader.frag");
-	auto simpleMeshShader = new Shader("simpleMeshShader", "../Data/simpleMeshShader.vert", "../Data/simpleMeshShader.frag");
-	auto simpleMaterialShader = new Shader("simpleMaterialShader", "../Data/simpleMaterialShader.vert", "../Data/simpleMaterialShader.frag");
-	auto BRDFMaterialShader = new Shader("brdfMaterialShader", "../Data/BRDFMaterialShader.vert", "../Data/BRDFMaterialShader.frag");
-	auto PbrTextureShader = new Shader("pbrTextureShader", "../Data/PbrTextureShader.vert", "../Data/PbrTextureShader.frag");
-	auto IrradianceConvolutionShader = new Shader("irradianceConvolutionShader", "../Data/cubemap.vert", "../Data/irradianceConvolution.frag");
-	auto BRDFShader = new Shader("brdfShader", "../Data/brdf.vert", "../Data/brdf.frag");
-	auto PrefilterShader = new Shader("prefilterShader", "../Data/cubemap.vert", "../Data/prefilter.frag");
-	auto EquirectangularToCubemap = new Shader("equirectangularToCubemap", "../Data/cubemap.vert", "../Data/equirectangularToCubemap.frag");
-
-	//Todo World, load shader folder / add shaders 
-	World::Get().AddShader(lightShader);
-	World::Get().AddShader(skyboxShader);
-	World::Get().AddShader(simpleMaterialShader);
-	World::Get().AddShader(simpleMeshShader);
-	World::Get().AddShader(IrradianceConvolutionShader);
-	World::Get().AddShader(BRDFShader);
-	World::Get().AddShader(PrefilterShader);
-	World::Get().AddShader(EquirectangularToCubemap);
+	ShaderLoader sLoader;
+	sLoader.LoadShaderFolder("../Data/Shaders/");
 
 	Skybox skybox("universe");
 
-	ReflectionProbe probeOne(512, 512);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	//probeOne.SetReflectionMap(skybox.GetId());
-	skybox.SetId(probeOne.GetReflectionMap());
-	probeOne.Create();
-	
-	auto materialPBR = new MaterialPBR("PBR");
-	materialPBR->SetAlbedo(glm::vec3(0.5f, 0.0f, 0.0f));
-	materialPBR->SetMetallic(1.0f);
-	materialPBR->SetRoughness(0.05f);
-	materialPBR->SetAo(1.0f);
-	materialPBR->SetShader(BRDFMaterialShader);
-
-	auto materialTexturePBR = new MaterialPBR("PBRTexture");
-	materialTexturePBR->SetPBRTexture("../Data/Textures/Materials/gold");
-	materialTexturePBR->SetReflectionProbe(&probeOne);
-	materialTexturePBR->SetShader(PbrTextureShader);
-
-	auto materialTexturePBR2 = new MaterialPBR("PBRTexture2");
-	materialTexturePBR2->SetPBRTexture("../Data/Textures/Materials/hardwood");
-	materialTexturePBR2->SetReflectionProbe(&probeOne);
-	materialTexturePBR2->SetShader(PbrTextureShader);
+	auto wheelTexture = new Texture("../Data/Textures/wheel_bump.png", ETextureChannels::AlbedoMap);
 
 	//Todo: phongmaterial
 	auto whiteMaterial = new Material("white");
@@ -90,16 +37,18 @@ int main() {
 	whiteMaterial->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
 	whiteMaterial->Shininess = 32.0f;
 	whiteMaterial->m_Color = glm::vec3(1.0f);
-	whiteMaterial->SetShader(lightShader);
+	whiteMaterial->SetShader(World::Get().GetShader("lightShader"));
 
-	auto greyMaterial = new Material("grey");
-	greyMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
-	greyMaterial->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
-	greyMaterial->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
-	greyMaterial->Shininess = 32.0f;
-	greyMaterial->m_Color = glm::vec3(0.5f, 0.5f, 0.5f);
-	greyMaterial->SetShader(simpleMeshShader);
-	greyMaterial->SetReflections(ReflectionType::Ambient);
+	auto textureMaterial = new Material("grid");
+	textureMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
+	textureMaterial->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+	textureMaterial->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	textureMaterial->Shininess = 32.0f;
+	textureMaterial->m_Color = glm::vec3(1.0f);
+	textureMaterial->SetShader(World::Get().GetShader("simpleMeshShader"));
+	textureMaterial->SetTexture(wheelTexture);
+	textureMaterial->SetReflections(ReflectionType::Phong);
+
 
 	auto redMaterial = new Material("red");
 	redMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
@@ -107,87 +56,53 @@ int main() {
 	redMaterial->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
 	redMaterial->Shininess = 32.0f;
 	redMaterial->m_Color = glm::vec3(0.8f, 0.2f, 0.2f);
-	redMaterial->SetShader(simpleMeshShader);
+	redMaterial->SetShader(World::Get().GetShader("simpleMeshShader"));
 	redMaterial->SetReflections(ReflectionType::Diffuse);
 
 	auto cubeLight = new Light("cubeLight");
-	cubeLight->Type = LightSourceType::PointLight;
-	cubeLight->Position = glm::vec3(1.2f, 4.0f, 2.0f);
-	cubeLight->Constant = 1.0f;
-	cubeLight->Linear = 0.9f;
-	cubeLight->Quadratic = 0.032f;
-	cubeLight->Color = glm::vec3(1.0f);
+	cubeLight->SetType(LightSourceType::PointLight);
+	cubeLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
+	cubeLight->SetConstant(1.0f);
+	cubeLight->SetLinear(0.9f);
+	cubeLight->SetQuadratic(0.032f);
+	cubeLight->SetColor(glm::vec3(1.0f));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
 	///////////////////////////////////////////////////////////////////////////////
 	
 	SceneObject cube("cube");
-	SceneObject lightCube("lightCube");
-	SceneObject teapot("teapot");
-	SceneObject dragon("dragon");
-	SceneObject armadillo("armadillo");
-	SceneObject bunny("bunny");
-	SceneObject sphere("sphere");
-	SceneObject sphere1("sphere1");
-	SceneObject shaderball("shaderball");
-
 	
-
-
-	
-	activeScene->AddRootChild(&lightCube);
 	activeScene->AddRootChild(&cube);
-	activeScene->AddRootChild(&teapot);
-	activeScene->AddRootChild(&sphere);
-	activeScene->AddRootChild(&shaderball);
-	//activeScene->AddRootChild(&sphere1);
-	//activeScene->AddRootChild(&dragon);
-	//activeScene->AddRootChild(&armadillo);
-	//activeScene->AddRootChild(&bunny);
 	
-	teapot.AddModel(new Model("../Data/Models/test-models/teapot.obj"));
-	//armadillo.AddModel(new Model("../Data/Models/test-models/armadillo.obj"));
-	//dragon.AddModel(new Model("../Data/Models/test-models/dragon.obj"));
-	//bunny.AddModel(new Model("../Data/Models/test-models/bunny.obj"));
 	cube.AddModel(new Model(std::string("cube")));
-	sphere.AddModel(new Model(std::string("sphere")));
-	sphere1.AddModel(new Model(std::string("sphere1")));
-	shaderball.AddModel(new Model("../Data/Models/test-models/ShaderballUnreal.obj"));
-	lightCube.AddModel(new Model(std::string("lightCube")));
 	
 	cube.GetModel().AddMesh(new StudentCube("cube"));
-	lightCube.GetModel().AddMesh(new StudentCube("lightCube"));
-	sphere.GetModel().AddMesh(new Sphere("Sphere", 256));
-	sphere1.GetModel().AddMesh(new Sphere("Sphere1", 2));
-	lightCube.AddLight(cubeLight);
 	activeScene->GetSceneObject("cube")->GetModel().GetMesh("cube")->SetMaterial(redMaterial);
-	activeScene->GetSceneObject("cube")->GetModel().GetMesh("cube")->SetMaterial(materialTexturePBR);
-	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh("lightCube")->SetMaterial(whiteMaterial);
-	activeScene->GetSceneObject("teapot")->GetModel().GetMesh(0)->SetMaterial(materialPBR);
-	activeScene->GetSceneObject("sphere")->GetModel().GetMesh(0)->SetMaterial(materialTexturePBR);
-	activeScene->GetSceneObject("shaderball")->GetModel().GetMesh(0)->SetMaterial(materialTexturePBR2);
-	activeScene->GetSceneObject("shaderball")->GetModel().GetMesh(1)->SetMaterial(materialTexturePBR);
-	//activeScene->GetSceneObject("sphere1")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
-	//activeScene->GetSceneObject("dragon")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
-	//activeScene->GetSceneObject("armadillo")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
-	//activeScene->GetSceneObject("bunny")->GetModel().GetMesh(0)->SetMaterial(redMaterial);
-	
-	lightCube.GetTransform()->Translate(cubeLight->Position, Space::Local);
-	lightCube.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
-	cube.GetTransform()->Translate(glm::vec3(3.0f, 0.0f, 0.0f), Space::Local);
-	cube.GetTransform()->Scale(glm::vec3(20.0f, 0.25f, 20.0f), Space::Local);
-	shaderball.GetTransform()->Translate(glm::vec3(50.0f, 0.0f, 0.0f), Space::Local);
-	shaderball.GetTransform()->Scale(glm::vec3(0.01f, 0.01f, 0.01f), Space::Local);
 
-	//armadillo.GetTransform()->Translate(glm::vec3(3.0f, 0.5f, 0.0f), Space::Local);
-	teapot.GetTransform()->Translate(glm::vec3(-3.0f, 0.0f, 0.0f), Space::Local);
-	//dragon.GetTransform()->Translate(glm::vec3(6.0f, 0.4f, 0.0f), Space::Local);
-	//bunny.GetTransform()->Translate(glm::vec3(-6.0f, -0.3f, 0.0f), Space::Local);
-	//armadillo.GetTransform()->Scale(glm::vec3(0.01f), Space::Local);
-	//dragon.GetTransform()->Scale(glm::vec3(0.01f), Space::Local);
-	//teapot.GetTransform()->Scale(glm::vec3(0.5f), Space::Local);
-	//bunny.GetTransform()->Scale(glm::vec3(10.0f), Space::Local);
+	/*SceneObject wheel("wheel");
+
+	activeScene->AddRootChild(&wheel);
+
+	wheel.AddModel(new Model("../Data/Models/wheel/Autoreifen.obj"));
+	
+	activeScene->GetSceneObject("wheel")->GetModel().GetMesh(0)->SetMaterial(textureMaterial);*/
+
+	
+
+	///////////////////////////////////////////////////////////////////////////////
+	// Light
+	///////////////////////////////////////////////////////////////////////////////
+
+	SceneObject lightCube("lightCube");
+	activeScene->AddRootChild(&lightCube);
+	lightCube.AddModel(new Model(std::string("lightCube")));
+	lightCube.GetModel().AddMesh(new Sphere("Sphere", 32));
+	lightCube.AddLight(cubeLight);
+	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
+
+	lightCube.GetTransform()->Translate(cubeLight->GetPosition(), Space::Local);
+	lightCube.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
 	
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -199,8 +114,11 @@ int main() {
 	activeScene->SetSceneSkybox(&skybox);
 	activeScene->AddSceneLight(cubeLight);
 
+	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+	l->CreateDirectionalDepthMap(1024, 1024);
+
 	///////////////////////////////////////////////////////////////////////////////
-	// main Rendering loop
+	// Animation
 	///////////////////////////////////////////////////////////////////////////////
 
 	double lasttime = glfwGetTime();
@@ -209,11 +127,13 @@ int main() {
 	Animation anim("Cube", &cube, FPS);
 
 	Keyframe first;
+
 	Keyframe second;
 	second.Frame = FPS * 5;
 	second.Position = glm::vec3(5.0, 5.0f, 0.0f);
 	second.Scale = glm::vec3(3.0, 3.0f, 3.0f);
 	second.Rotation = glm::vec3(0.0, 900.0f, 0.0f);
+
 	Keyframe third;
 	third.Frame = FPS * 10;
 	third.Position = glm::vec3(5.0, 10.0f, 0.0f);
@@ -225,6 +145,11 @@ int main() {
 	anim.InsertKeyframe(&second);
 	anim.InsertKeyframe(&third);
 
+	Renderer::Init();
+
+	///////////////////////////////////////////////////////////////////////////////
+	// main Rendering loop
+	///////////////////////////////////////////////////////////////////////////////
 
 	while (!glfwWindowShouldClose(window->m_Window)) {
 		window->WindowRendering();
@@ -235,10 +160,13 @@ int main() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 		lasttime += 1.0 / FPS;
+
 		// Animation update, könnte die welt verwalten oder ein manager
 		anim.Update();
+		Renderer::DepthPrePath();
+		Renderer::GeometryPath();
+		Renderer::SkyboxPath();
 
-		activeScene->RenderScene();
 		window->ImGuiRender();
 
 		glfwSwapBuffers(window->m_Window);
@@ -252,12 +180,8 @@ int main() {
 
 	delete g_Camera;
 	delete window;
-	delete simpleMeshShader;
-	delete lightShader;
-	delete skyboxShader;
 	delete activeScene;
 	delete cubeLight;
-	delete greyMaterial;
 	delete redMaterial;
 	delete whiteMaterial;
 	
