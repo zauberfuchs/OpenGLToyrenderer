@@ -20,9 +20,7 @@ public:
 	Model(const char* path);
 
 	~Model() override;
-
-	void Draw(Transform& transform) override;
-
+	
 	void AddMesh(IMesh* mesh) override;
 	IMesh* GetMesh(const int& index) override;
 	IMesh* GetMesh(const std::string& name) override;

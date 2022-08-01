@@ -14,8 +14,6 @@ public:
 
 	virtual std::string GetName() = 0;
 
-	virtual void Render() = 0;
-
 	virtual void AddModel(IModel* mesh) = 0;
 
 	virtual void AddLight(Light* light) = 0;

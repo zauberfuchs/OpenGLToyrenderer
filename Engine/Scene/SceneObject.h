@@ -10,8 +10,6 @@ public:
 
 	std::string GetName() override;
 
-	void Render() override;
-
 	void AddModel(IModel* model) override;
 
 	void AddLight(Light* light) override;

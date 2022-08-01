@@ -10,8 +10,6 @@ public:
 	~Mesh() override;
 
 	void SetupMesh() override;
-	
-	void Draw(Transform& transform) override;
 
 	void SetName(const std::string& name) override;
 	std::string GetName() override;

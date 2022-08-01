@@ -4,14 +4,33 @@
 #include "../../Engine/Scene/World.h"
 
 
-Shader::Shader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath)
+Shader::Shader(const std::string& name)
+	: m_ID(0), m_Name(name)
+{
+	
+}
+
+Shader::Shader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
 	: m_ID(0), m_Name(name)
 {
 	std::string v_string = LoadShaderFile(vertexPath.c_str());
 	std::string f_string = LoadShaderFile(fragmentPath.c_str());
 
-	m_ID = CreateShader(v_string.c_str(), f_string.c_str());
-	World::Get().AddShader(this);
+	if(geometryPath != "")
+	{
+		std::string g_string = LoadShaderFile(geometryPath.c_str());
+		CreateShader(v_string.c_str(), f_string.c_str(), g_string.c_str());
+	}
+	else
+	{
+		CreateShader(v_string.c_str(), f_string.c_str());
+	}
+	
+}
+
+void AddShaderSource(const std::string& sourcePath)
+{
+	
 }
 
 Shader::~Shader()
@@ -78,11 +97,18 @@ int Shader::GetUniformLocation(const std::string& name)
 }
 
 
-unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+void Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryShader)
 {
 	unsigned int program = glCreateProgram();
+	unsigned int gs = 0;
 	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+
+	if(geometryShader != "")
+	{
+		unsigned int gs = CompileShader(GL_GEOMETRY_SHADER, geometryShader);
+		glAttachShader(program, gs);
+	}
 
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
@@ -92,8 +118,13 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
+	if (geometryShader != "")
+	{
+		glDeleteShader(gs);
+	}
 
-	return program;
+	m_ID = program;
+	World::Get().AddShader(this);
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)

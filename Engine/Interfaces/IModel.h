@@ -8,7 +8,6 @@ class IModel
 {
 public:
 	virtual ~IModel() {};
-	virtual void Draw(Transform& transform) = 0;
 
 	virtual void AddMesh(IMesh* mesh) = 0;
 	virtual IMesh* GetMesh(const int& index) = 0;

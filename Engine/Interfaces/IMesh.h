@@ -15,7 +15,6 @@ public:
 	virtual ~IMesh() = default;
 
 	virtual void SetupMesh() = 0;
-	virtual void Draw(Transform& transform) = 0;
 
 	virtual void SetName(const std::string& name) = 0;
 	virtual std::string GetName() = 0;

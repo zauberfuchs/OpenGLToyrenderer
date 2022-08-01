@@ -158,7 +158,7 @@ void MaterialPBR::RenderPre()
 	}
 	if (m_TextureShadowDepth != nullptr) {
 		m_TextureShadowDepth->RenderPre();
-		m_Shader->SetUniform1i("shadowMap", 8);
+		m_Shader->SetUniform1i("depthMap", 8);
 	}
 
 }

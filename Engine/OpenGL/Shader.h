@@ -8,11 +8,14 @@
 class Shader : public IShader
 {
 public:
-	Shader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath);
+	Shader(const std::string& name);
+	Shader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath = "");
 	~Shader() override;
 
 	void Bind() const override;
 	void Unbind() const override;
+
+	void AddShaderSource(const std::string& sourcePath);
 
 	// Set uniforms
 	void SetUniform1i(const std::string& name, int value) override;
@@ -24,10 +27,10 @@ public:
 	
 	unsigned int GetShaderID() override;
 
-	virtual std::string GetName() override;
+	std::string GetName() override;
+	void CreateShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryPath = "");
 private:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
-	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 	int GetUniformLocation(const std::string& name);
 	std::string LoadShaderFile(const char* filePath);
 
@@ -44,14 +47,29 @@ public:
 
 	void LoadShaderFolder(const std::string& path)
 	{
-		std::unordered_set<std::string> filenames;
+		//std::unordered_set<std::string> filenames;
+		std::unordered_map<std::string, uint16_t> filenames;
 		for (const auto& entry : std::filesystem::directory_iterator(path))
 		{
-			filenames.emplace(entry.path().filename().stem().u8string());
+			if(entry.path().filename().extension() == ".geom")
+			{
+				filenames.insert_or_assign(entry.path().filename().stem().u8string(), 0x001);
+			}
+			else
+			{
+				filenames.insert({ entry.path().filename().stem().u8string(), NULL });
+			}
 		}
 		for (const auto& filename : filenames)
 		{
-			Shader* s = new Shader(filename, path + filename + ".vert", path + filename + ".frag");
+			if(filename.second == 0x001)
+			{
+				Shader* s = new Shader(filename.first, path + filename.first + ".vert", path + filename.first + ".frag", path + filename.first + ".geom");
+			}
+			else
+			{
+				Shader* s = new Shader(filename.first, path + filename.first + ".vert", path + filename.first + ".frag");
+			}
 		}
 	}
 };

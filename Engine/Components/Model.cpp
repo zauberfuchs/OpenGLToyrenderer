@@ -21,14 +21,6 @@ Model::~Model()
 		delete m.second;
 }
 
-void Model::Draw(Transform& transform)
-{
-	for (auto& m : m_Meshes) {
-		m.second->Draw(transform);
-	}
-};
-
-
 void Model::AddMesh(IMesh* mesh)
 {
 	m_Meshes.insert({mesh->GetName(), mesh});

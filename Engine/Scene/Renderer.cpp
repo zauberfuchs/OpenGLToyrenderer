@@ -45,13 +45,36 @@ void Renderer::SkyboxPath()
 void Renderer::DepthPrePath()
 {
 	//Todo enum class von shadertypen?
-	s_Data.ActiveShader = World::Get().GetShader("shadowmapShader");
-
+	
 	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+	
+	switch(l->GetType()) {
+	case LightSourceType::DirectionalLight:
+		s_Data.ActiveShader = World::Get().GetShader("dirLightDepthMap");
+		break;
+	case LightSourceType::SpotLight:
+		s_Data.ActiveShader = World::Get().GetShader("spotLightDepthMap");
+		break;
+	case LightSourceType::PointLight:
+		s_Data.ActiveShader = World::Get().GetShader("pointLightDepthMap");
+		break;
+	}
+
 
 	glViewport(0, 0, l->GetShadowWidth(), l->GetShadowHeight());
 	glBindFramebuffer(GL_FRAMEBUFFER, l->GetFramebuffer()->GetId());
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//todo maybe let the light do it
+	// Überprüfen ob gewisse ob shadowtransformatrix erstellt wird
+	int i = 0;
+	for(auto m : l->CreateShadowTransformMatrices(1.0f, 25.0f))
+	{
+		s_Data.ActiveShader->SetUniformMat4f("shadowMatrices[" + std::to_string(i) + "]", m);
+		i++;
+	}
+	s_Data.ActiveShader->SetUniform1f("farPlane", l->GetFarPlane());
+	s_Data.ActiveShader->SetUniform3f("lightPos", l->GetPosition());
 
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
@@ -103,10 +126,11 @@ void Renderer::DrawMesh()
 	s_Data.MeshVAO->Bind();
 	s_Data.ActiveShader->Bind();
 	s_Data.ActiveShader->SetUniformMat4f("model", s_Data.MeshTransform->GetTransformMatrix());
-	s_Data.ActiveShader->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix());
+	s_Data.ActiveShader->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix(1.0f, 25.0f));
 	if (s_Data.MeshMaterial)
 	{
 		//Todo wrong place??
+		s_Data.ActiveShader->SetUniform1f("farPlane", l->GetFarPlane());
 		s_Data.MeshMaterial->SetTexture(l->GetDepthmap());
 		s_Data.MeshMaterial->Render();
 	}

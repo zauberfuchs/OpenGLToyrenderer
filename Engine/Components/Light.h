@@ -17,9 +17,11 @@ public:
 	Light(const std::string& name);
 	virtual ~Light() = default;
 
-	void CreateDepthMap(const unsigned int& width, const unsigned int& height);
+	void CreateDirectionalDepthMap(const unsigned int& width, const unsigned int& height);
+	void CreatePointDepthMap(const unsigned int& width, const unsigned int& height);
 
-	glm::mat4 CreateLightSpaceMatrix();
+	std::vector<glm::mat4> CreateShadowTransformMatrices(const float& nearPlane, const float& farPlane);
+	glm::mat4 CreateLightSpaceMatrix(const float& nearPlane, const float& farPlane);
 
 	inline LightSourceType GetType() { return m_Type; }
 	inline void SetType(const LightSourceType& type) { m_Type = type; }
@@ -57,6 +59,13 @@ public:
 	inline Framebuffer* GetFramebuffer() { return m_FBO; }
 	inline Texture* GetDepthmap() { return m_Depthmap; }
 
+
+	inline float GetNearPlane() { return m_NearPlane; }
+	inline void SetNearPlane(const float& nearPlane) { m_NearPlane = nearPlane; }
+
+	inline float GetFarPlane() { return m_FarPlane; }
+	inline void SetFarPlane(const float& farPlane) { m_FarPlane = farPlane; }
+
 private:
 	unsigned int m_ShadowWidth;
 	unsigned int m_ShadowHeight;
@@ -73,6 +82,9 @@ private:
 
 	float m_CutOff;
 	float m_OuterCutOff;
+
+	float m_NearPlane;
+	float m_FarPlane;
 
 	Framebuffer* m_FBO;
 	Texture* m_Depthmap;

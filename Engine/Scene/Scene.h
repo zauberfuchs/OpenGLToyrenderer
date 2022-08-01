@@ -13,9 +13,7 @@ class Scene
 public:
 	Scene(const std::string& name);
 	~Scene();
-
-	void RenderScene();
-	void RenderDepthMap();
+	
 	void UpdateScene();
 
 	void AddSceneLight(Light* l);

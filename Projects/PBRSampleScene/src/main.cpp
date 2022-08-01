@@ -49,7 +49,7 @@ int main() {
 	whiteMaterial->SetShader(World::Get().GetShader("lightShader"));
 
 	auto cubeLight = new Light("cubeLight");
-	cubeLight->SetType(LightSourceType::DirectionalLight);
+	cubeLight->SetType(LightSourceType::PointLight);
 	cubeLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
 	cubeLight->SetConstant(1.0f);
 	cubeLight->SetLinear(0.9f);
@@ -96,14 +96,6 @@ int main() {
 		}
 	}
 
-	//
-	SceneObject cube("cube");
-	activeScene->AddRootChild(&cube);
-	cube.AddModel(new Model(std::string("cube")));
-	cube.GetModel().AddMesh(new StudentCube("cube"));
-	cube.GetTransform()->Translate(glm::vec3(10.0f, 0.5f, 4.0f), Space::Local);
-	activeScene->GetSceneObject("cube")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
-
 	///////////////////////////////////////////////////////////////////////////////
 	// ground
 	///////////////////////////////////////////////////////////////////////////////
@@ -148,7 +140,8 @@ int main() {
 	Renderer::Init();
 
 	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
-	l->CreateDepthMap(1024, 1024);
+	//l->CreateDirectionalDepthMap(1024, 1024);
+	l->CreatePointDepthMap(1024, 1024);
 
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -168,7 +161,7 @@ int main() {
 
 		Renderer::GeometryPath();
 
-		//Renderer::SkyboxPath();
+		Renderer::SkyboxPath();
 		
 
 		window->ImGuiRender();

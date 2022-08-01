@@ -14,30 +14,10 @@ SceneObject::~SceneObject()
 	delete m_Model;
 }
 
-void SceneObject::Render() 
-{
-
-	if (m_Model != nullptr) {
-		m_Model->Draw(m_Transform);
-	}
-	std::unordered_set<ISceneObject*>::iterator iter = m_Children.begin();
-	for (; iter != m_Children.end(); ++iter) {
-		SceneObject* child = (SceneObject*) (*iter);
-		if (child != nullptr) {
-			child->Render();
-		}
-	}
-
-	// alternativ
-	/*for (auto c : m_Children) {
-		c->Render();
-	}*/
-};
-
 void SceneObject::AddModel(IModel* model)
 {
 	m_Model = model;
-};
+}
 
 void SceneObject::AddLight(Light* light)
 {
