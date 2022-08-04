@@ -22,37 +22,23 @@ void Material::SetTexture(ITexture* texture)
 {
 	m_HasTexture = 1;
 	switch (texture->GetTextureType()) {
-	case ETextureChannels::SpecularMap:
-		m_TextureSpec = texture;
-		break;
-	case ETextureChannels::AmbientOcclusionMap:
-		m_TextureAO = texture;
-		break;
-	case ETextureChannels::NormalMap:
-		m_TextureNorm = texture;
-		break;
 	case ETextureChannels::AlbedoMap:
+		m_TextureAlbedo = texture;
+		break;
 	default:
-		m_TextureDiff = texture;
+		break;
 	}
 
 }
 
 ITexture* Material::GetTexture(ETextureChannels channelMap)
 {
-	ITexture* retTexture = m_TextureDiff;
+	ITexture* retTexture;
 
 	switch (channelMap) {
-	case ETextureChannels::SpecularMap:
-		retTexture = m_TextureSpec;
-		break;
-	case ETextureChannels::AmbientOcclusionMap:
-		retTexture = m_TextureAO;
-		break;
-	case ETextureChannels::NormalMap:
-		retTexture = m_TextureNorm;
-		break;
 	case ETextureChannels::AlbedoMap:
+		retTexture = m_TextureAlbedo;
+		break;
 	default:
 		break;
 	}
@@ -107,42 +93,21 @@ void Material::RenderPre()
 	if (m_Shader != nullptr)
 		m_Shader->Bind();
 
-	if (m_TextureDiff != nullptr) {
-		m_TextureDiff->RenderPre();
+	if (m_TextureAlbedo != nullptr) {
+		m_TextureAlbedo->RenderPre();
 		m_Shader->SetUniform1i("hasTexture", m_HasTexture);
-		m_Shader->SetUniform1i("diffuseMap1", 0);
-	}
-	if (m_TextureSpec != nullptr) {
-		m_TextureSpec->RenderPre();
-		m_Shader->SetUniform1i("specularMap1", 1);
-	}
-	if (m_TextureAO != nullptr) {
-		m_TextureAO->RenderPre();
-		m_Shader->SetUniform1i("ambientMap1", 2);
-	}
-	if (m_TextureNorm != nullptr) {
-		m_TextureNorm->RenderPre();
-		m_Shader->SetUniform1i("normalMap1", 3);
-	}
-	if (m_TextureHeightMap != nullptr) {
-		m_TextureHeightMap->RenderPre();
-		m_Shader->SetUniform1i("heightMap1", 2);
+		m_Shader->SetUniform1i("albedoMap", 0);
 	}
 }
 
 void Material::Render()
 {
 	RenderPre();
+
 	Scene* activeScene = World::Get().GetActiveScene();
 	Camera* sceneCamera = activeScene->GetSceneCamera();
 	sceneCamera->UpdateMatrix(m_Shader);
 	auto lights = activeScene->GetSceneLightSources();
-
-	// Keep track of how many of each Type of textures we have
-
-	if (m_TextureDiff != nullptr) {
-		m_TextureDiff->Render(m_Shader);
-	}
 
 	m_Shader->SetUniform1i("hasAmbient", m_HasAmbient);
 	m_Shader->SetUniform1i("hasDiffuse", m_HasDiffuse);
@@ -150,7 +115,6 @@ void Material::Render()
 	m_Shader->SetUniform1i("hasTexture", m_HasTexture);
 
 	m_Shader->SetUniform1i("hasDiffuseMap", m_HasDiffuseMap);
-	m_Shader->SetUniform1i("hasSpecularMap", m_HasSpecularMap);
 
 	m_Shader->SetUniform3f("material.ambient", Ambient);
 	m_Shader->SetUniform3f("material.diffuse", Diffuse);
@@ -162,6 +126,7 @@ void Material::Render()
 	m_Shader->SetUniform3f("camPos", sceneCamera->Position);
 
 	m_Shader->SetUniform1i("numPointlights", (int)lights.size());
+
 	int i = 0;
 	for (auto& l : lights)
 	{
@@ -200,12 +165,8 @@ void Material::Render()
 
 void Material::RenderPost()
 {
-	if (m_TextureDiff != nullptr) {
-		m_TextureDiff->Unbind();
-	}
-
-	if (m_TextureSpec != nullptr) {
-		m_TextureSpec->Unbind();
+	if (m_TextureAlbedo != nullptr) {
+		m_TextureAlbedo->Unbind();
 	}
 
 	if (m_Shader != nullptr) {

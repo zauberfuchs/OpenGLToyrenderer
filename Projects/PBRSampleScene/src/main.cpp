@@ -48,13 +48,14 @@ int main() {
 	whiteMaterial->m_Color = glm::vec3(1.0f);
 	whiteMaterial->SetShader(World::Get().GetShader("lightShader"));
 
-	const auto cubeLight = new Light("cubeLight");
-	cubeLight->SetType(LightSourceType::PointLight);
-	cubeLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
-	cubeLight->SetConstant(1.0f);
-	cubeLight->SetLinear(0.9f);
-	cubeLight->SetQuadratic(0.032f);
-	cubeLight->SetColor(glm::vec3(1.0f));
+	const auto pointLight = new Light("pointLight");
+	pointLight->SetType(LightSourceType::PointLight);
+	pointLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
+	pointLight->SetConstant(1.0f);
+	pointLight->SetLinear(0.9f);
+	pointLight->SetQuadratic(0.032f);
+	pointLight->SetColor(glm::vec3(1.0f));
+	pointLight->CreatePointDepthMap(1024, 1024);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
@@ -101,10 +102,13 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 
 	SceneObject ground("ground");
-	activeScene->AddRootChild(&ground);
+
 	ground.AddModel(new Model(std::string("ground")));
 	ground.GetModel().AddMesh(new StudentCube("ground"));
+
+	activeScene->AddRootChild(&ground);
 	activeScene->GetSceneObject("ground")->GetModel().GetMesh(0)->SetMaterial(World::Get().GetMaterial("ceramictile"));
+
 	ground.GetTransform()->Scale(glm::vec3(30.00f, .25f, 30.00f), Space::Local);
 	ground.GetTransform()->Translate(glm::vec3(10.0f, 0.0f, 4.0f), Space::Local);
 
@@ -113,23 +117,26 @@ int main() {
 	// Light
 	///////////////////////////////////////////////////////////////////////////////
 	
-	SceneObject lightCube("lightCube");
-	activeScene->AddRootChild(&lightCube);
-	lightCube.AddModel(new Model(std::string("lightCube")));
-	lightCube.GetModel().AddMesh(new Sphere("Sphere", 32));
-	lightCube.AddLight(cubeLight);
-	activeScene->GetSceneObject("lightCube")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
+	SceneObject lightSphere("lightSphere");
 
-	lightCube.GetTransform()->Translate(cubeLight->GetPosition(), Space::Local);
-	lightCube.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
-	
+	lightSphere.AddModel(new Model(std::string("lightSphere")));
+	lightSphere.GetModel().AddMesh(new Sphere("Sphere", 32));
+	lightSphere.AddLight(pointLight);
+
+	activeScene->AddRootChild(&lightSphere);
+	activeScene->GetSceneObject("lightSphere")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
+
+	lightSphere.GetTransform()->Translate(pointLight->GetPosition(), Space::Local);
+	lightSphere.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
+
+
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
 	activeScene->SetSceneSkybox(&skybox);
-	activeScene->AddSceneLight(cubeLight);
+	activeScene->AddSceneLight(pointLight);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Init Window & Rendering
@@ -140,8 +147,7 @@ int main() {
 	
 	Renderer::Init();
 
-	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
-	l->CreatePointDepthMap(1024, 1024);
+	
 
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -149,17 +155,14 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	
 	while (!glfwWindowShouldClose(window->m_Window)) {
-
-		//todo brauch zeit bis es aktiviert wird??
-		window->FrameRateLimit(FPS);
+		
 		window->WindowRendering();
 		window->NewImGuiFrame();
 
 		activeScene->UpdateScene();
 
 		Renderer::DepthPrePath();
-
-		//Renderer::SetViewport();
+		
 		Renderer::GeometryPath();
 
 		Renderer::SkyboxPath();
@@ -179,7 +182,7 @@ int main() {
 	delete g_Camera;
 	delete window;
 	delete activeScene;
-	delete cubeLight;
+	delete pointLight;
 	delete whiteMaterial;
 	
 	return error;

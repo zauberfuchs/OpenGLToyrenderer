@@ -110,14 +110,13 @@ void Renderer::DepthPrePath()
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	SetViewport(s_Data.RenderViewport[0], s_Data.RenderViewport[1], s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 }
 
 void Renderer::GeometryPath()
 {
-	//get windowsize?
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glViewport(0, 0, 1280, 1024);
 
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{

@@ -50,12 +50,7 @@ public:
 
 
 protected:
-	ITexture* m_TextureDiff = nullptr;
-	ITexture* m_TextureSpec = nullptr;
-	ITexture* m_TextureAO = nullptr;
-	ITexture* m_TextureBump = nullptr;
-	ITexture* m_TextureNorm = nullptr;
-	ITexture* m_TextureHeightMap = nullptr;
+	ITexture* m_TextureAlbedo = nullptr;
 
 	IShader* m_Shader;
 
