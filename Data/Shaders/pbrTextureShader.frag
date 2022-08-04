@@ -107,10 +107,31 @@ float ShadowCalculation(vec3 fragPos)
     shadow /= float(samples);
         
     // display closestDepth as debug (to visualize depth cubemap)
-    // FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
+     //fragmentColor = vec4(vec3(closestDepth / farPlane), 1.0);    
         
     return shadow;
 }
+
+
+
+//float ShadowCalculation(vec3 fragPos)
+//{
+//    // get vector between fragment position and light position
+//    vec3 fragToLight = fragPos - light[0].position;
+//    // ise the fragment to light vector to sample from the depth map    
+//    float closestDepth = texture(depthMap, fragToLight).r;
+//    // it is currently in linear range between [0,1], let's re-transform it back to original depth value
+//    closestDepth *= farPlane;
+//    // now get current linear depth as the length between the fragment and light position
+//    float currentDepth = length(fragToLight);
+//    // test for shadows
+//    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+//    float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;        
+//    // display closestDepth as debug (to visualize depth cubemap)
+//    fragmentColor = vec4(vec3(closestDepth / farPlane), 1.0);    
+//        
+//    return shadow;
+//}
 
 
 vec3 getNormalFromMap()
@@ -250,12 +271,12 @@ void main()
     vec2 brdf  = texture(material.brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-    vec3 ambient = (kD * (diffuse) + specular) * ao;
+    vec3 ambient = (kD * (diffuse) + specular) * (ao + (1.0f - shadow));
 
      
 
    // vec3 color = (ambient - shadow) + Lo;
-    vec3 color = (ambient) + Lo;
+    vec3 color = ambient + Lo;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

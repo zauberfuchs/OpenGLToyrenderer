@@ -3,6 +3,7 @@ layout (triangles) in;
 layout (triangle_strip, max_vertices=18) out;
 
 uniform mat4 shadowMatrices[6];
+uniform int test;
 
 out vec4 FragPos; // FragPos from GS (output per emitvertex)
 
@@ -15,6 +16,7 @@ void main()
         {
             FragPos = gl_in[i].gl_Position;
             gl_Position = shadowMatrices[face] * FragPos;
+           // gl_Position = FragPos;
             EmitVertex();
         }    
         EndPrimitive();

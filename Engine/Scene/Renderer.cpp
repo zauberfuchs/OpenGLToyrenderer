@@ -42,6 +42,11 @@ void Renderer::SkyboxPath()
 	s_Data.SceneSkybox->Render();
 }
 
+float near_plane = 1.0f;
+float far_plane = 25.0f;
+glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)1024 / (float)1024, near_plane, far_plane);
+std::vector<glm::mat4> shadowTransforms;
+
 void Renderer::DepthPrePath()
 {
 	//Todo enum class von shadertypen?
@@ -61,24 +66,33 @@ void Renderer::DepthPrePath()
 	}
 
 
+
 	glViewport(0, 0, l->GetShadowWidth(), l->GetShadowHeight());
 	glBindFramebuffer(GL_FRAMEBUFFER, l->GetFramebuffer()->GetId());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 
+	
+	
+	
 	//todo maybe let the light do it
 	// Überprüfen ob gewisse ob shadowtransformatrix erstellt wird
-	int i = 0;
-	for(auto m : l->CreateShadowTransformMatrices(1.0f, 25.0f))
+	//int i = 0;	
+	/*for(auto m : l->CreateShadowTransformMatrices(1.0f, 25.0f))
 	{
 		s_Data.ActiveShader->SetUniformMat4f("shadowMatrices[" + std::to_string(i) + "]", m);
 		i++;
-	}
-	s_Data.ActiveShader->SetUniform1f("farPlane", l->GetFarPlane());
-	s_Data.ActiveShader->SetUniform3f("lightPos", l->GetPosition());
+	}*/
+	//auto shadowMatrices = l->CreateShadowTransformMatrices(1.0f, 25.0f);
+	//for (unsigned int i = 0; i < 6; ++i)
+	//{
+	//	s_Data.ActiveShader->SetUniformMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowMatrices[i]);
+	//}
+	//s_Data.ActiveShader->SetUniform1f("farPlane", l->GetFarPlane());
+	//s_Data.ActiveShader->SetUniform3f("lightPos", l->GetPosition());
 
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
-		s_Data.MeshTransform = s.second->GetTransform();
+		s_Data.MeshTransform = s.second->GetTransform(); 
 		for (const auto& m : s.second->GetModel().GetMeshes())
 		{
 			s_Data.MeshVAO = m.second->GetVAO();
@@ -87,14 +101,16 @@ void Renderer::DepthPrePath()
 			s_Data.MeshMaterial = nullptr;
 
 			DrawMesh();
+			
 		}
+		
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, 1280, 1024);
-	RenderScreenQuad();*/
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glViewport(0, 0, 1280, 1024);
+	//RenderScreenQuad();
 }
 
 void Renderer::GeometryPath()
@@ -102,6 +118,7 @@ void Renderer::GeometryPath()
 	//get windowsize?
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, 1280, 1024);
+
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
 		s_Data.MeshTransform = s.second->GetTransform();
@@ -126,7 +143,7 @@ void Renderer::DrawMesh()
 	s_Data.MeshVAO->Bind();
 	s_Data.ActiveShader->Bind();
 	s_Data.ActiveShader->SetUniformMat4f("model", s_Data.MeshTransform->GetTransformMatrix());
-	s_Data.ActiveShader->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix(1.0f, 25.0f));
+	//s_Data.ActiveShader->SetUniformMat4f("lightSpaceMatrix", l->CreateLightSpaceMatrix(1.0f, 25.0f));
 	if (s_Data.MeshMaterial)
 	{
 		//Todo wrong place??
@@ -134,6 +151,20 @@ void Renderer::DrawMesh()
 		s_Data.MeshMaterial->SetTexture(l->GetDepthmap());
 		s_Data.MeshMaterial->Render();
 	}
+	s_Data.ActiveShader->SetUniform1f("farPlane", 25);
+	s_Data.ActiveShader->SetUniform3f("lightPos", l->GetPosition());
+	shadowTransforms.push_back(shadowProj * glm::lookAt(l->GetPosition(), l->GetPosition() + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(l->GetPosition(), l->GetPosition() + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(l->GetPosition(), l->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(l->GetPosition(), l->GetPosition() + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(l->GetPosition(), l->GetPosition() + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(l->GetPosition(), l->GetPosition() + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		s_Data.ActiveShader->SetUniformMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+	}
+	
 	
 	glDrawElements(s_Data.MeshRenderMode, s_Data.MeshIndexCount, GL_UNSIGNED_INT, nullptr);
 
@@ -158,7 +189,7 @@ void Renderer::RenderScreenQuad()
 	s_Data.ActiveShader->SetUniform1f("far_plane", 7.5f);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, l->GetDepthmap()->m_ID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, l->GetDepthmap()->m_ID);
 
 	if (quadVAO == 0)
 	{

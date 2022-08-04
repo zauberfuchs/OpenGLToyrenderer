@@ -42,6 +42,7 @@ set(APPLICATION
 # Find *all* shaders.
 file(GLOB_RECURSE SHADERS
 	"${DATA_SRC}/*.frag"
+	"${DATA_SRC}/*.geom"
 	"${DATA_SRC}/*.vert"
 	)
 	

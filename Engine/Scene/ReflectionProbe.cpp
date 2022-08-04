@@ -94,6 +94,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
         RenderCube();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_EquirectangularToCubemapShader->Unbind();
 }
 
 void ReflectionProbe::SetReflectionMap(const unsigned& id)
@@ -146,6 +147,7 @@ void ReflectionProbe::CreateIrradianceMap()
 
 	m_IrradianceTexture.m_ID = m_IrradianceMap;
 	m_IrradianceTexture.m_Type = ETextureChannels::IrradianceMap;
+    m_IrradianceShader->Unbind();
 }
 
 
@@ -201,6 +203,8 @@ void ReflectionProbe::CreatePrefilterMap()
 
     m_PrefilterTexture.m_ID = m_PrefilterMap;
     m_PrefilterTexture.m_Type = ETextureChannels::PrefilterMap;
+    m_PrefilterShader->Unbind();
+
 }
 
 void ReflectionProbe::CreateBRDFLookUpTexture()
@@ -232,6 +236,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
 
     m_BrdfLookUpTexture.m_ID = m_BrdfLUT;
     m_BrdfLookUpTexture.m_Type = ETextureChannels::BrdfLookUpTexture;
+    m_BrdfShader->Unbind();
 }
 
 

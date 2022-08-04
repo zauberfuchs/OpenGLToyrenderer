@@ -69,10 +69,11 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO->GetId());
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	m_Depthmap = new Texture();
 	m_Depthmap->m_ID = depthMap;
 	m_Depthmap->SetTextureType(ETextureChannels::DepthMap);

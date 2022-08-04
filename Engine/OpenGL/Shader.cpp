@@ -74,7 +74,7 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 
 void Shader::SetUniformMat4f(const std::string& name, glm::mat4& matrix)
 {
-	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+ 	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
 }
 
 unsigned int Shader::GetShaderID()
@@ -106,7 +106,7 @@ void Shader::CreateShader(const std::string& vertexShader, const std::string& fr
 
 	if(geometryShader != "")
 	{
-		unsigned int gs = CompileShader(GL_GEOMETRY_SHADER, geometryShader);
+		gs = CompileShader(GL_GEOMETRY_SHADER, geometryShader);
 		glAttachShader(program, gs);
 	}
 
@@ -147,7 +147,14 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 		glDeleteShader(id);
 		return 0;
 	}
-
+	GLchar infoLog[1024];
+	glGetProgramiv(id, GL_LINK_STATUS, &result);
+	if (result == GL_FALSE)
+	{
+		glGetProgramInfoLog(id, 1024, NULL, infoLog);
+		std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+	
+	}
 	return id;
 }
 

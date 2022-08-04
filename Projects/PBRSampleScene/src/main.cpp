@@ -50,6 +50,7 @@ int main() {
 
 	auto cubeLight = new Light("cubeLight");
 	cubeLight->SetType(LightSourceType::PointLight);
+	//cubeLight->SetPosition(glm::vec3(0.0f, 3.0f, 0.0f));
 	cubeLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
 	cubeLight->SetConstant(1.0f);
 	cubeLight->SetLinear(0.9f);
@@ -107,6 +108,7 @@ int main() {
 	activeScene->GetSceneObject("ground")->GetModel().GetMesh(0)->SetMaterial(World::Get().GetMaterial("ceramictile"));
 	ground.GetTransform()->Scale(glm::vec3(30.00f, .25f, 30.00f), Space::Local);
 	ground.GetTransform()->Translate(glm::vec3(10.0f, 0.0f, 4.0f), Space::Local);
+
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Light

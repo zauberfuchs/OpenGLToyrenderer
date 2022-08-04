@@ -27,8 +27,7 @@ public:
 
 	virtual Animation* GetAnimation() = 0;
 	virtual void SetAnimation(Animation* anim) = 0;
-	
-	
+
 	virtual Transform* GetTransform() = 0;
 	virtual IModel& GetModel() = 0;
 };

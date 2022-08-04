@@ -15,6 +15,7 @@
 #include <fstream>
 #include <filesystem>
 #include <vector>
+#include <optional>
 #include <unordered_map>
 #include <unordered_set>
 
