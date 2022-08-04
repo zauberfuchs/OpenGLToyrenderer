@@ -19,7 +19,7 @@ int main() {
 	Scene* activeScene = World::Get().GetActiveScene();
 	activeScene->SetSceneCamera(g_Camera);
 
-	srand(time(NULL));
+	srand(time(nullptr));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials / Lights
@@ -40,7 +40,7 @@ int main() {
 	mLoader.LoadMaterialFolder("../Data/Textures/Materials/");
 
 	//Todo: phongmaterial
-	auto whiteMaterial = new Material("white");
+	const auto whiteMaterial = new Material("white");
 	whiteMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
 	whiteMaterial->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 	whiteMaterial->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -48,9 +48,8 @@ int main() {
 	whiteMaterial->m_Color = glm::vec3(1.0f);
 	whiteMaterial->SetShader(World::Get().GetShader("lightShader"));
 
-	auto cubeLight = new Light("cubeLight");
+	const auto cubeLight = new Light("cubeLight");
 	cubeLight->SetType(LightSourceType::PointLight);
-	//cubeLight->SetPosition(glm::vec3(0.0f, 3.0f, 0.0f));
 	cubeLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
 	cubeLight->SetConstant(1.0f);
 	cubeLight->SetLinear(0.9f);
@@ -142,7 +141,6 @@ int main() {
 	Renderer::Init();
 
 	Light* l = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
-	//l->CreateDirectionalDepthMap(1024, 1024);
 	l->CreatePointDepthMap(1024, 1024);
 
 
@@ -161,6 +159,7 @@ int main() {
 
 		Renderer::DepthPrePath();
 
+		//Renderer::SetViewport();
 		Renderer::GeometryPath();
 
 		Renderer::SkyboxPath();

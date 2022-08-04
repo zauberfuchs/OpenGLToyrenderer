@@ -167,9 +167,6 @@ void Window::WindowRendering()
 	{
 		g_Camera->UpdateCameraWindow(m_Width, m_Height);
 	}
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
 }
 
 void Window::InitImGui()
