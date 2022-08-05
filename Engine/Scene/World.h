@@ -4,6 +4,8 @@
 #include "../../Engine/OpenGL/Shader.h"
 #include "../../Engine/Interfaces/IMesh.h"
 
+class Window;
+
 class World
 {
 public:
@@ -22,6 +24,9 @@ public:
 	void SetActiveScene(Scene* s);
 	Scene* GetActiveScene();
 
+	void SetActiveWindow(Window* w) { m_Window = w; }
+	Window* GetActiveWindow() { return m_Window; };
+
 	static auto& Get() {
 		static World world;
 		return world;
@@ -34,6 +39,7 @@ private:
 	std::unordered_map<std::string, IMaterial*> m_MaterialCache;
 	std::unordered_map<std::string, Shader*> m_ShaderCache;
 
+	Window* m_Window;
 	Scene* m_ActiveScene;
 	glm::mat4 m_CoordinateSystem = glm::mat4(1.0f);
 };

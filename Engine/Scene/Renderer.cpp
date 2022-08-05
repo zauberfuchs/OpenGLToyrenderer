@@ -1,37 +1,11 @@
 #include "../../Engine/Utils/pch.h"
 #include "Renderer.h"
 
-#include "Skybox.h"
-#include "../../Engine/Scene/World.h"
-
-struct RendererStorage
-{
-	Framebuffer* GeometryFramebuffer;
-	Renderbuffer* GeometryRenderbuffer;
-
-	Scene* ActiveScene;
-	IShader* ActiveShader;
-	IShader* PostFXShader;
-
-	Skybox* SceneSkybox;
-
-	VertexArray* MeshVAO;
-
-	uint32_t MeshIndexCount;
-	uint16_t MeshRenderMode;
-
-	IMaterial* MeshMaterial;
-	Transform* MeshTransform;
-
-	Light* ActiveSceneLight;
-
-	GLint RenderViewport[4];
 
 
 
-};
 
-static RendererStorage s_Data;
+
 
 void Renderer::Init()
 {
@@ -44,16 +18,19 @@ void Renderer::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
+	
+	s_Data.MSAA = new int(1);
+
 	s_Data.GeometryFramebuffer = new Framebuffer();
-	s_Data.GeometryFramebuffer->SetSampleSize(16);
-	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(1280, 1024);
-	s_Data.GeometryFramebuffer->CreateColorTexture(true);
+	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
 	s_Data.GeometryRenderbuffer = new Renderbuffer();
-	s_Data.GeometryRenderbuffer->SetSampleSize(16);
-	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(1280, 1024, FramebufferTextureFormat::Depth32Stencil8);
-	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
+	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
+
+
 
 	s_Data.ActiveScene = World::Get().GetActiveScene();
+
+
 	if (s_Data.ActiveScene->GetSceneSkybox())
 	{
 		s_Data.SceneSkybox = s_Data.ActiveScene->GetSceneSkybox();
@@ -73,6 +50,12 @@ void Renderer::DepthPrePath()
 {
 	//Todo Update Rendererdata Function?
 	UpdateViewport();
+
+	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+	s_Data.GeometryFramebuffer->CreateColorTexture(true);
+	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
+	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
+
 
 	switch(s_Data.ActiveSceneLight->GetType()) {
 	case LightSourceType::DirectionalLight:
@@ -166,7 +149,7 @@ void Renderer::PostFxPath()
 {
 	s_Data.GeometryFramebuffer->Unbind();
 	s_Data.PostFXShader->Bind();
-	s_Data.PostFXShader->SetUniform1i("sampleSize", 16);
+	s_Data.PostFXShader->SetUniform1i("sampleSize", *s_Data.MSAA);
 	s_Data.PostFXShader->SetUniform1i("screenTexture", 0);
 
 	glActiveTexture(GL_TEXTURE0);

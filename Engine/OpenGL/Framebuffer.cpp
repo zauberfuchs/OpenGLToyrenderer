@@ -33,9 +33,10 @@ void Framebuffer::Unbind() const
 
 void Framebuffer::CreateColorTexture(bool isMultisampled)
 {
-
+	
 	Bind();
 	if (isMultisampled) {
+		glDeleteTextures(1, &m_ColorTextureID);
 		glGenTextures(1, &m_ColorTextureID);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID);
 
@@ -48,6 +49,7 @@ void Framebuffer::CreateColorTexture(bool isMultisampled)
 	}
 	else 
 	{
+		//glDeleteTextures(1, &m_ID);
 		glGenTextures(1, &m_ColorTextureID);
 		glBindTexture(GL_TEXTURE_2D, m_ColorTextureID);
 

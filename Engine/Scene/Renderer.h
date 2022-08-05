@@ -1,5 +1,35 @@
 #pragma once
 
+#include "Skybox.h"
+#include "World.h"
+
+struct RendererStorage
+{
+	Framebuffer* GeometryFramebuffer;
+	Renderbuffer* GeometryRenderbuffer;
+
+	Scene* ActiveScene;
+	IShader* ActiveShader;
+	IShader* PostFXShader;
+
+	Skybox* SceneSkybox;
+
+	VertexArray* MeshVAO;
+
+	uint32_t MeshIndexCount;
+	uint16_t MeshRenderMode;
+
+	IMaterial* MeshMaterial;
+	Transform* MeshTransform;
+
+	Light* ActiveSceneLight;
+
+	int* MSAA;
+
+	GLint RenderViewport[4];
+};
+
+static RendererStorage s_Data;
 
 class Renderer
 {
@@ -21,7 +51,4 @@ public:
 	static void SetCullMode(const uint8_t& cullMode);
 
 	static void RenderQuad();
-
-private:
-	static uint32_t m_viewport[4];
 };

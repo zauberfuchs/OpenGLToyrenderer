@@ -6,13 +6,17 @@
 #include "../../Engine/Scene/Sphere.h"
 #include "../../Engine/Scene/Renderer.h"
 #include "../../Engine/Window/Window.h"
+#include "../../Engine/Window/ImGuiWindow.h"
 
 #define FPS 30
 
 int main() {
 
 	auto window = new Window(1280, 720);
+	World::Get().SetActiveWindow(window);
 	int error = window->InitOpenGLContext();
+
+	g_Camera = new Camera(glm::vec3(0.0f, 20.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0);
 
 	World::Get().SetActiveScene(new Scene("Main Scene"));
 
@@ -143,11 +147,10 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 
 	//todo make static??
-	window->InitImGui();
-	
-	Renderer::Init();
+	//window->InitImGui();
 
-	
+	ImGuiWindow::Init();
+	Renderer::Init();
 
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -157,7 +160,9 @@ int main() {
 	while (!glfwWindowShouldClose(window->m_Window)) {
 		
 		window->WindowRendering();
-		window->NewImGuiFrame();
+		//window->NewImGuiFrame();
+
+		ImGuiWindow::NewFrame();
 
 		activeScene->UpdateScene();
 
@@ -170,16 +175,17 @@ int main() {
 		Renderer::PostFxPath();
 		
 
-		window->ImGuiRender();
+		//window->ImGuiRender();
+		ImGuiWindow::Render();
 		
 		glfwSwapBuffers(window->m_Window);
 		glfwPollEvents();
 	}
 
+	Renderer::Shutdown();
+
 	// cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	
 
 	delete g_Camera;
 	delete window;

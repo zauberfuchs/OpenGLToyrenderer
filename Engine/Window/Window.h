@@ -20,46 +20,24 @@ public:
 
 	void ProcessInput(GLFWwindow* window);
 	void WindowRendering();
-	void ImGuiRender();
 
 	void FrameRateLimit(const unsigned int& fps);
-
-	void NewImGuiFrame();
-	void InitImGui();
+	
 	
 	GLFWwindow* m_Window;
 	int m_Width, m_Height;
 
+	double m_LastX, m_LastY;
 
-	void DrawVec3Control(const std::string& label, glm::vec3& values, const float& vMin = 0.0f, const float& vMax = 0.0f, float resetValue = 0.0f, float columnWidth = 100.0f, bool rgbMode = false);
+	double m_DeltaTime, m_LastFrame, m_LastTime;
 
-private:
 
-	bool m_WireMode = false;
-	bool m_hasAmbient;
-	bool m_hasDiffuse;
-	bool m_hasSpecular;
-
-	Texture* m_playBTNTex;
-	Texture* m_stopBTNTex;
-	Texture* m_pauseBTNTex;
 
 };
 
-extern Camera* g_Camera;
+inline Camera* g_Camera;
 
-extern const char* glsl_version;
+inline const char* glsl_version = "#version 330 core";
 
-extern const int WIN_WIDTH;
-extern const int WIN_HEIGHT;
-
-extern double lastX;
-extern double lastY;
-
-// timing
-extern double deltaTime;
-extern double lastFrame;
-extern double lasttime;
-
-extern bool firstMouse;
-extern bool mouseButtonPressed;
+inline bool firstMouse = true;
+inline bool mouseButtonPressed = false;
