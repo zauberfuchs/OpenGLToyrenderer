@@ -29,7 +29,7 @@ struct RendererStorage
 	GLint RenderViewport[4];
 };
 
-static RendererStorage s_Data;
+inline RendererStorage s_Data;
 
 class Renderer
 {

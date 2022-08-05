@@ -2,11 +2,6 @@
 #include "Renderer.h"
 
 
-
-
-
-
-
 void Renderer::Init()
 {
 	UpdateViewport();
@@ -164,8 +159,6 @@ void Renderer::DrawMesh()
 	
 	glDrawElements(s_Data.MeshRenderMode, s_Data.MeshIndexCount, GL_UNSIGNED_INT, nullptr);
 }
-
-
 
 void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
