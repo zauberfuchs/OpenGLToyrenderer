@@ -31,22 +31,22 @@ void MaterialPBR::SetTexture(ITexture* texture)
 {
 
 	switch (texture->GetTextureType()) {
-	case ETextureChannels::AlbedoMap:
+	case TextureType::AlbedoMap:
 		m_TextureAlbedo = texture;
 		break;
-	case ETextureChannels::NormalMap:
+	case TextureType::NormalMap:
 		m_TextureNormal = texture;
 		break;
-	case ETextureChannels::MetallicMap:
+	case TextureType::MetallicMap:
 		m_TextureMetallic = texture;
 		break;
-	case ETextureChannels::RoughnessMap:
+	case TextureType::RoughnessMap:
 		m_TextureRoughness = texture;
 		break;
-	case ETextureChannels::AmbientOcclusionMap:
+	case TextureType::AmbientOcclusionMap:
 		m_TextureAmbienOcclusion = texture;
 		break;
-	case ETextureChannels::DepthMap:
+	case TextureType::DepthMap:
 		m_TextureShadowDepth = texture;
 		break;
 	default:
@@ -56,31 +56,31 @@ void MaterialPBR::SetTexture(ITexture* texture)
 
 void MaterialPBR::SetPBRTexture(const std::string& path)
 {
-	m_TextureAlbedo = new Texture(path + "/albedo.png", ETextureChannels::AlbedoMap);
-	m_TextureMetallic = new Texture(path + "/metallic.png", ETextureChannels::MetallicMap);
-	m_TextureNormal = new Texture(path + "/normal.png", ETextureChannels::NormalMap);
-	m_TextureRoughness = new Texture(path + "/roughness.png", ETextureChannels::RoughnessMap);
-	m_TextureAmbienOcclusion = new Texture(path + "/ao.png", ETextureChannels::AmbientOcclusionMap);
+	m_TextureAlbedo = new Texture(path + "/albedo.png", TextureType::AlbedoMap);
+	m_TextureMetallic = new Texture(path + "/metallic.png", TextureType::MetallicMap);
+	m_TextureNormal = new Texture(path + "/normal.png", TextureType::NormalMap);
+	m_TextureRoughness = new Texture(path + "/roughness.png", TextureType::RoughnessMap);
+	m_TextureAmbienOcclusion = new Texture(path + "/ao.png", TextureType::AmbientOcclusionMap);
 }
 
-ITexture* MaterialPBR::GetTexture(ETextureChannels channelMap)
+ITexture* MaterialPBR::GetTexture(TextureType channelMap)
 {
 	ITexture* retTexture;
 
 	switch (channelMap) {
-	case ETextureChannels::AlbedoMap:
+	case TextureType::AlbedoMap:
 		retTexture = m_TextureAlbedo;
 		break;
-	case ETextureChannels::NormalMap:
+	case TextureType::NormalMap:
 		retTexture = m_TextureNormal;
 		break;
-	case ETextureChannels::MetallicMap:
+	case TextureType::MetallicMap:
 		retTexture = m_TextureMetallic;
 		break;
-	case ETextureChannels::RoughnessMap:
+	case TextureType::RoughnessMap:
 		retTexture = m_TextureRoughness;
 		break;
-	case ETextureChannels::AmbientOcclusionMap:
+	case TextureType::AmbientOcclusionMap:
 		retTexture = m_TextureAmbienOcclusion;
 		break;
 	default:

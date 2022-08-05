@@ -15,7 +15,7 @@ public:
 	
 
 	void SetTexture(ITexture* texture) override;
-	ITexture* GetTexture(ETextureChannels channelMap = ETextureChannels::AlbedoMap) override;
+	ITexture* GetTexture(TextureType channelMap = TextureType::AlbedoMap) override;
 
 	void SetShader(IShader* shader) override;
 	IShader* GetShader() override;

@@ -22,7 +22,7 @@ void Material::SetTexture(ITexture* texture)
 {
 	m_HasTexture = 1;
 	switch (texture->GetTextureType()) {
-	case ETextureChannels::AlbedoMap:
+	case TextureType::AlbedoMap:
 		m_TextureAlbedo = texture;
 		break;
 	default:
@@ -31,12 +31,12 @@ void Material::SetTexture(ITexture* texture)
 
 }
 
-ITexture* Material::GetTexture(ETextureChannels channelMap)
+ITexture* Material::GetTexture(TextureType channelMap)
 {
 	ITexture* retTexture;
 
 	switch (channelMap) {
-	case ETextureChannels::AlbedoMap:
+	case TextureType::AlbedoMap:
 		retTexture = m_TextureAlbedo;
 		break;
 	default:

@@ -10,6 +10,7 @@ public:
 	static void SkyboxPath();
 	static void DepthPrePath();
 	static void GeometryPath();
+	static void PostFxPath();
 
 	static void DrawMesh();
 
@@ -18,6 +19,8 @@ public:
 	static void SetClearColor(const glm::vec4& color);
 	static void Clear();
 	static void SetCullMode(const uint8_t& cullMode);
+
+	static void RenderQuad();
 
 private:
 	static uint32_t m_viewport[4];

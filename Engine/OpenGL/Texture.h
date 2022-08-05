@@ -9,23 +9,23 @@ class Texture : public ITexture
 
 public:
 	Texture();
-	Texture(const std::string& path, ETextureChannels type);
+	Texture(const std::string& path, TextureType type);
 	~Texture() override;
 
-	static std::shared_ptr<Texture> Create(const std::string path, ETextureChannels type);
+	static std::shared_ptr<Texture> Create(const std::string path, TextureType type);
 
 	void Render(IShader* shader) override;
 	void RenderPost() override;
 	void RenderPre() override;
 
-	void SetTextureType(ETextureChannels type) override;
-	ETextureChannels GetTextureType() override;
+	void SetTextureType(TextureType type) override;
+	TextureType GetTextureType() override;
 
 	void SetName(const std::string name) override;
 	std::string GetName() override;
 
 	void Load() override;
-	void LoadModelTexture(const std::string& path, ETextureChannels type) override;
+	void LoadModelTexture(const std::string& path, TextureType type) override;
 
 	inline int GetWidth() const override { return m_Width; }
 	inline int GetHeigth() const override { return m_Height; }
@@ -38,7 +38,7 @@ protected:
 public:
 	GLuint m_ID;
 	std::string m_FilePath;
-	ETextureChannels m_Type;
+	TextureType m_Type;
 private:
 	unsigned char* m_LocalBuffer;
 	int m_Width, m_Height, m_Components;

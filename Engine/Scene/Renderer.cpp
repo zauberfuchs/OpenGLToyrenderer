@@ -6,8 +6,12 @@
 
 struct RendererStorage
 {
+	Framebuffer* GeometryFramebuffer;
+	Renderbuffer* GeometryRenderbuffer;
+
 	Scene* ActiveScene;
 	IShader* ActiveShader;
+	IShader* PostFXShader;
 
 	Skybox* SceneSkybox;
 
@@ -23,44 +27,53 @@ struct RendererStorage
 
 	GLint RenderViewport[4];
 
+
+
 };
 
 static RendererStorage s_Data;
 
 void Renderer::Init()
 {
+	UpdateViewport();
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_DEPTH_TEST);
+	s_Data.GeometryFramebuffer = new Framebuffer();
+	s_Data.GeometryFramebuffer->SetSampleSize(16);
+	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(1280, 1024);
+	s_Data.GeometryFramebuffer->CreateColorTexture(true);
+	s_Data.GeometryRenderbuffer = new Renderbuffer();
+	s_Data.GeometryRenderbuffer->SetSampleSize(16);
+	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(1280, 1024, FramebufferTextureFormat::Depth32Stencil8);
+	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
 	s_Data.ActiveScene = World::Get().GetActiveScene();
 	if (s_Data.ActiveScene->GetSceneSkybox())
 	{
 		s_Data.SceneSkybox = s_Data.ActiveScene->GetSceneSkybox();
 	}
-
+	s_Data.PostFXShader = World::Get().GetShader("postFX");
 	s_Data.ActiveSceneLight = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+
+	
 }
 
 void Renderer::Shutdown()
 {
-
-}
-
-void Renderer::SkyboxPath()
-{
-	s_Data.SceneSkybox->Render();
+	delete s_Data.GeometryFramebuffer;
 }
 
 void Renderer::DepthPrePath()
 {
 	//Todo Update Rendererdata Function?
 	UpdateViewport();
-	
-	
+
 	switch(s_Data.ActiveSceneLight->GetType()) {
 	case LightSourceType::DirectionalLight:
 		s_Data.ActiveShader = World::Get().GetShader("dirLightDepthMap");
@@ -84,7 +97,7 @@ void Renderer::DepthPrePath()
 
 	
 	//todo maybe let the light do it
-	auto shadowMatrices = s_Data.ActiveSceneLight->CreateShadowTransformMatrices(1.0f, 25.0f);
+	auto shadowMatrices = s_Data.ActiveSceneLight->CreateShadowTransformMatrices(0.1f, 50.0f);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		s_Data.ActiveShader->SetUniformMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowMatrices[i]);
@@ -116,8 +129,9 @@ void Renderer::DepthPrePath()
 
 void Renderer::GeometryPath()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	s_Data.GeometryFramebuffer->Bind();
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
 		s_Data.MeshTransform = s.second->GetTransform();
@@ -143,6 +157,23 @@ void Renderer::GeometryPath()
 	}
 }
 
+void Renderer::SkyboxPath()
+{
+	s_Data.SceneSkybox->Render();
+}
+
+void Renderer::PostFxPath()
+{
+	s_Data.GeometryFramebuffer->Unbind();
+	s_Data.PostFXShader->Bind();
+	s_Data.PostFXShader->SetUniform1i("sampleSize", 16);
+	s_Data.PostFXShader->SetUniform1i("screenTexture", 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s_Data.GeometryFramebuffer->GetColorTextureId());
+	RenderQuad();
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+}
 
 void Renderer::DrawMesh()
 {
@@ -176,4 +207,33 @@ void Renderer::Clear()
 void Renderer::SetCullMode(const uint8_t& cullMode)
 {
 	glCullFace(cullMode);
+}
+
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void Renderer::RenderQuad()
+{
+	if (quadVAO == 0)
+	{
+		float quadVertices[] = {
+			// positions        // texture Coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 }

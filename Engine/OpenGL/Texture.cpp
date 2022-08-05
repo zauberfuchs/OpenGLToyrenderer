@@ -3,7 +3,7 @@
 #include "Texture.h"
 
 
-Texture::Texture(const std::string& path, ETextureChannels type)
+Texture::Texture(const std::string& path, TextureType type)
 	: m_FilePath(path), m_Type(type)
 {
 	Load();
@@ -67,7 +67,7 @@ void Texture::Load()
 		stbi_image_free(m_LocalBuffer);
 }
 
-void Texture::LoadModelTexture(const std::string& path, ETextureChannels type)
+void Texture::LoadModelTexture(const std::string& path, TextureType type)
 {
 	m_FilePath = path;
 	m_Type = type;
@@ -120,39 +120,39 @@ void Texture::RenderPre()
 {
 
 	switch (m_Type) {
-	case ETextureChannels::AlbedoMap:
+	case TextureType::AlbedoMap:
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
-	case ETextureChannels::NormalMap:
+	case TextureType::NormalMap:
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
-	case ETextureChannels::MetallicMap:
+	case TextureType::MetallicMap:
 		glActiveTexture(GL_TEXTURE0 + 2);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
-	case ETextureChannels::RoughnessMap:
+	case TextureType::RoughnessMap:
 		glActiveTexture(GL_TEXTURE0 + 3);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
-	case ETextureChannels::AmbientOcclusionMap:
+	case TextureType::AmbientOcclusionMap:
 		glActiveTexture(GL_TEXTURE0 + 4);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
-	case ETextureChannels::IrradianceMap:
+	case TextureType::IrradianceMap:
 		glActiveTexture(GL_TEXTURE0 + 5);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 		break;
-	case ETextureChannels::PrefilterMap:
+	case TextureType::PrefilterMap:
 		glActiveTexture(GL_TEXTURE0 + 6);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 		break;
-	case ETextureChannels::BrdfLookUpTexture:
+	case TextureType::BrdfLookUpTexture:
 		glActiveTexture(GL_TEXTURE0 + 7);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		break;
-	case ETextureChannels::DepthMap:
+	case TextureType::DepthMap:
 		glActiveTexture(GL_TEXTURE0 + 8);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 		break;
@@ -181,12 +181,12 @@ void Texture::RenderPost()
 	glActiveTexture(GL_TEXTURE0);
 }
 
-ETextureChannels Texture::GetTextureType()
+TextureType Texture::GetTextureType()
 {
 	return m_Type;
 }
 
-void Texture::SetTextureType(ETextureChannels type)
+void Texture::SetTextureType(TextureType type)
 {
 	m_Type = type;
 }

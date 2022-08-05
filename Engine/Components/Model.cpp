@@ -140,16 +140,16 @@ IMesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		m = LoadMaterial(material);
 
 		// 1. diffuse maps
-		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, ETextureChannels::AlbedoMap);
+		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, TextureType::AlbedoMap);
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		// 2. specular maps
-		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, ETextureChannels::SpecularMap);
+		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, TextureType::SpecularMap);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		// 3. Normal maps
-		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, ETextureChannels::HeightMap);
+		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, TextureType::HeightMap);
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 		// 4. height maps
-		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, ETextureChannels::AmbientOcclusionMap);
+		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TextureType::AmbientOcclusionMap);
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 	IMesh* _mesh = new Mesh(mesh->mName.C_Str(), vertices, indices);
@@ -181,7 +181,7 @@ Material* Model::LoadMaterial(aiMaterial* mat) {
 }
 
 
-std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, ETextureChannels typeName)
+std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName)
 {
 	std::vector<Texture> textures;
 	std::string filepath;
@@ -212,7 +212,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 	return textures;
 }
 
-Texture Model::TextureFromFile(const std::string& path, ETextureChannels type)
+Texture Model::TextureFromFile(const std::string& path, TextureType type)
 {
 	std::string filename = std::string(path);
 

@@ -5,7 +5,7 @@
 
 
 ReflectionProbe::ReflectionProbe(const int& width, const int& height)
-	: m_RBO(width, height), m_FBO(width, height), m_IrradianceMap(0), m_ReflectionMap(0), m_CaptureProjection(glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f)),
+	: m_RBO(width, height), m_IrradianceMap(0), m_ReflectionMap(0), m_CaptureProjection(glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f)),
 		m_CaptureViews{ glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
@@ -83,6 +83,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hdrTexture);
 
+    //todo possible bug
     glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
     glBindFramebuffer(GL_FRAMEBUFFER, m_FBO.GetId());
     for (unsigned int i = 0; i < 6; ++i)
@@ -146,7 +147,7 @@ void ReflectionProbe::CreateIrradianceMap()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	m_IrradianceTexture.m_ID = m_IrradianceMap;
-	m_IrradianceTexture.m_Type = ETextureChannels::IrradianceMap;
+	m_IrradianceTexture.m_Type = TextureType::IrradianceMap;
     m_IrradianceShader->Unbind();
 }
 
@@ -202,7 +203,7 @@ void ReflectionProbe::CreatePrefilterMap()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     m_PrefilterTexture.m_ID = m_PrefilterMap;
-    m_PrefilterTexture.m_Type = ETextureChannels::PrefilterMap;
+    m_PrefilterTexture.m_Type = TextureType::PrefilterMap;
     m_PrefilterShader->Unbind();
 
 }
@@ -235,7 +236,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     m_BrdfLookUpTexture.m_ID = m_BrdfLUT;
-    m_BrdfLookUpTexture.m_Type = ETextureChannels::BrdfLookUpTexture;
+    m_BrdfLookUpTexture.m_Type = TextureType::BrdfLookUpTexture;
     m_BrdfShader->Unbind();
 }
 

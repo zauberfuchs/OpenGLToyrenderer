@@ -43,7 +43,7 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	m_Depthmap = new Texture();
 	m_Depthmap->m_ID = depthMap;
-	m_Depthmap->SetTextureType(ETextureChannels::DepthMap);
+	m_Depthmap->SetTextureType(TextureType::DepthMap);
 
 	//Todo wrong place??
 	//World::Get().GetMaterial("pbrTextureShader")->SetTexture(m_Depthmap);
@@ -76,7 +76,7 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 
 	m_Depthmap = new Texture();
 	m_Depthmap->m_ID = depthMap;
-	m_Depthmap->SetTextureType(ETextureChannels::DepthMap);
+	m_Depthmap->SetTextureType(TextureType::DepthMap);
 }
 
 glm::mat4 Light::CreateLightSpaceMatrix(const float& nearPlane, const float& farPlane)

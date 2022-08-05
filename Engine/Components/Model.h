@@ -30,8 +30,8 @@ private:
 	void LoadModel(std::string path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	IMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
-	std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, ETextureChannels typeName);
-	Texture TextureFromFile(const std::string& path, ETextureChannels type);
+	std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName);
+	Texture TextureFromFile(const std::string& path, TextureType type);
 	Material* LoadMaterial(aiMaterial* mat);
 
 

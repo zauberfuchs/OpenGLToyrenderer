@@ -18,7 +18,7 @@ public:
 
 	void SetTexture(ITexture* texture) override;
 	void SetPBRTexture(const std::string& path);
-	ITexture* GetTexture(ETextureChannels channelMap) override;
+	ITexture* GetTexture(TextureType channelMap) override;
 
 	void SetShader(IShader* shader) override;
 	IShader* GetShader() override;

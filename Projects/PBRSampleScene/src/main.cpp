@@ -166,6 +166,8 @@ int main() {
 		Renderer::GeometryPath();
 
 		Renderer::SkyboxPath();
+
+		Renderer::PostFxPath();
 		
 
 		window->ImGuiRender();

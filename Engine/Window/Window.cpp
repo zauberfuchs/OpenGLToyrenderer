@@ -184,9 +184,9 @@ void Window::InitImGui()
 	ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	
-	m_playBTNTex = new Texture("../Data/Textures/PlayButton.png", ETextureChannels::AlbedoMap);
-	m_stopBTNTex = new Texture("../Data/Textures/StopButton.png", ETextureChannels::AlbedoMap);
-	m_pauseBTNTex = new Texture("../Data/Textures/PauseButton.png", ETextureChannels::AlbedoMap);
+	m_playBTNTex = new Texture("../Data/Textures/PlayButton.png", TextureType::AlbedoMap);
+	m_stopBTNTex = new Texture("../Data/Textures/StopButton.png", TextureType::AlbedoMap);
+	m_pauseBTNTex = new Texture("../Data/Textures/PauseButton.png", TextureType::AlbedoMap);
 }
 
 void AddUnderLine(ImColor color)

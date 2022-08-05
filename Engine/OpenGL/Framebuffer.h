@@ -9,11 +9,20 @@ enum class FramebufferAttachment
 	DepthStencil = GL_DEPTH_STENCIL_ATTACHMENT
 };
 
+enum class FramebufferTextureFormat
+{
+	RedInteger = GL_RED,
+	Rgba8 = GL_RGB8,
+	Depth24 = GL_DEPTH_COMPONENT24,
+	Depth32 = GL_DEPTH_COMPONENT32,
+	Depth24Stencil8 = GL_DEPTH24_STENCIL8,
+	Depth32Stencil8 = GL_DEPTH32F_STENCIL8,
+};
+
 class Framebuffer
 {
 public:
 	Framebuffer();
-	Framebuffer(const int& width, const int& height);
 	~Framebuffer();
 
 	void Bind() const;
@@ -23,6 +32,7 @@ public:
 	GLuint GetColorTextureId();
 	GLuint GetId();
 	void AttachRenderBuffer(const GLuint& rbo_ID, const FramebufferAttachment& attachment);
+	void SetFramebufferTextureSize(const int& width, const int& height);
 	void SetSampleSize(unsigned int samples);
 
 private:
