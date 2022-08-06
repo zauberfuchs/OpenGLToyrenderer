@@ -9,6 +9,8 @@ $$ |  $$\ $$ |  $$ |$$ |     $$  __$$ |$$ |  $$ |
  \______/  \______/ \________|\_______|\_______/ 
 ```
 
+ ![alt text](https://i.gyazo.com/c46893210bbbf71326971773a1648291.jpg)
+ ![alt text](https://i.gyazo.com/02480933ecb8130d0581a35634c2bb9c.jpg)
  
  
  # 3D-Computergrafik Praktikum
