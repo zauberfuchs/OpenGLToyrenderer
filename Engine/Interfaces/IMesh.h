@@ -6,7 +6,6 @@
 #include "../../Engine/OpenGL/Texture.h"
 #include "../../Engine/Components/Transform.h"
 #include "../../Engine/Components/Material.h"
-#include "../../Engine/Components/MaterialPBR.h"
 
 
 class IMesh

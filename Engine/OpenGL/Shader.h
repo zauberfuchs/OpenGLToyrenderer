@@ -26,6 +26,7 @@ public:
 	void SetUniformMat4f(const std::string& name, glm::mat4& matrix) override;
 	
 	unsigned int GetShaderID() override;
+	void AddUniform(std::string name, GLenum type);
 
 	std::string GetName() override;
 	void CreateShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryPath = "");

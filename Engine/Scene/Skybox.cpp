@@ -7,7 +7,7 @@
 Skybox::Skybox(const std::string& name)
 	: m_Name(name)
 {
-	m_Shader = World::Get().GetShader("skyboxShader");
+	m_Shader = World::Get().GetShader("skybox");
 	glGenTextures(1, &m_ID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 	Load();

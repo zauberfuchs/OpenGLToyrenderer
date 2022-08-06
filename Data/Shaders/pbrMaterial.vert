@@ -20,10 +20,6 @@ out vec2 texCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-// ändern
-//uniform mat4 normalMatrix;
-//uniform mat4 modelViewMatrix;
-//uniform mat4 modelViewProjectionMatrix;
 
 
 

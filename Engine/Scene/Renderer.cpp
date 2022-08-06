@@ -126,11 +126,11 @@ void Renderer::GeometryPath()
 
 			s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
 			s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());
-			s_Data.MeshMaterial->Render();
+			s_Data.MeshMaterial->SetupUniforms();
 
 			DrawMesh();
 
-			s_Data.MeshMaterial->RenderPost();
+			s_Data.MeshMaterial->UnbindTextures();
 		}
 	}
 }
@@ -210,6 +210,7 @@ void Renderer::RenderQuad()
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	}
 	glBindVertexArray(quadVAO);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }

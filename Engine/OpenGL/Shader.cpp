@@ -125,7 +125,41 @@ void Shader::CreateShader(const std::string& vertexShader, const std::string& fr
 
 	m_ID = program;
 	World::Get().AddShader(this);
+
+
+	//Todo Shader knows what uniforms he needs and how to fill them.
+	//GLint numUniforms = 0;
+	//glGetProgramInterfaceiv(m_ID, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numUniforms);
+
+	//GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_BLOCK_INDEX };
+
+	//printf("Active uniforms:\n");
+	//for (int i = 0; i < numUniforms; ++i) {
+	//	GLint results[4];
+	//	glGetProgramResourceiv(m_ID, GL_UNIFORM, i, 4, properties, 4, NULL, results);
+	//	if (results[3] != -1)
+	//		continue;       // Skip uniforms in blocks 
+	//	GLint nameBufSize = results[0] + 1;
+	//	char* name = new char[nameBufSize];
+	//	glGetProgramResourceName(m_ID, GL_UNIFORM, i, nameBufSize, NULL, name);
+
+	//	std::cout << results[2] << name << results[1] << std::endl;
+	//	delete[] name;
+	//}
 }
+//
+//std::map<int, std::function<void()>> myMap;
+//
+//std::unordered_map<std::string, std::function<void(std::initializer_list<std::any>)>> uniforms;
+//void Shader::AddUniform(std::string name, GLenum type)
+//{
+//	myMap.emplace(1, [&]() {this->SetUniform3f(const std::string& name, glm::vec3& value); });
+//	switch(type)
+//	{
+//	case 35665: uniforms.insert({ name, this->Bind}); https://gist.github.com/szimek/763999
+//	}
+//}
+
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {

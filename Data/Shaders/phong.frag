@@ -39,7 +39,7 @@ struct Light {
     vec3 position;
     vec3 color;
 };
-uniform Light light;
+uniform Light light[4];
 
 uniform vec3 lightPos; 
 uniform vec3 lightColor; // Lichtintensitaet
@@ -67,7 +67,7 @@ void main()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
     
-    vec3 L = normalize(light.position - FragPos);
+    vec3 L = normalize(light[0].position - FragPos);
     vec3 N = normalize(Normal);
     vec3 V = normalize(camPos - FragPos);
     vec3 R = 2 * N * (dot(N, L)) - L;
@@ -75,20 +75,20 @@ void main()
     //--- Ambient ---///
     if(hasAmbient == 1)
     {
-        ambient = light.color * material.ambient;
+        ambient = light[0].color * material.ambient;
     }
     
   	
     //--- Diffuse ---///
     if(hasDiffuse == 1)
     {
-        diffuse = light.color * material.diffuse * max(dot(L , N), 0.0f);
+        diffuse = light[0].color * material.diffuse * max(dot(L , N), 0.0f);
     }
 
     ///--- Specular ---///
     if(hasSpecular == 1)
     {
-       specular = light.color * material.specular * pow(max(dot(R, V), 0.0f), material.shininess);
+       specular = light[0].color * material.specular * pow(max(dot(R, V), 0.0f), material.shininess);
     }
     
 

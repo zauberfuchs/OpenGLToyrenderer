@@ -12,7 +12,7 @@
 
 int main() {
 
-	auto window = new Window(1280, 720);
+	auto window = new Window(1600, 1200);
 	World::Get().SetActiveWindow(window);
 	int error = window->InitOpenGLContext();
 
@@ -28,38 +28,30 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials / Lights
 	///////////////////////////////////////////////////////////////////////////////
+
 	ShaderLoader sLoader;
 	sLoader.LoadShaderFolder("../Data/Shaders/");
 
 	Skybox skybox("universe");
 	
 	ReflectionProbe probeOne(1024, 1024);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	skybox.SetId(probeOne.GetReflectionMap());
+	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	//skybox.SetId(probeOne.GetReflectionMap());
+	probeOne.SetReflectionMap(skybox.GetId());
 	probeOne.Create();
-
 	activeScene->SetReflectionProbe(&probeOne);
 
 	MaterialLoader mLoader;
 	mLoader.LoadMaterialFolder("../Data/Textures/Materials/");
-
-	//Todo: phongmaterial
+	
 	const auto whiteMaterial = new Material("white");
-	whiteMaterial->Ambient = glm::vec3(0.3f, 0.3f, 0.3f);
-	whiteMaterial->Diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
-	whiteMaterial->Specular = glm::vec3(0.5f, 0.5f, 0.5f);
-	whiteMaterial->Shininess = 32.0f;
-	whiteMaterial->m_Color = glm::vec3(1.0f);
-	whiteMaterial->SetShader(World::Get().GetShader("lightShader"));
-
-	const auto pointLight = new Light("pointLight");
-	pointLight->SetType(LightSourceType::PointLight);
-	pointLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
-	pointLight->SetConstant(1.0f);
-	pointLight->SetLinear(0.9f);
-	pointLight->SetQuadratic(0.032f);
-	pointLight->SetColor(glm::vec3(1.0f));
-	pointLight->CreatePointDepthMap(1024, 1024);
+	whiteMaterial->SetType(MaterialType::Phong);
+	whiteMaterial->SetAmbient(glm::vec3(1.0f, 1.0f, 1.0f));
+	whiteMaterial->SetDiffuse(glm::vec3(0.5f, 0.5f, 0.5f));
+	whiteMaterial->SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
+	whiteMaterial->SetShininess(32.0f);
+	whiteMaterial->SetReflections(ReflectionType::Phong);
+	whiteMaterial->SetColor(glm::vec3(1.0f));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
@@ -120,7 +112,16 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Light
 	///////////////////////////////////////////////////////////////////////////////
-	
+
+	const auto pointLight = new Light("pointLight");
+	pointLight->SetType(LightSourceType::PointLight);
+	pointLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
+	pointLight->SetConstant(1.0f);
+	pointLight->SetLinear(0.9f);
+	pointLight->SetQuadratic(0.032f);
+	pointLight->SetColor(glm::vec3(1.0f));
+	pointLight->CreatePointDepthMap(1024, 1024);
+
 	SceneObject lightSphere("lightSphere");
 
 	lightSphere.AddModel(new Model(std::string("lightSphere")));
@@ -146,12 +147,8 @@ int main() {
 	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
 
-	//todo make static??
-	//window->InitImGui();
-
 	ImGuiWindow::Init();
 	Renderer::Init();
-
 
 	///////////////////////////////////////////////////////////////////////////////
 	// main Rendering loop
@@ -160,7 +157,6 @@ int main() {
 	while (!glfwWindowShouldClose(window->m_Window)) {
 		
 		window->WindowRendering();
-		//window->NewImGuiFrame();
 
 		ImGuiWindow::NewFrame();
 
@@ -173,9 +169,7 @@ int main() {
 		Renderer::SkyboxPath();
 
 		Renderer::PostFxPath();
-		
 
-		//window->ImGuiRender();
 		ImGuiWindow::Render();
 		
 		glfwSwapBuffers(window->m_Window);
@@ -185,8 +179,6 @@ int main() {
 	Renderer::Shutdown();
 
 	// cleanup
-	
-
 	delete g_Camera;
 	delete window;
 	delete activeScene;

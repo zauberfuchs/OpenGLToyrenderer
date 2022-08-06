@@ -94,12 +94,6 @@ void ImGuiWindow::Render()
 		DrawVec3Control("Rotation", rotation);
 		DrawVec3Control("Scale", scale);
 
-		//ImGui::Dummy(ImVec2(20, 20));
-		//ImGui::Text("Model Component", 20);
-		//AddUnderLine(ImColor(255, 255, 255, 255));
-		//ImGui::Dummy(ImVec2(1, 1));
-		//ImGui::ColorEdit3("Model Color", (float*)&color);
-
 		if (s->GetLight() != nullptr)
 		{
 			Light* l = s->GetLight();
@@ -126,44 +120,44 @@ void ImGuiWindow::Render()
 			ImGui::Dummy(ImVec2(1, 1));
 			ImGui::Text((std::string("Name: ") + material->GetName() + std::string(" Material")).c_str(), 50);
 			ImGui::Dummy(ImVec2(1, 1));
-			DrawVec3Control("Ambient", material->Ambient, 0, 1, 0, 100, true);
-			DrawVec3Control("Diffuse", material->Diffuse, 0, 1, 0, 100, true);
-			DrawVec3Control("Specular", material->Specular, 0, 1, 0, 100, true);
+			DrawVec3Control("Ambient", *material->GetAmbient(), 0, 1, 0, 100, true);
+			DrawVec3Control("Diffuse", *material->GetDiffuse(), 0, 1, 0, 100, true);
+			DrawVec3Control("Specular", *material->GetSpecular(), 0, 1, 0, 100, true);
 			ImGui::Dummy(ImVec2(1, 1));
-			ImGui::DragFloat("Shininess", &material->Shininess, 1, 1, 256);
+			ImGui::DragFloat("Shininess", material->GetShininess(), 1, 1, 256);
 
-			s_ImGuiData.HasAmbientReflection = material->m_HasAmbient;
-			s_ImGuiData.HasDiffuseReflection = material->m_HasDiffuse;
-			s_ImGuiData.HasSpecularReflection = material->m_HasSpecular;
+			s_ImGuiData.HasAmbientReflection = material->GetHasAmbient();
+			s_ImGuiData.HasDiffuseReflection = material->GetHasDiffuse();
+			s_ImGuiData.HasSpecularReflection = material->GetHasSpecular();
 
 			ImGui::Checkbox("Toggle Ambient Reflection", &s_ImGuiData.HasAmbientReflection);
 			if (s_ImGuiData.HasAmbientReflection)
 			{
-				material->m_HasAmbient = 1;
+				material->SetHasAmbient(1);
 			}
 			else
 			{
-				material->m_HasAmbient = 0;
+				material->SetHasAmbient(0);
 			}
 
 			ImGui::Checkbox("Toggle Diffuse Reflection", &s_ImGuiData.HasDiffuseReflection);
 			if (s_ImGuiData.HasDiffuseReflection)
 			{
-				material->m_HasDiffuse = 1;
+				material->SetHasDiffuse(1);
 			}
 			else
 			{
-				material->m_HasDiffuse = 0;
+				material->SetHasDiffuse(0);
 			}
 
 			ImGui::Checkbox("Toggle Specular Reflection", &s_ImGuiData.HasSpecularReflection);
 			if (s_ImGuiData.HasSpecularReflection)
 			{
-				material->m_HasSpecular = 1;
+				material->SetHasSpecular(1);
 			}
 			else
 			{
-				material->m_HasSpecular = 0;
+				material->SetHasSpecular(0);
 			}
 
 		}
