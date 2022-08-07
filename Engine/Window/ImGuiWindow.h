@@ -1,6 +1,9 @@
 #pragma once
 #include <imgui.h>
 
+class IMesh;
+class Mesh;
+class Material;
 class ISceneObject;
 class Texture;
 
@@ -30,7 +33,9 @@ struct ImGuiWindowStorage
 
 	// Material Textures
 	std::vector<Texture*> textures;
-
+	bool MaterialWindowState = false;
+	IMesh* SelectedMesh;
+	std::unordered_set<Material*> materials;
 
 	std::unordered_map<std::string, Texture*> ButtonTextures;
 

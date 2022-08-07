@@ -35,9 +35,9 @@ int main() {
 	Skybox skybox("universe");
 	
 	ReflectionProbe probeOne(1024, 1024);
-	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	//skybox.SetId(probeOne.GetReflectionMap());
-	probeOne.SetReflectionMap(skybox.GetId());
+	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	skybox.SetId(probeOne.GetReflectionMap());
+	//probeOne.SetReflectionMap(skybox.GetId());
 	probeOne.Create();
 	activeScene->SetReflectionProbe(&probeOne);
 

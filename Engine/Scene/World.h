@@ -20,6 +20,7 @@ public:
 	void AddMaterial(IMaterial* m);
 	IMaterial* GetMaterial(const std::string& name);
 	IMaterial* GetMaterial(const int& index);
+	std::unordered_map<std::string, IMaterial*> GetMaterials() { return m_MaterialCache; }
 
 	void SetActiveScene(Scene* s);
 	Scene* GetActiveScene();

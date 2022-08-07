@@ -72,7 +72,7 @@ void ImGuiWindow::RenderScenePanel()
 		ImGui::EndCombo();
 	}
 	ImGui::PopItemWidth();
-
+	ImGui::Dummy(ImVec2(20, 20));
 	ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
 	if (current_item != "")
@@ -116,12 +116,11 @@ void ImGuiWindow::RenderMeshComponent()
 
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Material Component", 20);
-		for(const auto& m : meshes)
+		AddUnderLine(ImColor(255, 255, 255, 255));
+		for(auto m : meshes)
 		{
 			auto material = (Material*)m.second->GetMaterial();
-
-			
-
+			s_ImGuiData.materials.insert(material);
 
 			ImGui::Dummy(ImVec2(1, 1));
 			ImGui::Text((std::string("Name: ") + material->GetName() + std::string(" Material")).c_str(), 50);
@@ -204,13 +203,34 @@ void ImGuiWindow::RenderMeshComponent()
 				material->SetAo(s_ImGuiData.AmbientOcclusion);
 				break;
 			case MaterialType::TexturedPhysicallyBased :
-				if (ImGui::ImageButton((ImTextureID)material->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
+				if(ImGui::ImageButton((ImTextureID)material->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
 				{
+					s_ImGuiData.SelectedMesh = m.second;
+					s_ImGuiData.MaterialWindowState = true;
 				}
-
 			}
 		}
+		if (s_ImGuiData.MaterialWindowState)
+		{
+			ImGui::Begin("Materials");
+			int i = 0;
+			for (const auto& m : World::Get().GetMaterials())
+			{
+				i++;
 
+				if (ImGui::ImageButton((ImTextureID)m.second->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
+				{
+					s_ImGuiData.SelectedMesh->SetMaterial(m.second);
+					s_ImGuiData.MaterialWindowState = false;
+				}
+				if (i % 5 != 0)
+				{
+					ImGui::SameLine();
+				}
+				
+			}
+			ImGui::End();
+		}
 		
 
 	}
@@ -275,6 +295,9 @@ void ImGuiWindow::RenderAnimationComponent()
 void ImGuiWindow::RenderWireFrameMode()
 {
 	ImGui::Dummy(ImVec2(20, 20));
+	ImGui::Text("Renderer Settings", 20);
+	AddUnderLine(ImColor(255, 255, 255, 255));
+	ImGui::Dummy(ImVec2(10, 10));
 	ImGui::Checkbox("Wireframe Mode", &s_ImGuiData.WireMode);
 	if (s_ImGuiData.WireMode)
 	{
