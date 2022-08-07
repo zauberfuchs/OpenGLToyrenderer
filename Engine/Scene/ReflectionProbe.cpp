@@ -146,8 +146,8 @@ void ReflectionProbe::CreateIrradianceMap()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	m_IrradianceTexture.m_ID = m_IrradianceMap;
-	m_IrradianceTexture.m_Type = TextureType::IrradianceMap;
+	m_IrradianceTexture.SetTextureID(m_IrradianceMap);
+	m_IrradianceTexture.SetTextureType(TextureType::IrradianceMap);
     m_IrradianceShader->Unbind();
 }
 
@@ -202,8 +202,8 @@ void ReflectionProbe::CreatePrefilterMap()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    m_PrefilterTexture.m_ID = m_PrefilterMap;
-    m_PrefilterTexture.m_Type = TextureType::PrefilterMap;
+    m_PrefilterTexture.SetTextureID(m_PrefilterMap);
+    m_PrefilterTexture.SetTextureType(TextureType::PrefilterMap);
     m_PrefilterShader->Unbind();
 
 }
@@ -235,8 +235,8 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    m_BrdfLookUpTexture.m_ID = m_BrdfLUT;
-    m_BrdfLookUpTexture.m_Type = TextureType::BrdfLookUpTexture;
+    m_BrdfLookUpTexture.SetTextureID(m_BrdfLUT);
+    m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
     m_BrdfShader->Unbind();
 }
 

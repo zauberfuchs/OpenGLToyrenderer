@@ -42,7 +42,7 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	m_Depthmap = new Texture();
-	m_Depthmap->m_ID = depthMap;
+	m_Depthmap->SetTextureID(depthMap);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 
 	//Todo wrong place??
@@ -75,7 +75,7 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	m_Depthmap = new Texture();
-	m_Depthmap->m_ID = depthMap;
+	m_Depthmap->SetTextureID(depthMap);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 }
 

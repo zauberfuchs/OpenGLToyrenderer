@@ -36,20 +36,12 @@ void ImGuiWindow::AddUnderLine(ImColor color)
 		min, max, color, 1.0f);
 }
 
-void ImGuiWindow::Render()
+void ImGuiWindow::RenderScenePanel()
 {
-	// TODO, komplett überarbeiten, Model Auswählen, meshes auswählen, Materialen Auswählen etc pp
-
 	ImGui::Begin("Scene Panel");
-	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 translation(0, 0, 0);
-	glm::vec3 rotation(0, 0, 0);
-	glm::vec3 scale(0, 0, 0);
 	std::string name;
 	static std::string current_item = "";
 	auto sceneObjects = World::Get().GetActiveScene()->GetSceneObjects();
-
 
 	ImGui::Text("Scene Objects", 20);
 	AddUnderLine(ImColor(255, 255, 255, 255));
@@ -67,6 +59,12 @@ void ImGuiWindow::Render()
 			if (ImGui::Selectable(name.c_str(), is_selected))
 			{
 				current_item = name.c_str();
+				s_ImGuiData.CurrentSceneObject = sceneObjects.at(current_item);
+				s_ImGuiData.Translation = s_ImGuiData.CurrentSceneObject->GetTransform()->GetLocalPosition();
+				s_ImGuiData.Rotation = s_ImGuiData.CurrentSceneObject->GetTransform()->GetLocalEulerAngles();
+				s_ImGuiData.Scale = s_ImGuiData.CurrentSceneObject->GetTransform()->GetLocalScale();
+				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes().begin()->second->GetMaterial()->GetColor();
+
 			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
@@ -77,133 +75,205 @@ void ImGuiWindow::Render()
 
 	ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
-
-
 	if (current_item != "")
 	{
-		auto s = sceneObjects.at(current_item);
+		RenderTransformComponent();
+		RenderMeshComponent();
+		RenderLightComponent();
+		RenderAnimationComponent();
+	}
+	RenderWireFrameMode();
+	RenderMSAA();
+	RenderFpsCounter();
+
+	ImGui::End();
+	ImGui::Render();
+
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void ImGuiWindow::RenderTransformComponent()
+{
+	ImGui::Dummy(ImVec2(20, 20));
+	ImGui::Text("Transform", 20);
+	AddUnderLine(ImColor(255, 255, 255, 255));
+	ImGui::Dummy(ImVec2(1, 1));
+	DrawVec3Control("Translation", s_ImGuiData.Translation);
+	DrawVec3Control("Rotation", s_ImGuiData.Rotation);
+	DrawVec3Control("Scale", s_ImGuiData.Scale);
+
+	s_ImGuiData.CurrentSceneObject->GetTransform()->Translate(s_ImGuiData.Translation, Space::Local);
+	s_ImGuiData.CurrentSceneObject->GetTransform()->Scale(s_ImGuiData.Scale, Space::Local);
+	s_ImGuiData.CurrentSceneObject->GetTransform()->SetRotation(s_ImGuiData.Rotation, Space::Local);
+}
+
+void ImGuiWindow::RenderMeshComponent()
+{
+	if (s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes().size() != 0)
+	{
+		auto meshes = s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes();
+		//auto material = (Material*)meshes.begin()->second->GetMaterial();
+
 		ImGui::Dummy(ImVec2(20, 20));
-		translation = s->GetTransform()->GetLocalPosition();
-		rotation = s->GetTransform()->GetLocalEulerAngles();
-		scale = s->GetTransform()->GetLocalScale();
-		color = s->GetModel().GetMeshes().begin()->second->GetMaterial()->GetColor();
-		ImGui::Text("Transform", 20);
-		AddUnderLine(ImColor(255, 255, 255, 255));
-		ImGui::Dummy(ImVec2(1, 1));
-		DrawVec3Control("Translation", translation);
-		DrawVec3Control("Rotation", rotation);
-		DrawVec3Control("Scale", scale);
-
-		if (s->GetLight() != nullptr)
+		ImGui::Text("Material Component", 20);
+		for(const auto& m : meshes)
 		{
-			Light* l = s->GetLight();
-			lightColor = l->GetColor();
-			ImGui::Dummy(ImVec2(20, 20));
-			ImGui::Text("Light Component", 20);
-			AddUnderLine(ImColor(255, 255, 255, 255));
-			ImGui::ColorEdit3("Light Color", &lightColor.x);
-			l->SetColor(lightColor);
-			s->GetLight()->SetPosition(translation);
-		}
+			auto material = (Material*)m.second->GetMaterial();
 
-		if (s->GetModel().GetMeshes().size() != 0)
-		{
-			auto meshes = s->GetModel().GetMeshes();
-			auto material = (Material*)meshes.begin()->second->GetMaterial();
-			ImGui::Dummy(ImVec2(20, 20));
-			ImGui::Text("Material Component", 20);
-			AddUnderLine(ImColor(255, 255, 255, 255));
-			ImGui::Dummy(ImVec2(1, 1));
-			glm::vec3 color = material->GetColor();
-			ImGui::ColorEdit3("Model Color", (float*)&color);
-			material->SetColor(color);
+			
+
+
 			ImGui::Dummy(ImVec2(1, 1));
 			ImGui::Text((std::string("Name: ") + material->GetName() + std::string(" Material")).c_str(), 50);
 			ImGui::Dummy(ImVec2(1, 1));
-			DrawVec3Control("Ambient", *material->GetAmbient(), 0, 1, 0, 100, true);
-			DrawVec3Control("Diffuse", *material->GetDiffuse(), 0, 1, 0, 100, true);
-			DrawVec3Control("Specular", *material->GetSpecular(), 0, 1, 0, 100, true);
-			ImGui::Dummy(ImVec2(1, 1));
-			ImGui::DragFloat("Shininess", material->GetShininess(), 1, 1, 256);
 
-			s_ImGuiData.HasAmbientReflection = material->GetHasAmbient();
-			s_ImGuiData.HasDiffuseReflection = material->GetHasDiffuse();
-			s_ImGuiData.HasSpecularReflection = material->GetHasSpecular();
+			switch (material->GetType())
+			{
+			case MaterialType::Phong:
+				ImGui::Dummy(ImVec2(10, 10));
+				ImGui::Text(m.first.c_str(), 20);
+				glm::vec3 color = material->GetColor();
+				ImGui::ColorEdit3("Model Color", (float*)&color);
+				material->SetColor(color);
 
-			ImGui::Checkbox("Toggle Ambient Reflection", &s_ImGuiData.HasAmbientReflection);
-			if (s_ImGuiData.HasAmbientReflection)
-			{
-				material->SetHasAmbient(1);
-			}
-			else
-			{
-				material->SetHasAmbient(0);
-			}
+				s_ImGuiData.Ambient = material->GetAmbient();
+				s_ImGuiData.Diffuse = material->GetDiffuse();
+				s_ImGuiData.Specular = material->GetSpecular();
+				s_ImGuiData.Shininess = material->GetShininess();
 
-			ImGui::Checkbox("Toggle Diffuse Reflection", &s_ImGuiData.HasDiffuseReflection);
-			if (s_ImGuiData.HasDiffuseReflection)
-			{
-				material->SetHasDiffuse(1);
-			}
-			else
-			{
-				material->SetHasDiffuse(0);
-			}
+				DrawVec3Control("Ambient", s_ImGuiData.Ambient, 0, 0.01f, 0, 100, true);
+				DrawVec3Control("Diffuse", s_ImGuiData.Diffuse, 0, 0.01f, 0, 100, true);
+				DrawVec3Control("Specular", s_ImGuiData.Specular, 0, 0.01f, 0, 100, true);
+				ImGui::Dummy(ImVec2(1, 1));
+				ImGui::DragFloat("Shininess", &s_ImGuiData.Shininess, 1, 1, 256);
 
-			ImGui::Checkbox("Toggle Specular Reflection", &s_ImGuiData.HasSpecularReflection);
-			if (s_ImGuiData.HasSpecularReflection)
-			{
-				material->SetHasSpecular(1);
-			}
-			else
-			{
-				material->SetHasSpecular(0);
-			}
+				s_ImGuiData.HasAmbientReflection = material->GetHasAmbient();
+				s_ImGuiData.HasDiffuseReflection = material->GetHasDiffuse();
+				s_ImGuiData.HasSpecularReflection = material->GetHasSpecular();
 
+				ImGui::Checkbox("Toggle Ambient Reflection", &s_ImGuiData.HasAmbientReflection);
+				if (s_ImGuiData.HasAmbientReflection)
+				{
+					material->SetHasAmbient(true);
+				}
+				else
+				{
+					material->SetHasAmbient(false);
+				}
+
+				ImGui::Checkbox("Toggle Diffuse Reflection", &s_ImGuiData.HasDiffuseReflection);
+				if (s_ImGuiData.HasDiffuseReflection)
+				{
+					material->SetHasDiffuse(true);
+				}
+				else
+				{
+					material->SetHasDiffuse(false);
+				}
+
+				ImGui::Checkbox("Toggle Specular Reflection", &s_ImGuiData.HasSpecularReflection);
+				if (s_ImGuiData.HasSpecularReflection)
+				{
+					material->SetHasSpecular(true);
+				}
+				else
+				{
+					material->SetHasSpecular(false);
+				}
+
+				material->SetAmbient(s_ImGuiData.Ambient);
+				material->SetDiffuse(s_ImGuiData.Diffuse);
+				material->SetSpecular(s_ImGuiData.Specular);
+				material->SetShininess(s_ImGuiData.Shininess);
+
+				break;
+			case MaterialType::PhysicallyBased:
+				s_ImGuiData.Albedo = material->GetAlbedo();
+				s_ImGuiData.Metallic = material->GetMetallic();
+				s_ImGuiData.Roughness = material->GetRoughness();
+				s_ImGuiData.AmbientOcclusion = material->GetAo();
+				ImGui::Dummy(ImVec2(1, 1));
+				DrawVec3Control("Albedo", s_ImGuiData.Albedo, 0, 1, 0, 100, true);
+				ImGui::DragFloat("Metallic", &s_ImGuiData.Metallic, 0.01f, 0, 1);
+				ImGui::DragFloat("Roughness", &s_ImGuiData.Roughness, 0.01f, 0.01f, 1);
+				ImGui::DragFloat("Ambient Occlusion", &s_ImGuiData.AmbientOcclusion, 0.01f, 0, 1);
+
+				material->SetAlbedo(s_ImGuiData.Albedo);
+				material->SetMetallic(s_ImGuiData.Metallic);
+				material->SetRoughness(s_ImGuiData.Roughness);
+				material->SetAo(s_ImGuiData.AmbientOcclusion);
+				break;
+			case MaterialType::TexturedPhysicallyBased :
+				if (ImGui::ImageButton((ImTextureID)material->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
+				{
+				}
+
+			}
 		}
 
-		for (auto [name, mesh] : s->GetModel().GetMeshes())
-		{
-			mesh->GetMaterial()->GetColor() = color;
-		}
+		
 
-		s->GetTransform()->Translate(translation, Space::Local);
-		s->GetTransform()->Scale(scale, Space::Local);
-		s->GetTransform()->SetRotation(rotation, Space::Local);
-
-		if (s->GetAnimation() != nullptr)
-		{
-			Animation* a = s->GetAnimation();
-			ImGui::Dummy(ImVec2(20, 20));
-			ImGui::Text("Animation Component", 20);
-			AddUnderLine(ImColor(255, 255, 255, 255));
-			ImGui::Dummy(ImVec2(1, 1));
-			if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("playBTN")->m_ID, {25, 25}, {0, 1}, {1, 0}))
-			{
-				a->StartAnimation();
-			}
-			ImGui::SameLine();
-			if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("pauseBTN")->m_ID, { 25, 25 }, { 0, 1 }, { 1, 0 }))
-			{
-				a->PauseAnimation();
-			}
-			ImGui::SameLine();
-			if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("stopBTN")->m_ID, { 25, 25 }, { 0, 1 }, { 1, 0 }))
-			{
-				a->ResetAnimation();
-			}
-			ImGui::Dummy(ImVec2(1, 1));
-			if (ImGui::Button("Print TimeLine", { 125, 25 }))
-			{
-				a->PrintTimeline();
-			}
-		}
-
-		ImGui::RadioButton("no Antialiasing", s_Data.MSAA, 1);
-		ImGui::RadioButton("4x MSAA", s_Data.MSAA, 4);
-		ImGui::RadioButton("8x MSAA", s_Data.MSAA, 8);
-		ImGui::RadioButton("16x MSAA", s_Data.MSAA, 16);
 	}
+
+	for (auto [name, mesh] : s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes())
+	{
+		mesh->GetMaterial()->GetColor() = s_ImGuiData.MaterialColor;
+	}
+}
+
+void ImGuiWindow::RenderLightComponent()
+{
+	if (s_ImGuiData.CurrentSceneObject->GetLight() != nullptr)
+	{
+		Light* l = s_ImGuiData.CurrentSceneObject->GetLight();
+		s_ImGuiData.LightColor = l->GetColor();
+		ImGui::Dummy(ImVec2(20, 20));
+		ImGui::Text("Light Component", 20);
+		AddUnderLine(ImColor(255, 255, 255, 255));
+		ImGui::ColorEdit3("Light Color", &s_ImGuiData.LightColor.x);
+		l->SetColor(s_ImGuiData.LightColor);
+		s_ImGuiData.CurrentSceneObject->GetLight()->SetPosition(s_ImGuiData.Translation);
+	}
+}
+
+void ImGuiWindow::RenderMaterialComponent()
+{
+	
+}
+
+void ImGuiWindow::RenderAnimationComponent()
+{
+	if (s_ImGuiData.CurrentSceneObject->GetAnimation() != nullptr)
+	{
+		Animation* a = s_ImGuiData.CurrentSceneObject->GetAnimation();
+		ImGui::Dummy(ImVec2(20, 20));
+		ImGui::Text("Animation Component", 20);
+		AddUnderLine(ImColor(255, 255, 255, 255));
+		ImGui::Dummy(ImVec2(1, 1));
+		if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("playBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
+		{
+			a->StartAnimation();
+		}
+		ImGui::SameLine();
+		if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("pauseBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
+		{
+			a->PauseAnimation();
+		}
+		ImGui::SameLine();
+		if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("stopBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
+		{
+			a->ResetAnimation();
+		}
+		ImGui::Dummy(ImVec2(1, 1));
+		if (ImGui::Button("Print TimeLine", { 125, 25 }))
+		{
+			a->PrintTimeline();
+		}
+	}
+}
+
+void ImGuiWindow::RenderWireFrameMode()
+{
 	ImGui::Dummy(ImVec2(20, 20));
 	ImGui::Checkbox("Wireframe Mode", &s_ImGuiData.WireMode);
 	if (s_ImGuiData.WireMode)
@@ -214,16 +284,24 @@ void ImGuiWindow::Render()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+	
+}
 
+void ImGuiWindow::RenderMSAA()
+{
+	ImGui::Dummy(ImVec2(20, 20));
+	ImGui::RadioButton("no Antialiasing", s_Data.MSAA, 1);
+	ImGui::RadioButton("4x MSAA", s_Data.MSAA, 4);
+	ImGui::RadioButton("8x MSAA", s_Data.MSAA, 8);
+	ImGui::RadioButton("16x MSAA", s_Data.MSAA, 16);
+}
+
+void ImGuiWindow::RenderFpsCounter()
+{
 	ImGui::Dummy(ImVec2(20, 20));
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	ImGui::End();
-
-
-	ImGui::Render();
-
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
 
 void ImGuiWindow::DrawVec3Control(const std::string& label, glm::vec3& values, const float& vMin, const float& vMax, float resetValue, float columnWidth, bool rgbMode)
 {

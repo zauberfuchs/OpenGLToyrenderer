@@ -30,16 +30,19 @@ public:
 	inline int GetWidth() const override { return m_Width; }
 	inline int GetHeigth() const override { return m_Height; }
 
+	int GetTextureID() { return m_ID; }
+	void SetTextureID(const int& id) { m_ID = id; }
+
 protected:
 
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;
 
 public:
-	GLuint m_ID;
 	std::string m_FilePath;
 	TextureType m_Type;
 private:
+	GLuint m_ID;
 	unsigned char* m_LocalBuffer;
 	int m_Width, m_Height, m_Components;
 	std::string m_Name;

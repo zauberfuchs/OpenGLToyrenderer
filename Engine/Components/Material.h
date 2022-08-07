@@ -46,21 +46,29 @@ public:
 	std::string GetName() override { return m_Name; }
 
 	void SetAlbedo(const glm::vec3& albedo) { m_Albedo = albedo; }
+	glm::vec3 GetAlbedo() { return m_Albedo; }
+
 	void SetMetallic(const float& metallic) { m_Metallic = metallic; }
+	float GetMetallic() { return m_Metallic; }
+
 	void SetRoughness(const float& roughness) { m_Roughness = roughness; }
+	float GetRoughness() { return m_Roughness; }
+
 	void SetAo(const float& ambientOcclusion) { m_Ao = ambientOcclusion; }
+	float GetAo() { return m_Ao; }
+
 
 	void SetAmbient(const glm::vec3& ambient) { m_Ambient = ambient; }
-	glm::vec3* GetAmbient() { return &m_Ambient; }
+	glm::vec3 GetAmbient() { return m_Ambient; }
 
 	void SetDiffuse(const glm::vec3& diffuse) { m_Diffuse = diffuse; }
-	glm::vec3* GetDiffuse() { return &m_Diffuse; }
+	glm::vec3 GetDiffuse() { return m_Diffuse; }
 
 	void SetSpecular(const glm::vec3 &specular) { m_Specular = specular; }
-	glm::vec3* GetSpecular() { return &m_Specular; }
+	glm::vec3 GetSpecular() { return m_Specular; }
 
 	void SetShininess(const float& shininess) { m_Shininess = shininess; }
-	float *GetShininess() { return &m_Shininess; }
+	float GetShininess() { return m_Shininess; }
 
 	void SetHasAmbient(const bool& hasAmbient) { m_HasAmbient = hasAmbient; }
 	bool GetHasAmbient() { return m_HasAmbient; }
@@ -92,12 +100,15 @@ private:
 	int m_HasDiffuse;
 	int m_HasSpecular;
 
+
 	// Physically Based Rendering properties
 	glm::vec3 m_Albedo;
 	float m_Metallic;
 	float m_Roughness;
 	float m_Ao;
-	
+
+
+	// Physically Based Textured Rendering propoerties
 	ITexture* m_TextureAlbedo = nullptr;
 	ITexture* m_TextureMetallic = nullptr;
 	ITexture* m_TextureRoughness = nullptr;

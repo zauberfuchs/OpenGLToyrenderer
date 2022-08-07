@@ -38,7 +38,8 @@ public:
 
 	virtual void SetName(const std::string name) = 0;
 	virtual std::string GetName() = 0;
-
+	virtual int GetTextureID() = 0;
+	virtual void SetTextureID(const int& id) = 0;
 	virtual void Load() = 0;
 	virtual void LoadModelTexture(const std::string& path, TextureType type) = 0;
 

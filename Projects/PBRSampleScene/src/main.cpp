@@ -53,6 +53,13 @@ int main() {
 	whiteMaterial->SetReflections(ReflectionType::Phong);
 	whiteMaterial->SetColor(glm::vec3(1.0f));
 
+	const auto pbrMaterial = new Material("pbr");
+	pbrMaterial->SetType(MaterialType::PhysicallyBased);
+	pbrMaterial->SetAlbedo(glm::vec3(1.0f, 1.0f, 1.0f));
+	pbrMaterial->SetMetallic(1.0f);
+	pbrMaterial->SetRoughness(0.1f);
+	pbrMaterial->SetAo(1.0f);
+
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
 	///////////////////////////////////////////////////////////////////////////////
@@ -92,6 +99,11 @@ int main() {
 			s.second->GetModel().GetMesh(1)->SetMaterial(World::Get().GetMaterial(rand() % 17));
 		}
 	}
+
+	SceneObject teapot("teapot");
+	activeScene->AddRootChild(&teapot);
+	teapot.AddModel(new Model("../Data/Models/test-models/teapot.obj"));
+	activeScene->GetSceneObject("teapot")->GetModel().GetMesh(0)->SetMaterial(pbrMaterial);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// ground
@@ -170,7 +182,7 @@ int main() {
 
 		Renderer::PostFxPath();
 
-		ImGuiWindow::Render();
+		ImGuiWindow::RenderScenePanel();
 		
 		glfwSwapBuffers(window->m_Window);
 		glfwPollEvents();
