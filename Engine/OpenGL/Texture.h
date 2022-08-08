@@ -12,13 +12,13 @@ public:
 	Texture(const std::string& path, TextureType type);
 	~Texture() override;
 
-	static std::shared_ptr<Texture> Create(const std::string path, TextureType type);
+	static std::shared_ptr<Texture> Create(const std::string& path, TextureType type);
 
 	void Render(IShader* shader) override;
 	void RenderPost() override;
 	void RenderPre() override;
 
-	void SetTextureType(TextureType type) override;
+	void SetTextureType(const TextureType& type) override;
 	TextureType GetTextureType() override;
 
 	void SetName(const std::string name) override;
@@ -27,20 +27,27 @@ public:
 	void Load() override;
 	void LoadModelTexture(const std::string& path, TextureType type) override;
 
-	inline int GetWidth() const override { return m_Width; }
-	inline int GetHeigth() const override { return m_Height; }
+	int GetWidth() const override { return m_Width; }
+	int GetHeigth() const override { return m_Height; }
 
-	int GetTextureID() { return m_ID; }
-	void SetTextureID(const int& id) { m_ID = id; }
+	int GetTextureID() override { return m_ID; }
+	void SetTextureID(const int& id) override { m_ID = id; }
 
+	TextureTarget GetTextureTarget() override { return m_Target; }
+	void SetTextureTarget(TextureTarget tt) override { m_Target = tt; }
+
+	std::string GetUniformLocation() override { return m_UniformLocation; }
+	void SetUniformLocation(const std::string& uniformLocation) override { m_UniformLocation = uniformLocation; }
 protected:
 
-	void Bind(unsigned int slot = 0) const;
+	void Bind(const unsigned int& slot, TextureTarget tt) const;
 	void Unbind() const;
 
 public:
 	std::string m_FilePath;
 	TextureType m_Type;
+	TextureTarget m_Target;
+	std::string m_UniformLocation;
 private:
 	GLuint m_ID;
 	unsigned char* m_LocalBuffer;

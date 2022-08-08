@@ -59,14 +59,13 @@ public:
 	static void RenderTransformComponent();
 	static void RenderMeshComponent();
 	static void RenderLightComponent();
-	static void RenderMaterialComponent();
 	static void RenderAnimationComponent();
 	static void RenderWireFrameMode();
 	static void RenderMSAA();
 	static void RenderFpsCounter();
 
 	static void AddUnderLine(ImColor color);
-	static void DrawVec3Control(const std::string& label, glm::vec3& values, const float& vMin = 0.0f, const float& vMax = 0.0f, float resetValue = 0.0f, float columnWidth = 100.0f, bool rgbMode = false);
+	static void DrawVec3Control(const std::string& label, glm::vec3& values, const float& vMin = 0.0f, const float& vMax = 0.0f, float resetValue = 0.0f, float columnWidth = 120.0f, bool rgbMode = false);
 
 
 

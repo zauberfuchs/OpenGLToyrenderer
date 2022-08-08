@@ -29,65 +29,42 @@ Material::~Material()
 
 void Material::SetTexture(ITexture* texture)
 {
-
-	switch (texture->GetTextureType()) {
-	case TextureType::AlbedoMap:
-		m_TextureAlbedo = texture;
-		break;
-	case TextureType::NormalMap:
-		m_TextureNormal = texture;
-		break;
-	case TextureType::MetallicMap:
-		m_TextureMetallic = texture;
-		break;
-	case TextureType::RoughnessMap:
-		m_TextureRoughness = texture;
-		break;
-	case TextureType::AmbientOcclusionMap:
-		m_TextureAmbienOcclusion = texture;
-		break;
-	case TextureType::DepthMap:
-		m_TextureShadowDepth = texture;
-		break;
-	default:
-		break;
-	}
+	m_Textures.insert({ texture->GetTextureType(), texture });
 }
 
 void Material::SetPBRTexture(const std::string& path)
 {
+	//Todo name hinzufügen?
 	m_TextureAlbedo = new Texture(path + "/albedo.png", TextureType::AlbedoMap);
+	m_TextureAlbedo->SetUniformLocation("material.albedoMap");
+	m_TextureAlbedo->SetTextureTarget(TextureTarget::Texture2D);
+
 	m_TextureMetallic = new Texture(path + "/metallic.png", TextureType::MetallicMap);
+	m_TextureMetallic->SetUniformLocation("material.metallicMap");
+	m_TextureMetallic->SetTextureTarget(TextureTarget::Texture2D);
+
 	m_TextureNormal = new Texture(path + "/normal.png", TextureType::NormalMap);
+	m_TextureNormal->SetUniformLocation("material.normalMap");
+	m_TextureNormal->SetTextureTarget(TextureTarget::Texture2D);
+
 	m_TextureRoughness = new Texture(path + "/roughness.png", TextureType::RoughnessMap);
+	m_TextureRoughness->SetUniformLocation("material.roughnessMap");
+	m_TextureRoughness->SetTextureTarget(TextureTarget::Texture2D);
+
 	m_TextureAmbienOcclusion = new Texture(path + "/ao.png", TextureType::AmbientOcclusionMap);
+	m_TextureAmbienOcclusion->SetUniformLocation("material.aoMap");
+	m_TextureAmbienOcclusion->SetTextureTarget(TextureTarget::Texture2D);
+
+	m_Textures.insert({ m_TextureAlbedo->GetTextureType(), m_TextureAlbedo });
+	m_Textures.insert({ m_TextureMetallic->GetTextureType(), m_TextureMetallic });
+	m_Textures.insert({ m_TextureNormal->GetTextureType(), m_TextureNormal });
+	m_Textures.insert({ m_TextureRoughness->GetTextureType(), m_TextureRoughness });
+	m_Textures.insert({ m_TextureAmbienOcclusion->GetTextureType(), m_TextureAmbienOcclusion });
 }
 
-ITexture* Material::GetTexture(TextureType channelMap)
+ITexture* Material::GetTexture(const TextureType& channelMap)
 {
-	ITexture* retTexture;
-
-	switch (channelMap) {
-	case TextureType::AlbedoMap:
-		retTexture = m_TextureAlbedo;
-		break;
-	case TextureType::NormalMap:
-		retTexture = m_TextureNormal;
-		break;
-	case TextureType::MetallicMap:
-		retTexture = m_TextureMetallic;
-		break;
-	case TextureType::RoughnessMap:
-		retTexture = m_TextureRoughness;
-		break;
-	case TextureType::AmbientOcclusionMap:
-		retTexture = m_TextureAmbienOcclusion;
-		break;
-	default:
-		break;
-	}
-
-	return retTexture;
+	return m_Textures.at(channelMap);
 }
 
 void Material::SetReflections(ReflectionType r)
@@ -104,11 +81,16 @@ void Material::SetReflections(ReflectionType r)
 void Material::SetReflectionProbe(ReflectionProbe* probe)
 {
 	m_Probe = probe;
+
+	m_Textures.insert({ m_Probe->GetBrdfLookUpTexture()->GetTextureType() ,m_Probe->GetBrdfLookUpTexture() });
+	m_Textures.insert({ m_Probe->GetPrefilterTexture()->GetTextureType() ,m_Probe->GetPrefilterTexture() });
+	m_Textures.insert({ m_Probe->GetIrradianceTexture()->GetTextureType() ,m_Probe->GetIrradianceTexture() });
+
 	m_TextureBrdfLookUp = m_Probe->GetBrdfLookUpTexture();
 	m_TexturePrefilter = m_Probe->GetPrefilterTexture();
 	m_TextureIrradiance = m_Probe->GetIrradianceTexture();
 }
-
+//Todo ergibt der name sinn?
 void Material::SetType(const MaterialType& type)
 {
 	switch(type)
@@ -130,44 +112,17 @@ void Material::SetType(const MaterialType& type)
 
 void Material::SetupTextures()
 {
+
 	if (m_Shader != nullptr) {
 		m_Shader->Bind();
 	}
-	if (m_TextureAlbedo != nullptr) {
-		m_TextureAlbedo->RenderPre();
-		m_Shader->SetUniform1i("material.albedoMap", 0);
-	}
-	if (m_TextureNormal != nullptr) {
-		m_TextureNormal->RenderPre();
-		m_Shader->SetUniform1i("material.normalMap", 1);
-	}
-	if (m_TextureMetallic != nullptr) {
-		m_TextureMetallic->RenderPre();
-		m_Shader->SetUniform1i("material.metallicMap", 2);
-	}
-	if (m_TextureRoughness != nullptr) {
-		m_TextureRoughness->RenderPre();
-		m_Shader->SetUniform1i("material.roughnessMap", 3);
-	}
-	if (m_TextureAmbienOcclusion != nullptr) {
-		m_TextureAmbienOcclusion->RenderPre();
-		m_Shader->SetUniform1i("material.aoMap", 4);
-	}
-	if (m_TextureIrradiance != nullptr) {
-		m_TextureIrradiance->RenderPre();
-		m_Shader->SetUniform1i("material.irradianceMap", 5);
-	}
-	if (m_TexturePrefilter != nullptr) {
-		m_TexturePrefilter->RenderPre();
-		m_Shader->SetUniform1i("material.prefilterMap", 6);
-	}
-	if (m_TextureBrdfLookUp != nullptr) {
-		m_TextureBrdfLookUp->RenderPre();
-		m_Shader->SetUniform1i("material.brdfLUT", 7);
-	}
-	if (m_TextureShadowDepth != nullptr) {
-		m_TextureShadowDepth->RenderPre();
-		m_Shader->SetUniform1i("depthMap", 8);
+	
+	int i = 0;
+	for(const auto& [texturetType, texture] : m_Textures)
+	{
+		texture->Bind(i, texture->GetTextureTarget());
+		m_Shader->SetUniform1i(texture->GetUniformLocation(), i);
+		i++;
 	}
 
 }
@@ -220,33 +175,10 @@ void Material::SetupUniforms()
 
 void Material::UnbindTextures()
 {
-
-	//Todo: map von texturen??
-	if (m_TextureAlbedo != nullptr) {
-		m_TextureAlbedo->Unbind();
+	for (const auto& [textureType, texture] : m_Textures)
+	{
+		texture->Unbind();
 	}
-	if (m_TextureMetallic != nullptr) {
-		m_TextureMetallic->Unbind();
-	}
-	if (m_TextureNormal != nullptr) {
-		m_TextureNormal->Unbind();
-	}
-	if (m_TextureRoughness != nullptr) {
-		m_TextureRoughness->Unbind();
-	}
-	if (m_TextureAmbienOcclusion != nullptr) {
-		m_TextureAmbienOcclusion->Unbind();
-	}
-	if (m_TexturePrefilter != nullptr) {
-		m_TexturePrefilter->Unbind();
-	}
-	if (m_TextureIrradiance != nullptr) {
-		m_TextureIrradiance->Unbind();
-	}
-	if (m_TextureBrdfLookUp != nullptr) {
-		m_TextureBrdfLookUp->Unbind();
-	}
-
 	if (m_Shader != nullptr) {
 		m_Shader->Unbind();
 	}
@@ -256,7 +188,6 @@ void MaterialLoader::LoadMaterialFolder(const std::string& path)
 {
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-
 		Material* m = new Material(entry.path().filename().stem().u8string());
 		m->SetType(MaterialType::TexturedPhysicallyBased);
 		m->SetPBRTexture(entry.path().u8string());

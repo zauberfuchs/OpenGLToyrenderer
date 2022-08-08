@@ -77,6 +77,8 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 	m_Depthmap = new Texture();
 	m_Depthmap->SetTextureID(depthMap);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
+	m_Depthmap->SetTextureTarget(TextureTarget::TextureCubeMap);
+	m_Depthmap->SetUniformLocation("depthMap");
 }
 
 glm::mat4 Light::CreateLightSpaceMatrix(const float& nearPlane, const float& farPlane)

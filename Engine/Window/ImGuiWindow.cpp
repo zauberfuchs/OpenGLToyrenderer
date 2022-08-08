@@ -13,7 +13,7 @@ void ImGuiWindow::Init()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
+	io.Fonts->AddFontFromFileTTF("../Data/Fonts/OpenSans-Regular.ttf", 25);
 	// Setup Dear ImGui style
 	// ----------------------
 	ImGui::StyleColorsDark();
@@ -191,8 +191,8 @@ void ImGuiWindow::RenderMeshComponent()
 				s_ImGuiData.Metallic = material->GetMetallic();
 				s_ImGuiData.Roughness = material->GetRoughness();
 				s_ImGuiData.AmbientOcclusion = material->GetAo();
-				ImGui::Dummy(ImVec2(1, 1));
 				DrawVec3Control("Albedo", s_ImGuiData.Albedo, 0, 1, 0, 100, true);
+				ImGui::Dummy(ImVec2(1, 1));
 				ImGui::DragFloat("Metallic", &s_ImGuiData.Metallic, 0.01f, 0, 1);
 				ImGui::DragFloat("Roughness", &s_ImGuiData.Roughness, 0.01f, 0.01f, 1);
 				ImGui::DragFloat("Ambient Occlusion", &s_ImGuiData.AmbientOcclusion, 0.01f, 0, 1);
@@ -254,11 +254,6 @@ void ImGuiWindow::RenderLightComponent()
 		l->SetColor(s_ImGuiData.LightColor);
 		s_ImGuiData.CurrentSceneObject->GetLight()->SetPosition(s_ImGuiData.Translation);
 	}
-}
-
-void ImGuiWindow::RenderMaterialComponent()
-{
-	
 }
 
 void ImGuiWindow::RenderAnimationComponent()
@@ -339,7 +334,7 @@ void ImGuiWindow::DrawVec3Control(const std::string& label, glm::vec3& values, c
 	ImGui::Text(label.c_str());
 	ImGui::NextColumn();
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-	ImVec2 buttonSize = { 20.0f, 20.0f };
+	ImVec2 buttonSize = { 30.0f, 30.0f };
 
 	ImGui::PushItemWidth(100);
 	ImGui::PushItemWidth(ImGui::CalcItemWidth());

@@ -24,6 +24,7 @@ struct Light {
     vec3 position;
     vec3 color;
 };
+
 uniform Light light[4];
 uniform samplerCube depthMap;
 uniform float farPlane;

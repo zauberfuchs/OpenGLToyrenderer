@@ -148,6 +148,8 @@ void ReflectionProbe::CreateIrradianceMap()
 
 	m_IrradianceTexture.SetTextureID(m_IrradianceMap);
 	m_IrradianceTexture.SetTextureType(TextureType::IrradianceMap);
+    m_IrradianceTexture.SetTextureTarget(TextureTarget::TextureCubeMap);
+    m_IrradianceTexture.SetUniformLocation("material.irradianceMap");
     m_IrradianceShader->Unbind();
 }
 
@@ -204,6 +206,8 @@ void ReflectionProbe::CreatePrefilterMap()
 
     m_PrefilterTexture.SetTextureID(m_PrefilterMap);
     m_PrefilterTexture.SetTextureType(TextureType::PrefilterMap);
+    m_PrefilterTexture.SetTextureTarget(TextureTarget::TextureCubeMap);
+    m_PrefilterTexture.SetUniformLocation("material.prefilterMap");
     m_PrefilterShader->Unbind();
 
 }
@@ -215,6 +219,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     // pre-allocate enough memory for the LUT texture.
     glBindTexture(GL_TEXTURE_2D, m_BrdfLUT);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+
     // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -237,6 +242,8 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
 
     m_BrdfLookUpTexture.SetTextureID(m_BrdfLUT);
     m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
+    m_BrdfLookUpTexture.SetTextureTarget(TextureTarget::Texture2D);
+    m_BrdfLookUpTexture.SetUniformLocation("material.brdfLUT");
     m_BrdfShader->Unbind();
 }
 

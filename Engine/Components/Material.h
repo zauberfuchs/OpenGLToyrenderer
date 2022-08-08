@@ -24,7 +24,7 @@ public:
 	
 
 	void SetTexture(ITexture* texture) override;
-	ITexture* GetTexture(TextureType channelMap) override;
+	ITexture* GetTexture(const TextureType& channelMap) override;
 	void SetPBRTexture(const std::string& path);
 
 	void SetReflectionProbe(ReflectionProbe* probe);
@@ -120,6 +120,8 @@ private:
 	ITexture* m_TextureShadowDepth = nullptr;
 
 	ReflectionProbe* m_Probe = nullptr;
+
+	std::unordered_map<TextureType, ITexture*> m_Textures;
 
 };
 

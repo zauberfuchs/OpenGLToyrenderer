@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GL/glew.h>
+
 #include "IShader.h"
 
 
@@ -21,6 +23,12 @@ enum class TextureType
 	PrefilterMap
 };
 
+enum class TextureTarget
+{
+	Texture2D = GL_TEXTURE_2D,
+	TextureCubeMap = GL_TEXTURE_CUBE_MAP
+};
+
 
 
 class ITexture
@@ -33,7 +41,7 @@ public:
 	virtual void Render(IShader* shader) = 0;
 	virtual void RenderPost() = 0;
 
-	virtual void SetTextureType(TextureType type) = 0;
+	virtual void SetTextureType(const TextureType& type) = 0;
 	virtual TextureType GetTextureType() = 0;
 
 	virtual void SetName(const std::string name) = 0;
@@ -43,7 +51,13 @@ public:
 	virtual void Load() = 0;
 	virtual void LoadModelTexture(const std::string& path, TextureType type) = 0;
 
-	virtual void Bind(unsigned int slot = 0) const = 0;
+	virtual TextureTarget GetTextureTarget() = 0;
+	virtual void SetTextureTarget(TextureTarget tt) = 0;
+
+	virtual std::string GetUniformLocation() = 0;
+	virtual void SetUniformLocation(const std::string& uniformLocation) = 0;
+
+	virtual void Bind(const unsigned int& slot, TextureTarget tt) const = 0;
 	virtual void Unbind() const = 0;
 
 	virtual inline int GetWidth() const = 0;

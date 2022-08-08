@@ -16,7 +16,7 @@ public:
 	virtual std::string GetName() = 0;
 	
 	virtual void SetTexture(ITexture* texture) = 0;
-	virtual ITexture* GetTexture(TextureType channelMap = TextureType::AlbedoMap) = 0;
+	virtual ITexture* GetTexture(const TextureType& channelMap = TextureType::AlbedoMap) = 0;
 
 	virtual void SetShader(IShader* shader) = 0;
 	virtual IShader* GetShader() = 0;

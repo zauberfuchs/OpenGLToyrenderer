@@ -71,6 +71,7 @@ void Texture::LoadModelTexture(const std::string& path, TextureType type)
 {
 	m_FilePath = path;
 	m_Type = type;
+	
 
 	glGenTextures(1, &m_ID);
 
@@ -105,10 +106,10 @@ void Texture::LoadModelTexture(const std::string& path, TextureType type)
 
 
 
-void Texture::Bind(unsigned int slot /*= 0*/) const
+void Texture::Bind(const unsigned int& slot, TextureTarget tt) const
 {
-	glActiveTexture(GL_TEXTURE0 + slot); // der Texture Slot hier 0 = erster
-	glBindTexture(GL_TEXTURE_2D, m_ID);
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(static_cast<GLenum>(tt), m_ID);
 }
 
 void Texture::Unbind() const
@@ -186,7 +187,7 @@ TextureType Texture::GetTextureType()
 	return m_Type;
 }
 
-void Texture::SetTextureType(TextureType type)
+void Texture::SetTextureType(const TextureType& type)
 {
 	m_Type = type;
 }
