@@ -11,6 +11,7 @@ struct RendererStorage
 	Scene* ActiveScene;
 	IShader* ActiveShader;
 	IShader* PostFXShader;
+	Camera* ActiveSceneCamera;
 
 	Skybox* SceneSkybox;
 

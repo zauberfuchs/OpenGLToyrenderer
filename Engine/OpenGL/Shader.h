@@ -44,11 +44,9 @@ private:
 class ShaderLoader
 {
 public:
-	ShaderLoader() = default;
 
-	void LoadShaderFolder(const std::string& path)
+	static void LoadShaderFolder(const std::string& path)
 	{
-		//std::unordered_set<std::string> filenames;
 		std::unordered_map<std::string, uint16_t> filenames;
 		for (const auto& entry : std::filesystem::directory_iterator(path))
 		{

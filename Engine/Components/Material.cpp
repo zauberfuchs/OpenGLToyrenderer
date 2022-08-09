@@ -32,34 +32,36 @@ void Material::SetTexture(ITexture* texture)
 	m_Textures.insert({ texture->GetTextureType(), texture });
 }
 
+// mehr parameter?? type/ target / uniform
 void Material::SetPBRTexture(const std::string& path)
 {
-	//Todo name hinzufügen?
-	m_TextureAlbedo = new Texture(path + "/albedo.png", TextureType::AlbedoMap);
-	m_TextureAlbedo->SetUniformLocation("material.albedoMap");
-	m_TextureAlbedo->SetTextureTarget(TextureTarget::Texture2D);
+	ITexture* tex;
 
-	m_TextureMetallic = new Texture(path + "/metallic.png", TextureType::MetallicMap);
-	m_TextureMetallic->SetUniformLocation("material.metallicMap");
-	m_TextureMetallic->SetTextureTarget(TextureTarget::Texture2D);
+	tex = new Texture(path + "/albedo.png", TextureType::AlbedoMap);
+	tex->SetUniformLocation("material.albedoMap");
+	tex->SetTextureTarget(TextureTarget::Texture2D);
+	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	m_TextureNormal = new Texture(path + "/normal.png", TextureType::NormalMap);
-	m_TextureNormal->SetUniformLocation("material.normalMap");
-	m_TextureNormal->SetTextureTarget(TextureTarget::Texture2D);
+	tex = new Texture(path + "/normal.png", TextureType::NormalMap);
+	tex->SetUniformLocation("material.normalMap");
+	tex->SetTextureTarget(TextureTarget::Texture2D);
+	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	m_TextureRoughness = new Texture(path + "/roughness.png", TextureType::RoughnessMap);
-	m_TextureRoughness->SetUniformLocation("material.roughnessMap");
-	m_TextureRoughness->SetTextureTarget(TextureTarget::Texture2D);
+	tex = new Texture(path + "/metallic.png", TextureType::MetallicMap);
+	tex->SetUniformLocation("material.metallicMap");
+	tex->SetTextureTarget(TextureTarget::Texture2D);
+	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	m_TextureAmbienOcclusion = new Texture(path + "/ao.png", TextureType::AmbientOcclusionMap);
-	m_TextureAmbienOcclusion->SetUniformLocation("material.aoMap");
-	m_TextureAmbienOcclusion->SetTextureTarget(TextureTarget::Texture2D);
+	tex = new Texture(path + "/roughness.png", TextureType::RoughnessMap);
+	tex->SetUniformLocation("material.roughnessMap");
+	tex->SetTextureTarget(TextureTarget::Texture2D);
+	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	m_Textures.insert({ m_TextureAlbedo->GetTextureType(), m_TextureAlbedo });
-	m_Textures.insert({ m_TextureMetallic->GetTextureType(), m_TextureMetallic });
-	m_Textures.insert({ m_TextureNormal->GetTextureType(), m_TextureNormal });
-	m_Textures.insert({ m_TextureRoughness->GetTextureType(), m_TextureRoughness });
-	m_Textures.insert({ m_TextureAmbienOcclusion->GetTextureType(), m_TextureAmbienOcclusion });
+	tex = new Texture(path + "/ao.png", TextureType::AmbientOcclusionMap);
+	tex->SetUniformLocation("material.aoMap");
+	tex->SetTextureTarget(TextureTarget::Texture2D);
+	m_Textures.insert({ tex->GetTextureType(), tex });
+
 }
 
 ITexture* Material::GetTexture(const TextureType& channelMap)
@@ -82,14 +84,19 @@ void Material::SetReflectionProbe(ReflectionProbe* probe)
 {
 	m_Probe = probe;
 
+	/*m_Textures.insert({ m_Probe->GetBrdfLookUpTexture()->GetTextureType() ,m_Probe->GetBrdfLookUpTexture() });
+	m_Textures.insert({ m_Probe->GetPrefilterTexture()->GetTextureType() ,m_Probe->GetPrefilterTexture() });
+	m_Textures.insert({ m_Probe->GetIrradianceTexture()->GetTextureType() ,m_Probe->GetIrradianceTexture() });*/
+}
+
+void Material::UpdateReflectionProbe()
+{
 	m_Textures.insert({ m_Probe->GetBrdfLookUpTexture()->GetTextureType() ,m_Probe->GetBrdfLookUpTexture() });
 	m_Textures.insert({ m_Probe->GetPrefilterTexture()->GetTextureType() ,m_Probe->GetPrefilterTexture() });
 	m_Textures.insert({ m_Probe->GetIrradianceTexture()->GetTextureType() ,m_Probe->GetIrradianceTexture() });
-
-	m_TextureBrdfLookUp = m_Probe->GetBrdfLookUpTexture();
-	m_TexturePrefilter = m_Probe->GetPrefilterTexture();
-	m_TextureIrradiance = m_Probe->GetIrradianceTexture();
 }
+
+
 //Todo ergibt der name sinn?
 void Material::SetType(const MaterialType& type)
 {
@@ -112,6 +119,7 @@ void Material::SetType(const MaterialType& type)
 
 void Material::SetupTextures()
 {
+	UpdateReflectionProbe();
 
 	if (m_Shader != nullptr) {
 		m_Shader->Bind();
@@ -129,14 +137,8 @@ void Material::SetupTextures()
 
 void Material::SetupUniforms()
 {
-	SetupTextures();
-
 	Scene* activeScene = World::Get().GetActiveScene();
-	Camera* sceneCamera = activeScene->GetSceneCamera();
-	sceneCamera->UpdateMatrix(m_Shader);
 	auto lights = activeScene->GetSceneLightSources();
-
-	m_Shader->SetUniform3f("camPos", sceneCamera->Position);
 
 	switch(m_Type)
 	{
@@ -159,9 +161,11 @@ void Material::SetupUniforms()
 		m_Shader->SetUniform1f("material.ao", m_Ao);
 		break;
 	case MaterialType::TexturedPhysicallyBased :
+		SetupTextures();
 		break;
 	}
 
+	//todo light pass
 	int i = 0;
 	for (auto& l : lights)
 	{

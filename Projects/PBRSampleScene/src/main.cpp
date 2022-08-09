@@ -12,37 +12,33 @@
 
 int main() {
 
-	auto window = new Window(1600, 1200);
+	const auto window = new Window(1600, 1200);
 	World::Get().SetActiveWindow(window);
-	int error = window->InitOpenGLContext();
+	const int error = window->InitOpenGLContext();
 
 	g_Camera = new Camera(glm::vec3(0.0f, 20.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0);
 
-	World::Get().SetActiveScene(new Scene("Main Scene"));
-
-	Scene* activeScene = World::Get().GetActiveScene();
-	activeScene->SetSceneCamera(g_Camera);
+	Scene* activeScene = new Scene("Main Scene");
+	World::Get().SetActiveScene(activeScene);
 
 	srand(time(nullptr));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials / Lights
 	///////////////////////////////////////////////////////////////////////////////
-
-	ShaderLoader sLoader;
-	sLoader.LoadShaderFolder("../Data/Shaders/");
+	
+	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
 
 	Skybox skybox("universe");
-	
+
 	ReflectionProbe probeOne(1024, 1024);
 	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
 	skybox.SetId(probeOne.GetReflectionMap());
 	//probeOne.SetReflectionMap(skybox.GetId());
 	probeOne.Create();
 	activeScene->SetReflectionProbe(&probeOne);
-
-	MaterialLoader mLoader;
-	mLoader.LoadMaterialFolder("../Data/Textures/Materials/");
+	
+	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 	
 	const auto whiteMaterial = new Material("white");
 	whiteMaterial->SetType(MaterialType::Phong);
@@ -103,19 +99,19 @@ int main() {
 	SceneObject teapot("teapot");
 	activeScene->AddRootChild(&teapot);
 	teapot.AddModel(new Model("../Data/Models/test-models/teapot.obj"));
-	activeScene->GetSceneObject("teapot")->GetModel().GetMesh(0)->SetMaterial(pbrMaterial);
+	teapot.GetModel().GetMesh(0)->SetMaterial(pbrMaterial);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// ground
 	///////////////////////////////////////////////////////////////////////////////
 
 	SceneObject ground("ground");
+	activeScene->AddRootChild(&ground);
 
 	ground.AddModel(new Model(std::string("ground")));
 	ground.GetModel().AddMesh(new StudentCube("ground"));
 
-	activeScene->AddRootChild(&ground);
-	activeScene->GetSceneObject("ground")->GetModel().GetMesh(0)->SetMaterial(World::Get().GetMaterial("ceramictile"));
+	ground.GetModel().GetMesh(0)->SetMaterial(World::Get().GetMaterial("ceramictile"));
 
 	ground.GetTransform()->Scale(glm::vec3(30.00f, .625f, 30.00f), Space::Local);
 	ground.GetTransform()->Translate(glm::vec3(10.0f, 0.0f, 4.0f), Space::Local);
@@ -135,13 +131,13 @@ int main() {
 	pointLight->CreatePointDepthMap(1024, 1024);
 
 	SceneObject lightSphere("lightSphere");
+	activeScene->AddRootChild(&lightSphere);
 
 	lightSphere.AddModel(new Model(std::string("lightSphere")));
 	lightSphere.GetModel().AddMesh(new Sphere("Sphere", 32));
 	lightSphere.AddLight(pointLight);
 
-	activeScene->AddRootChild(&lightSphere);
-	activeScene->GetSceneObject("lightSphere")->GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
+	lightSphere.GetModel().GetMesh(0)->SetMaterial(whiteMaterial);
 
 	lightSphere.GetTransform()->Translate(pointLight->GetPosition(), Space::Local);
 	lightSphere.GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
@@ -152,6 +148,7 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
+	activeScene->SetSceneCamera(g_Camera);
 	activeScene->SetSceneSkybox(&skybox);
 	activeScene->AddSceneLight(pointLight);
 

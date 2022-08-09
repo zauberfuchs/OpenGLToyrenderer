@@ -24,6 +24,7 @@ void Renderer::Init()
 
 
 	s_Data.ActiveScene = World::Get().GetActiveScene();
+	s_Data.ActiveSceneCamera = s_Data.ActiveScene->GetSceneCamera();
 
 
 	if (s_Data.ActiveScene->GetSceneSkybox())
@@ -108,6 +109,7 @@ void Renderer::DepthPrePath()
 void Renderer::GeometryPath()
 {
 	s_Data.GeometryFramebuffer->Bind();
+	
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
@@ -123,6 +125,9 @@ void Renderer::GeometryPath()
 
 			s_Data.ActiveShader->Bind();
 			s_Data.MeshVAO->Bind();
+			s_Data.ActiveSceneCamera->UpdateMatrix(s_Data.ActiveShader);
+			s_Data.ActiveShader->SetUniform3f("camPos", s_Data.ActiveSceneCamera->Position);
+
 
 			s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
 			s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());

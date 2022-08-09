@@ -28,6 +28,7 @@ public:
 	void SetPBRTexture(const std::string& path);
 
 	void SetReflectionProbe(ReflectionProbe* probe);
+	void UpdateReflectionProbe();
 
 	void SetupTextures() override;
 	void SetupUniforms() override;
@@ -109,14 +110,6 @@ private:
 
 
 	// Physically Based Textured Rendering propoerties
-	ITexture* m_TextureAlbedo = nullptr;
-	ITexture* m_TextureMetallic = nullptr;
-	ITexture* m_TextureRoughness = nullptr;
-	ITexture* m_TextureNormal = nullptr;
-	ITexture* m_TextureAmbienOcclusion = nullptr;
-	ITexture* m_TextureIrradiance = nullptr;
-	ITexture* m_TexturePrefilter = nullptr;
-	ITexture* m_TextureBrdfLookUp = nullptr;
 	ITexture* m_TextureShadowDepth = nullptr;
 
 	ReflectionProbe* m_Probe = nullptr;
@@ -129,9 +122,7 @@ private:
 class MaterialLoader
 {
 public:
-	MaterialLoader() = default;
-
-	void LoadMaterialFolder(const std::string& path);
+	static void LoadMaterialFolder(const std::string& path);
 
 	std::vector<std::filesystem::path> m_Entrys;
 };
