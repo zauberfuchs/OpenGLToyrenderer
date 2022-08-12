@@ -27,8 +27,8 @@ int Window::InitOpenGLContext()
 	// Tell GLFW what version of OpenGL we are using 
 	// In this case we are using OpenGL 3.2
 	// -------------------------------------------
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 
 	// Window initialization
 	m_Window = glfwCreateWindow(m_Width, m_Height, "OpenGL Tutorial", NULL, NULL);

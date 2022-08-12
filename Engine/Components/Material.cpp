@@ -83,10 +83,6 @@ void Material::SetReflections(ReflectionType r)
 void Material::SetReflectionProbe(ReflectionProbe* probe)
 {
 	m_Probe = probe;
-
-	/*m_Textures.insert({ m_Probe->GetBrdfLookUpTexture()->GetTextureType() ,m_Probe->GetBrdfLookUpTexture() });
-	m_Textures.insert({ m_Probe->GetPrefilterTexture()->GetTextureType() ,m_Probe->GetPrefilterTexture() });
-	m_Textures.insert({ m_Probe->GetIrradianceTexture()->GetTextureType() ,m_Probe->GetIrradianceTexture() });*/
 }
 
 void Material::UpdateReflectionProbe()
@@ -192,10 +188,9 @@ void MaterialLoader::LoadMaterialFolder(const std::string& path)
 {
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		Material* m = new Material(entry.path().filename().stem().u8string());
+		auto* m = new Material(entry.path().filename().stem().u8string());
 		m->SetType(MaterialType::TexturedPhysicallyBased);
 		m->SetPBRTexture(entry.path().u8string());
 		World::Get().AddMaterial(m);
 	}
 }
-

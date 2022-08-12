@@ -37,10 +37,6 @@ class ITexture
 public:
 	virtual ~ITexture() = default;
 
-	virtual void RenderPre() = 0;
-	virtual void Render(IShader* shader) = 0;
-	virtual void RenderPost() = 0;
-
 	virtual void SetTextureType(const TextureType& type) = 0;
 	virtual TextureType GetTextureType() = 0;
 
@@ -49,7 +45,6 @@ public:
 	virtual int GetTextureID() = 0;
 	virtual void SetTextureID(const int& id) = 0;
 	virtual void Load() = 0;
-	virtual void LoadModelTexture(const std::string& path, TextureType type) = 0;
 
 	virtual TextureTarget GetTextureTarget() = 0;
 	virtual void SetTextureTarget(TextureTarget tt) = 0;

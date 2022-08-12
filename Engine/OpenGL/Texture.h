@@ -8,25 +8,18 @@ class Texture : public ITexture
 {
 
 public:
-	Texture();
+	Texture() = default;
 	Texture(const std::string& path, TextureType type);
 	~Texture() override;
+	
+	TextureType GetTextureType() override { return m_Type; }
+	void SetTextureType(const TextureType& type) override { m_Type = type; }
 
-	static std::shared_ptr<Texture> Create(const std::string& path, TextureType type);
-
-	void Render(IShader* shader) override;
-	void RenderPost() override;
-	void RenderPre() override;
-
-	void SetTextureType(const TextureType& type) override;
-	TextureType GetTextureType() override;
-
-	void SetName(const std::string name) override;
-	std::string GetName() override;
+	std::string GetName() override { return m_Name; }
+	void SetName(const std::string name) override { m_Name = name; }
 
 	void Load() override;
-	void LoadModelTexture(const std::string& path, TextureType type) override;
-
+	
 	int GetWidth() const override { return m_Width; }
 	int GetHeigth() const override { return m_Height; }
 

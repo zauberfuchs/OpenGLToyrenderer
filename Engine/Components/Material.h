@@ -123,6 +123,5 @@ class MaterialLoader
 {
 public:
 	static void LoadMaterialFolder(const std::string& path);
-
 	std::vector<std::filesystem::path> m_Entrys;
 };
