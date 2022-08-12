@@ -27,7 +27,7 @@ public:
 	ITexture* GetTexture(const TextureType& channelMap) override;
 	void SetPBRTexture(const std::string& path);
 
-	void SetReflectionProbe(ReflectionProbe* probe);
+	void SetReflectionProbe(ReflectionProbe* probe) override;
 	void UpdateReflectionProbe();
 
 	void SetupTextures() override;

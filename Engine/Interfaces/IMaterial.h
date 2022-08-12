@@ -2,6 +2,9 @@
 
 #include "ITexture.h"
 
+
+class ReflectionProbe;
+
 enum class ReflectionType
 {
 	None = 0, Ambient, Diffuse, Specular, Phong
@@ -20,6 +23,8 @@ public:
 
 	virtual void SetShader(IShader* shader) = 0;
 	virtual IShader* GetShader() = 0;
+
+	virtual void SetReflectionProbe(ReflectionProbe* probe) = 0;
 
 	virtual glm::vec3 GetColor() = 0;
 	virtual void SetColor(const glm::vec3& color) = 0;

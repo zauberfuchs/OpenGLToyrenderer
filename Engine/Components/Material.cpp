@@ -195,7 +195,6 @@ void MaterialLoader::LoadMaterialFolder(const std::string& path)
 		Material* m = new Material(entry.path().filename().stem().u8string());
 		m->SetType(MaterialType::TexturedPhysicallyBased);
 		m->SetPBRTexture(entry.path().u8string());
-		m->SetReflectionProbe(World::Get().GetActiveScene()->GetReflectionProbe());
 		World::Get().AddMaterial(m);
 	}
 }

@@ -1,14 +1,14 @@
 #include "../../Engine/Utils/pch.h"
 #include "Renderer.h"
 
+#include "Skybox.h"
 
 void Renderer::Init()
 {
-	UpdateViewport();
-
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -17,24 +17,28 @@ void Renderer::Init()
 	s_Data.MSAA = new int(1);
 
 	s_Data.GeometryFramebuffer = new Framebuffer();
-	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
 	s_Data.GeometryRenderbuffer = new Renderbuffer();
-	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
 
+	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
+	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
 
 
 	s_Data.ActiveScene = World::Get().GetActiveScene();
 	s_Data.ActiveSceneCamera = s_Data.ActiveScene->GetSceneCamera();
 
+	for(auto m : World::Get().GetMaterials())
+	{
+		m.second->SetReflectionProbe(s_Data.ActiveScene->GetReflectionProbe());
+	}
 
 	if (s_Data.ActiveScene->GetSceneSkybox())
 	{
 		s_Data.SceneSkybox = s_Data.ActiveScene->GetSceneSkybox();
 	}
+
 	s_Data.PostFXShader = World::Get().GetShader("postFX");
 	s_Data.ActiveSceneLight = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
 
-	
 }
 
 void Renderer::Shutdown()
@@ -68,10 +72,10 @@ void Renderer::DepthPrePath()
 		break;
 	}
 	
-	
 
 	glViewport(0, 0, s_Data.ActiveSceneLight->GetShadowWidth(), s_Data.ActiveSceneLight->GetShadowHeight());
-	glBindFramebuffer(GL_FRAMEBUFFER, s_Data.ActiveSceneLight->GetFramebuffer()->GetId());
+	s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
+
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	
@@ -100,8 +104,7 @@ void Renderer::DepthPrePath()
 			DrawMesh();
 		}
 	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	s_Data.ActiveSceneLight->GetFramebuffer()->Unbind();
 
 	SetViewport(s_Data.RenderViewport[0], s_Data.RenderViewport[1], s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 }
@@ -109,9 +112,9 @@ void Renderer::DepthPrePath()
 void Renderer::GeometryPath()
 {
 	s_Data.GeometryFramebuffer->Bind();
-	
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	Clear();
+
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
 		s_Data.MeshTransform = s.second->GetTransform();
@@ -138,16 +141,17 @@ void Renderer::GeometryPath()
 			s_Data.MeshMaterial->UnbindTextures();
 		}
 	}
+	
 }
 
 void Renderer::SkyboxPath()
 {
 	s_Data.SceneSkybox->Render();
+	s_Data.GeometryFramebuffer->Unbind();
 }
 
 void Renderer::PostFxPath()
 {
-	s_Data.GeometryFramebuffer->Unbind();
 	s_Data.PostFXShader->Bind();
 	s_Data.PostFXShader->SetUniform1i("sampleSize", *s_Data.MSAA);
 	s_Data.PostFXShader->SetUniform1i("screenTexture", 0);

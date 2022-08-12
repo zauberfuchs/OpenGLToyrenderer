@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Skybox.h"
+
 #include "World.h"
 
 struct RendererStorage
@@ -46,10 +46,10 @@ public:
 	static void DrawMesh();
 
 	static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-	static void UpdateViewport();
 	static void SetClearColor(const glm::vec4& color);
-	static void Clear();
 	static void SetCullMode(const uint8_t& cullMode);
+	static void UpdateViewport();
+	static void Clear();
 
 	static void RenderQuad();
 };

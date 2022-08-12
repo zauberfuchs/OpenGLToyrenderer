@@ -24,21 +24,12 @@ int main() {
 	srand(time(nullptr));
 
 	///////////////////////////////////////////////////////////////////////////////
-	// Setup Shader / Materials / Lights
+	// Setup Shader / Materials
 	///////////////////////////////////////////////////////////////////////////////
 	
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
-
-	Skybox skybox("universe");
-
-	ReflectionProbe probeOne(1024, 1024);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	skybox.SetId(probeOne.GetReflectionMap());
-	//probeOne.SetReflectionMap(skybox.GetId());
-	probeOne.Create();
-	activeScene->SetReflectionProbe(&probeOne);
-	
 	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
+
 	
 	const auto whiteMaterial = new Material("white");
 	whiteMaterial->SetType(MaterialType::Phong);
@@ -51,10 +42,10 @@ int main() {
 
 	const auto pbrMaterial = new Material("pbr");
 	pbrMaterial->SetType(MaterialType::PhysicallyBased);
-	pbrMaterial->SetAlbedo(glm::vec3(1.0f, 1.0f, 1.0f));
-	pbrMaterial->SetMetallic(1.0f);
-	pbrMaterial->SetRoughness(0.1f);
-	pbrMaterial->SetAo(1.0f);
+	pbrMaterial->SetAlbedo(glm::vec3(1.0f, 0.0f, 0.0f));
+	pbrMaterial->SetMetallic(0.140f);
+	pbrMaterial->SetRoughness(0.2f);
+	pbrMaterial->SetAo(0.250f);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
@@ -148,6 +139,14 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
+	Skybox skybox("universe");
+
+	ReflectionProbe probeOne(1024, 1024);
+	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	skybox.SetId(probeOne.GetReflectionMap());
+	probeOne.Create();
+
+	activeScene->SetReflectionProbe(&probeOne);
 	activeScene->SetSceneCamera(g_Camera);
 	activeScene->SetSceneSkybox(&skybox);
 	activeScene->AddSceneLight(pointLight);
@@ -168,8 +167,6 @@ int main() {
 		window->WindowRendering();
 
 		ImGuiWindow::NewFrame();
-
-		activeScene->UpdateScene();
 
 		Renderer::DepthPrePath();
 		
