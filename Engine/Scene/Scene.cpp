@@ -32,7 +32,7 @@ void Scene::AddRootChild(SceneObject* s)
 }
 
 //Todo ?? redundant
-void Scene::AddSceneObject(ISceneObject* s)
+void Scene::AddSceneObject(SceneObject* s)
 {
 	m_SceneObjects.insert({ s->GetName(), s });
 }
@@ -78,12 +78,12 @@ ReflectionProbe* Scene::GetReflectionProbe()
 }
 
 
-std::unordered_map<std::string, ISceneObject*> Scene::GetSceneObjects()
+std::unordered_map<std::string, SceneObject*> Scene::GetSceneObjects()
 {
 	return m_SceneObjects;
 }
 
-ISceneObject* Scene::GetSceneObject(const std::string& name)
+SceneObject* Scene::GetSceneObject(const std::string& name)
 {
 	return m_SceneObjects.at(name);
 }
@@ -93,7 +93,7 @@ std::unordered_map<std::string, Light*> Scene::GetSceneLightSources()
 	return m_LightSources;
 }
 
-ISceneObject* Scene::GetRootSceneNode()
+SceneObject* Scene::GetRootSceneNode()
 {
 	return m_RootSO;
 }

@@ -3,6 +3,7 @@
 
 #include "../../Engine/OpenGL/Shader.h"
 #include "../../Engine/Scene/World.h"
+#include "../../Engine/Components/Mesh.h"
 
 Model::Model(const std::string& name)
 	:m_Name(name)
@@ -21,24 +22,24 @@ Model::~Model()
 		delete m.second;
 }
 
-void Model::AddMesh(IMesh* mesh)
+void Model::AddMesh(Mesh* mesh)
 {
 	m_Meshes.insert({mesh->GetName(), mesh});
 }
 
-IMesh* Model::GetMesh(const int& index)
+Mesh* Model::GetMesh(const int& index)
 {
 	auto it = m_Meshes.begin();
 	std::advance(it, index);
 	return it->second;
 }
 
-IMesh* Model::GetMesh(const std::string& name)
+Mesh* Model::GetMesh(const std::string& name)
 {
 	return m_Meshes.at(name);
 };
 
-std::unordered_map<std::string, IMesh*> Model::GetMeshes()
+std::unordered_map<std::string, Mesh*> Model::GetMeshes()
 {
 	return m_Meshes;
 }
@@ -83,7 +84,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	
 }
 
-IMesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
 	// data to fill
 	std::vector<Vertex> vertices;
@@ -152,7 +153,7 @@ IMesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TextureType::AmbientOcclusionMap);
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
-	IMesh* _mesh = new Mesh(mesh->mName.C_Str(), vertices, indices);
+	Mesh* _mesh = new Mesh(mesh->mName.C_Str(), vertices, indices);
 
 	_mesh->SetMaterial(m);
 	_mesh->GetMaterial()->SetShader(World::Get().GetShader("simpleMaterialShader"));

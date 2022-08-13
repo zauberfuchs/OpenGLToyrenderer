@@ -4,9 +4,9 @@
 
 #include "Window.h"
 #include "../../Engine/OpenGL/Texture.h"
-#include "../../Engine/Scene/Camera.h"
 #include "../../Engine/Scene/World.h"
 #include "../../Engine/Scene/Renderer.h"
+#include "../../Engine/Components/Model.h"
 
 void ImGuiWindow::Init()
 {

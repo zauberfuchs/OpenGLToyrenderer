@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../Engine/Interfaces/IMaterial.h"
 #include "../../Engine/Scene/ReflectionProbe.h"
 
 #include "../../Engine/Scene/World.h"
@@ -12,39 +11,43 @@ enum class MaterialType
 	TexturedPhysicallyBased
 };
 
+enum class ReflectionType
+{
+	None = 0, Ambient, Diffuse, Specular, Phong
+};
 
 
-class Material : public IMaterial
+class Material
 {
 public:
 	Material();
 	Material(const std::string& name);
 
-	~Material() override;
+	~Material();
 	
 
-	void SetTexture(ITexture* texture) override;
-	ITexture* GetTexture(const TextureType& channelMap) override;
+	void SetTexture(Texture* texture);
+	Texture* GetTexture(const TextureType& channelMap);
 	void SetPBRTexture(const std::string& path);
 
-	void SetReflectionProbe(ReflectionProbe* probe) override;
+	void SetReflectionProbe(ReflectionProbe* probe);
 	void UpdateReflectionProbe();
 
-	void SetupTextures() override;
-	void SetupUniforms() override;
-	void UnbindTextures() override;
+	void SetupTextures();
+	void SetupUniforms();
+	void UnbindTextures();
 
-	void SetShader(IShader* shader) override { m_Shader = shader; }
-	IShader* GetShader() override { return m_Shader; }
+	void SetShader(Shader* shader) { m_Shader = shader; }
+	Shader* GetShader() { return m_Shader; }
 
-	glm::vec3 GetColor() override { return m_Color; }
-	void SetColor(const glm::vec3& color) override { m_Color = color; }
+	glm::vec3 GetColor() { return m_Color; }
+	void SetColor(const glm::vec3& color) { m_Color = color; }
 
 	MaterialType GetType() { return m_Type; }
 	void SetType(const MaterialType& type);
 
-	void SetName(const std::string& name) override { m_Name = name; }
-	std::string GetName() override { return m_Name; }
+	void SetName(const std::string& name) { m_Name = name; }
+	std::string GetName() { return m_Name; }
 
 	void SetAlbedo(const glm::vec3& albedo) { m_Albedo = albedo; }
 	glm::vec3 GetAlbedo() { return m_Albedo; }
@@ -86,7 +89,7 @@ private:
 
 	std::string m_Name;
 	MaterialType m_Type;
-	IShader* m_Shader;
+	Shader* m_Shader;
 
 
 	// Phong Shading properties
@@ -110,11 +113,11 @@ private:
 
 
 	// Physically Based Textured Rendering propoerties
-	ITexture* m_TextureShadowDepth = nullptr;
+	Texture* m_TextureShadowDepth = nullptr;
 
 	ReflectionProbe* m_Probe = nullptr;
 
-	std::unordered_map<TextureType, ITexture*> m_Textures;
+	std::unordered_map<TextureType, Texture*> m_Textures;
 
 };
 

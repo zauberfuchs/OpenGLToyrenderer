@@ -11,10 +11,12 @@ set(CORE_SRC "../../Engine")
 
 file(GLOB_RECURSE UTIL_FILES
 	"${CORE_SRC}/Utils/*.h"
+	"${CORE_SRC}/Utils/*.cpp"
 	)
 
 file(GLOB_RECURSE INTERFACE_FILES
-	"${CORE_SRC}/Interfaces/*.h"
+	"${CORE_SRC}/Geometry/*.h"
+	"${CORE_SRC}/Geometry/*.cpp"
 	)
 
 file(GLOB_RECURSE OPENGL_FILES

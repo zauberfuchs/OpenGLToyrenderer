@@ -1,11 +1,12 @@
 #include "../../Engine/Utils/pch.h"
 #include "Renderer.h"
-
 #include "Skybox.h"
+
+#include "../../Engine/Components/Model.h"
 
 void Renderer::Init()
 {
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 

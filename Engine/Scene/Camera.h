@@ -1,8 +1,9 @@
 #pragma once
 
 #include <GL/glew.h> 
-#include "../../Engine/Interfaces/IShader.h"
 
+
+class Shader;
 
 enum class CameraMovement {
 	FORWARD,
@@ -65,7 +66,7 @@ public:
 	void UpdateCameraWindow(int& width, int& height);
 
 	// update camera view + projection matrix
-	void UpdateMatrix(IShader* shader);
+	void UpdateMatrix(Shader* shader);
 private:
 	// calculates the front vector from the Camera's (updated) Euler Angles
 	void UpdateCameraVectors();

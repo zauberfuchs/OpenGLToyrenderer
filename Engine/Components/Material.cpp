@@ -2,6 +2,7 @@
 #include "Material.h"
 
 #include "../../Engine/OpenGL/Shader.h"
+#include "../../Engine/OpenGL/Texture.h"
 
 Material::Material()
 	: m_Name("default"),
@@ -27,7 +28,7 @@ Material::~Material()
 {
 }
 
-void Material::SetTexture(ITexture* texture)
+void Material::SetTexture(Texture* texture)
 {
 	m_Textures.insert({ texture->GetTextureType(), texture });
 }
@@ -35,7 +36,7 @@ void Material::SetTexture(ITexture* texture)
 // mehr parameter?? type/ target / uniform
 void Material::SetPBRTexture(const std::string& path)
 {
-	ITexture* tex;
+	Texture* tex;
 
 	tex = new Texture(path + "/albedo.png", TextureType::AlbedoMap);
 	tex->SetUniformLocation("material.albedoMap");
@@ -64,7 +65,7 @@ void Material::SetPBRTexture(const std::string& path)
 
 }
 
-ITexture* Material::GetTexture(const TextureType& channelMap)
+Texture* Material::GetTexture(const TextureType& channelMap)
 {
 	return m_Textures.at(channelMap);
 }

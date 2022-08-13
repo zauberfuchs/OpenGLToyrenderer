@@ -1,43 +1,48 @@
 #pragma once
 
-#include "../../Engine/Interfaces/ISceneObject.h"
+#include "../../Engine/Components/Transform.h"
 
-class SceneObject : public ISceneObject
+class Model;
+class Animation;
+
+struct Light;
+
+class SceneObject 
 {
 public:
 	SceneObject(std::string name);
-	~SceneObject() override;
+	~SceneObject();
 
-	std::string GetName() override;
+	std::string GetName();
 
-	void AddModel(IModel* model) override;
+	void AddModel(Model* model);
 
-	void AddLight(Light* light) override;
-	Light* GetLight() override;
+	void AddLight(Light* light);
+	Light* GetLight();
 	
-	void AddChildren(ISceneObject* sceneObject) override;
-	std::unordered_set<ISceneObject*> GetChildren() override;
+	void AddChildren(SceneObject* sceneObject);
+	std::unordered_set<SceneObject*> GetChildren();
 
-	void SetParent(ISceneObject* sceneObject) override;
-	ISceneObject* GetParent() const override;
+	void SetParent(SceneObject* sceneObject);
+	SceneObject* GetParent() const;
 	
-	Transform* GetTransform() override;
+	Transform* GetTransform();
 
-	Animation* GetAnimation() override;
-	void SetAnimation(Animation* anim) override;
+	Animation* GetAnimation();
+	void SetAnimation(Animation* anim);
 
-	IModel& GetModel() override;
+	Model& GetModel();
 
 private:
 	std::string m_Name;
 
-	ISceneObject* m_Parent = nullptr;
-	std::unordered_set<ISceneObject*> m_Children;
+	SceneObject* m_Parent = nullptr;
+	std::unordered_set<SceneObject*> m_Children;
 
 	Transform m_Transform;
 
 	Animation* m_Animation = nullptr;
 
 	Light* m_Light = nullptr;
-	IModel* m_Model = nullptr;
+	Model* m_Model = nullptr;
 };

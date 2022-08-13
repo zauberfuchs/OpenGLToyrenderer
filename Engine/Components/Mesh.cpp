@@ -45,12 +45,12 @@ void Mesh::SetupMesh()
 	m_IBO->Unbind();
 }
 
-void Mesh::SetMaterial(IMaterial* material)
+void Mesh::SetMaterial(Material* material)
 {
 	m_Material = material;
 }
 
-IMaterial* Mesh::GetMaterial()
+Material* Mesh::GetMaterial()
 {
 	return m_Material;
 }

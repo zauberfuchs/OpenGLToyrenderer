@@ -61,7 +61,6 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 
     // pbr: setup cubemap to render to and attach to framebuffer
     // ---------------------------------------------------------
-   
     glGenTextures(1, &m_ReflectionMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
     for (unsigned int i = 0; i < 6; ++i)

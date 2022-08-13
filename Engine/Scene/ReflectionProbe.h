@@ -23,9 +23,9 @@ public:
 	inline unsigned int GetBrdfLUT() { return m_BrdfLUT; }
 	inline unsigned int GetReflectionMap() { return m_ReflectionMap; }
 
-	inline ITexture* GetIrradianceTexture() { return &m_IrradianceTexture; }
-	inline ITexture* GetPrefilterTexture() { return &m_PrefilterTexture; }
-	inline ITexture* GetBrdfLookUpTexture() { return &m_BrdfLookUpTexture; }
+	inline Texture* GetIrradianceTexture() { return &m_IrradianceTexture; }
+	inline Texture* GetPrefilterTexture() { return &m_PrefilterTexture; }
+	inline Texture* GetBrdfLookUpTexture() { return &m_BrdfLookUpTexture; }
 
 private:
 

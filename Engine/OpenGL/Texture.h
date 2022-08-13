@@ -2,45 +2,81 @@
 
 #include <GL/glew.h>
 #include <stb_image.h>
-#include "../../Engine/Interfaces/ITexture.h"
 
-class Texture : public ITexture
+enum class TextureType
+{
+	SpecularMap,
+	AmbientOcclusionMap,
+	NormalMap,
+	HeightMap,
+	EnvironmentMap,
+	IrradianceMap,
+	ReflectionMap,
+	MetallicMap,
+	RoughnessMap,
+	AlbedoMap,
+	EmissiveMap,
+	BrdfLookUpTexture,
+	DepthMap,
+	PrefilterMap
+};
+
+enum class TextureTarget
+{
+	Texture2D = GL_TEXTURE_2D,
+	TextureCubeMap = GL_TEXTURE_CUBE_MAP
+};
+
+enum class TextureWrap
+{
+	Repeat = GL_REPEAT,
+	ClampToEdge = GL_CLAMP_TO_EDGE
+};
+
+enum class TextureFilter
+{
+	Linear = GL_LINEAR,
+	MipMapLinear = GL_LINEAR_MIPMAP_LINEAR
+};
+
+
+class Texture
 {
 
 public:
 	Texture() = default;
 	Texture(const std::string& path, TextureType type);
-	~Texture() override;
+	~Texture();
 	
-	TextureType GetTextureType() override { return m_Type; }
-	void SetTextureType(const TextureType& type) override { m_Type = type; }
+	TextureType GetTextureType() { return m_Type; }
+	void SetTextureType(const TextureType& type) { m_Type = type; }
 
-	std::string GetName() override { return m_Name; }
-	void SetName(const std::string name) override { m_Name = name; }
+	std::string GetName() { return m_Name; }
+	void SetName(const std::string name) { m_Name = name; }
 
-	void Load() override;
+	void Load();
 	
-	int GetWidth() const override { return m_Width; }
-	int GetHeigth() const override { return m_Height; }
+	int GetWidth() const { return m_Width; }
+	int GetHeigth() const { return m_Height; }
 
-	int GetTextureID() override { return m_ID; }
-	void SetTextureID(const int& id) override { m_ID = id; }
+	int GetTextureID() const { return m_ID; }
+	void SetTextureID(const int& id) { m_ID = id; }
 
-	TextureTarget GetTextureTarget() override { return m_Target; }
-	void SetTextureTarget(TextureTarget tt) override { m_Target = tt; }
+	TextureTarget GetTextureTarget() const { return m_Target; }
+	void SetTextureTarget(TextureTarget tt) { m_Target = tt; }
 
-	std::string GetUniformLocation() override { return m_UniformLocation; }
-	void SetUniformLocation(const std::string& uniformLocation) override { m_UniformLocation = uniformLocation; }
-protected:
+	std::string GetUniformLocation() { return m_UniformLocation; }
+	void SetUniformLocation(const std::string& uniformLocation) { m_UniformLocation = uniformLocation; }
 
 	void Bind(const unsigned int& slot, TextureTarget tt) const;
 	void Unbind() const;
 
-public:
+	//Todo make  them private
 	std::string m_FilePath;
 	TextureType m_Type;
 	TextureTarget m_Target;
 	std::string m_UniformLocation;
+
 private:
 	GLuint m_ID;
 	unsigned char* m_LocalBuffer;

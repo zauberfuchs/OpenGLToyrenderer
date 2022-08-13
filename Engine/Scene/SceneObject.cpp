@@ -2,6 +2,7 @@
 #include "../../Engine/Scene/SceneObject.h"
 
 #include "World.h"
+#include "../../Engine/Components/Model.h"
 
 
 SceneObject::SceneObject(std::string name)
@@ -14,7 +15,7 @@ SceneObject::~SceneObject()
 	delete m_Model;
 }
 
-void SceneObject::AddModel(IModel* model)
+void SceneObject::AddModel(Model* model)
 {
 	m_Model = model;
 }
@@ -29,7 +30,7 @@ Light* SceneObject::GetLight()
 	return m_Light;
 }
 
-void SceneObject::AddChildren(ISceneObject* sceneObject)
+void SceneObject::AddChildren(SceneObject* sceneObject)
 {
 	World::Get().GetActiveScene()->AddSceneObject(sceneObject);
 	m_Children.insert(sceneObject);
@@ -37,17 +38,17 @@ void SceneObject::AddChildren(ISceneObject* sceneObject)
 	sceneObject->SetParent(this);
 }
 
-std::unordered_set<ISceneObject*> SceneObject::GetChildren()
+std::unordered_set<SceneObject*> SceneObject::GetChildren()
 {
 	return m_Children;
 }
 
-void SceneObject::SetParent(ISceneObject* sceneObject)
+void SceneObject::SetParent(SceneObject* sceneObject)
 {	
 	m_Parent = sceneObject;
 }
 
-ISceneObject* SceneObject::GetParent() const
+SceneObject* SceneObject::GetParent() const
 {
 	return m_Parent;
 }
@@ -58,7 +59,7 @@ std::string SceneObject::GetName()
 }
 
 
-IModel& SceneObject::GetModel()
+Model& SceneObject::GetModel()
 {
 	return *m_Model;
 }

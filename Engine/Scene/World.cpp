@@ -1,6 +1,8 @@
 #include "../../Engine/Utils/pch.h"
 #include "World.h"
 
+#include "../../Engine/Components/Material.h"
+
 World::World()
 {
 }
@@ -20,17 +22,17 @@ Shader* World::GetShader(const std::string& name)
 	return m_ShaderCache.at(name);
 }
 
-void World::AddMaterial(IMaterial* m)
+void World::AddMaterial(Material* m)
 {
 	m_MaterialCache.insert({ m->GetName(), m });
 }
 
-IMaterial* World::GetMaterial(const std::string& name)
+Material* World::GetMaterial(const std::string& name)
 {
 	return m_MaterialCache.at(name);
 }
 
-IMaterial* World::GetMaterial(const int& index)
+Material* World::GetMaterial(const int& index)
 {
 	auto it = m_MaterialCache.begin();
 	std::advance(it, index);
@@ -46,5 +48,3 @@ Scene* World::GetActiveScene()
 {
 	return m_ActiveScene;
 }
-
-

@@ -20,12 +20,12 @@ public:
 	void RemoveSceneLight(const std::string& name);
 	std::unordered_map<std::string, Light*> GetSceneLightSources();
 
-	ISceneObject* GetRootSceneNode();
+	SceneObject* GetRootSceneNode();
 	void AddRootChild(SceneObject* s);
 	void RemoveRootChild(const std::string& name);
-	ISceneObject* GetSceneObject(const std::string& name);
-	std::unordered_map<std::string, ISceneObject*> GetSceneObjects();
-	void AddSceneObject(ISceneObject*);
+	SceneObject* GetSceneObject(const std::string& name);
+	std::unordered_map<std::string, SceneObject*> GetSceneObjects();
+	void AddSceneObject(SceneObject*);
 
 	void SetSceneCamera(Camera* s);
 	Camera* GetSceneCamera();
@@ -44,9 +44,9 @@ private:
 	Camera* m_SceneCamera;
 	Skybox* m_Skybox = nullptr;
 
-	ISceneObject* m_RootSO;
+	SceneObject* m_RootSO;
 	
-	std::unordered_map<std::string, ISceneObject*> m_SceneObjects;
+	std::unordered_map<std::string, SceneObject*> m_SceneObjects;
 	std::unordered_map<std::string, Light*> m_LightSources;
 
 	ReflectionProbe* m_ReflectionProbe;

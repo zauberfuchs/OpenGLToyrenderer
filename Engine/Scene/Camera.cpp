@@ -1,6 +1,7 @@
 #include "../../Engine/Utils/pch.h"
 #include "Camera.h"
 
+#include "../../Engine/OpenGL/Shader.h"
 
 // constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
@@ -89,7 +90,7 @@ void Camera::UpdateCameraWindow(int& width, int& height)
 	this->height = height;
 }
 
-void Camera::UpdateMatrix(IShader* shader)
+void Camera::UpdateMatrix(Shader* shader)
 {
 	shader->Bind();
 	//Todo Redundant?

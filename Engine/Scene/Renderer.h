@@ -3,14 +3,16 @@
 
 #include "World.h"
 
+class VertexArray;
+
 struct RendererStorage
 {
 	Framebuffer* GeometryFramebuffer;
 	Renderbuffer* GeometryRenderbuffer;
 
 	Scene* ActiveScene;
-	IShader* ActiveShader;
-	IShader* PostFXShader;
+	Shader* ActiveShader;
+	Shader* PostFXShader;
 	Camera* ActiveSceneCamera;
 
 	Skybox* SceneSkybox;
@@ -20,7 +22,7 @@ struct RendererStorage
 	uint32_t MeshIndexCount;
 	uint16_t MeshRenderMode;
 
-	IMaterial* MeshMaterial;
+	Material* MeshMaterial;
 	Transform* MeshTransform;
 
 	Light* ActiveSceneLight;

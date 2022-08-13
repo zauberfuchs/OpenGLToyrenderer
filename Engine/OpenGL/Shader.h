@@ -1,34 +1,38 @@
 #pragma once
 //TODO dlete glew?? move to cpp
 #include <GL/glew.h>
-#include "../../Engine/Interfaces/IShader.h"
 
+enum class ShaderType
+{
+	PhongShader,
+	PbrShader,
+	PbrTextureShader
+};
 
-
-class Shader : public IShader
+class Shader
 {
 public:
 	Shader(const std::string& name);
 	Shader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath = "");
-	~Shader() override;
+	~Shader();
 
-	void Bind() const override;
-	void Unbind() const override;
+	void Bind() const;
+	void Unbind() const;
 
 	void AddShaderSource(const std::string& sourcePath);
 
 	// Set uniforms
-	void SetUniform1i(const std::string& name, int value) override;
-	void SetUniform1f(const std::string& name, float value) override;
-	void SetUniform3f(const std::string& name, float v0, float v1, float v2) override;
-	void SetUniform3f(const std::string& name, glm::vec3& value) override;
-	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3) override;
-	void SetUniformMat4f(const std::string& name, glm::mat4& matrix) override;
+	void SetUniform1i(const std::string& name, int value);
+	void SetUniform1f(const std::string& name, float value);
+	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
+	void SetUniform3f(const std::string& name, glm::vec3& value);
+	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniformMat4f(const std::string& name, glm::mat4& matrix);
 	
-	unsigned int GetShaderID() override;
+	unsigned int GetShaderID();
 	void AddUniform(std::string name, GLenum type);
 
-	std::string GetName() override;
+	std::string GetName();
 	void CreateShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryPath = "");
 private:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
