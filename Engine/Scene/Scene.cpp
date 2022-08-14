@@ -1,9 +1,7 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Scene.h"
 
-#include "Renderer.h"
 #include "Skybox.h"
-#include "World.h"
 
 Scene::Scene(const std::string& name) :
 	m_Name(name),

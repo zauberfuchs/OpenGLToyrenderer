@@ -1,7 +1,7 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "World.h"
 
-#include "../../Engine/Components/Material.h"
+#include "Engine/Components/Material.h"
 
 World::World()
 {
@@ -9,6 +9,16 @@ World::World()
 
 World::~World()
 {
+	for (auto [name, material] : m_MaterialCache)
+	{
+		delete material;
+		material = nullptr;
+	}
+	for (auto [name, shader] : m_ShaderCache)
+	{
+		delete shader;
+		shader = nullptr;
+	}
 }
 
 

@@ -1,8 +1,8 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Material.h"
 
-#include "../../Engine/OpenGL/Shader.h"
-#include "../../Engine/OpenGL/Texture.h"
+#include "Engine/OpenGL/Shader.h"
+#include "Engine/OpenGL/Texture.h"
 
 Material::Material()
 	: m_Name("default"),
@@ -26,6 +26,15 @@ Material::Material(const std::string& name)
 
 Material::~Material()
 {
+	for (auto [textureType, texture] : m_Textures)
+	{
+		if(textureType != TextureType::DepthMap)
+		{
+			//todo assetmanager
+//			delete texture;
+	//		texture = nullptr;
+		}
+	}
 }
 
 void Material::SetTexture(Texture* texture)
@@ -62,7 +71,6 @@ void Material::SetPBRTexture(const std::string& path)
 	tex->SetUniformLocation("material.aoMap");
 	tex->SetTextureTarget(TextureTarget::Texture2D);
 	m_Textures.insert({ tex->GetTextureType(), tex });
-
 }
 
 Texture* Material::GetTexture(const TextureType& channelMap)

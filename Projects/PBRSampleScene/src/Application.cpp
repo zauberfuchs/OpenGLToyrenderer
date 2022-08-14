@@ -1,12 +1,12 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 
-#include "../../Engine/Components/Model.h"
-#include "../../Engine/Scene/StudentCube.h"
-#include "../../Engine/Scene/Skybox.h"
-#include "../../Engine/Scene/Sphere.h"
-#include "../../Engine/Scene/Renderer.h"
-#include "../../Engine/Window/Window.h"
-#include "../../Engine/Window/ImGuiWindow.h"
+#include "Engine/Components/Model.h"
+#include "Engine/Geometry/StudentCube.h"
+#include "Engine/Geometry/Sphere.h"
+#include "Engine/Scene/Skybox.h"
+#include "Engine/Scene/Renderer.h"
+#include "Engine/Window/Window.h"
+#include "Engine/Window/ImGuiWindow.h"
 
 #define FPS 30
 
@@ -88,7 +88,6 @@ int main() {
 	}
 
 	SceneObject teapot("teapot");
-	activeScene->AddRootChild(&teapot);
 	teapot.AddModel(new Model("../Data/Models/test-models/teapot.obj"));
 	teapot.GetModel().GetMesh(0)->SetMaterial(pbrMaterial);
 
@@ -97,7 +96,6 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 
 	SceneObject ground("ground");
-	activeScene->AddRootChild(&ground);
 
 	ground.AddModel(new Model(std::string("ground")));
 	ground.GetModel().AddMesh(new StudentCube("ground"));
@@ -122,7 +120,7 @@ int main() {
 	pointLight->CreatePointDepthMap(1024, 1024);
 
 	SceneObject lightSphere("lightSphere");
-	activeScene->AddRootChild(&lightSphere);
+	
 
 	lightSphere.AddModel(new Model(std::string("lightSphere")));
 	lightSphere.GetModel().AddMesh(new Sphere("Sphere", 32));
@@ -145,6 +143,10 @@ int main() {
 	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
 	skybox.SetId(probeOne.GetReflectionMap());
 	probeOne.Create();
+
+	activeScene->AddRootChild(&ground);
+	activeScene->AddRootChild(&lightSphere);
+	activeScene->AddRootChild(&teapot);
 
 	activeScene->SetReflectionProbe(&probeOne);
 	activeScene->SetSceneCamera(g_Camera);

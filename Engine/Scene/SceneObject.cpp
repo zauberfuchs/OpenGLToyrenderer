@@ -1,8 +1,8 @@
-#include "../../Engine/Utils/pch.h"
-#include "../../Engine/Scene/SceneObject.h"
+#include "Engine/Utils/pch.h"
+#include "Engine/Scene/SceneObject.h"
 
 #include "World.h"
-#include "../../Engine/Components/Model.h"
+#include "Engine/Components/Model.h"
 
 
 SceneObject::SceneObject(std::string name)

@@ -1,7 +1,9 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Light.h"
 
-#include "../../Engine/Scene/World.h"
+#include <GL/glew.h>
+
+#include "Engine/Scene/World.h"
 
 Light::Light(const std::string& name) :
 	m_Name(name),
@@ -17,9 +19,22 @@ Light::Light(const std::string& name) :
 {
 }
 
+Light::~Light()
+{
+	if(m_Depthmap != nullptr)
+	{
+		delete m_Depthmap;
+		m_Depthmap = nullptr;
+		delete m_FBO;
+		m_FBO = nullptr;
+	}
+	
+}
+
 //Todo eigene klassen nutzen wie Texture??
 void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned int& height)
 {
+	//todo memory leak?
 	m_FBO = new Framebuffer();
 	//Todo create depthmap texture in texture class
 	m_ShadowWidth = width;

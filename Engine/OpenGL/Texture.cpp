@@ -1,5 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Texture.h"
 
 
@@ -27,17 +27,17 @@ void Texture::Load()
 	if (m_Components == 1)
 	{
 		format = GL_RED;
-		internalFormat = GL_R16;
+		internalFormat = GL_R8;
 	}
 	else if (m_Components == 3)
 	{
 		format = GL_RGB;
-		internalFormat = GL_RGB16;
+		internalFormat = GL_RGB8;
 	}
 	else if (m_Components == 4)
 	{
 		format = GL_RGBA;
-		internalFormat = GL_RGBA16;
+		internalFormat = GL_RGBA8;
 	}
 	else
 	{

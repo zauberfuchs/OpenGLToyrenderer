@@ -7,8 +7,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "../../Engine/Scene/Camera.h"
-#include "../../Engine/OpenGL/Texture.h"
+#include "Engine/Scene/Camera.h"
 
 class Window
 {

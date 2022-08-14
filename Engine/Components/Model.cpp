@@ -1,9 +1,8 @@
 #include "../../Engine/Utils/pch.h"
 #include "Model.h"
 
-#include "../../Engine/OpenGL/Shader.h"
-#include "../../Engine/Scene/World.h"
-#include "../../Engine/Components/Mesh.h"
+#include "Engine/Scene/World.h"
+#include "Engine/Components/Mesh.h"
 
 Model::Model(const std::string& name)
 	:m_Name(name)

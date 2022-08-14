@@ -1,7 +1,7 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Shader.h"
 
-#include "../../Engine/Scene/World.h"
+#include "Engine/Scene/World.h"
 
 
 Shader::Shader(const std::string& name)

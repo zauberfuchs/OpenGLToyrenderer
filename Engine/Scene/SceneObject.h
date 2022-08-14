@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Engine/Components/Transform.h"
+#include "Engine/Components/Transform.h"
 
 class Model;
 class Animation;

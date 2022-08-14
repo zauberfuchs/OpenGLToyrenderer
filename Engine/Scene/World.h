@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Scene.h"
-#include "../../Engine/OpenGL/Shader.h"
+#include "Engine/OpenGL/Shader.h"
 
 class Material;
 class Window;

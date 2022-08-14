@@ -1,12 +1,13 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "ImGuiWindow.h"
 
 
 #include "Window.h"
-#include "../../Engine/OpenGL/Texture.h"
-#include "../../Engine/Scene/World.h"
-#include "../../Engine/Scene/Renderer.h"
-#include "../../Engine/Components/Model.h"
+#include "Engine/OpenGL/Texture.h"
+#include "Engine/Scene/World.h"
+#include "Engine/Scene/Renderer.h"
+#include "Engine/Components/Animation.h"
+#include "Engine/Components/Model.h"
 
 void ImGuiWindow::Init()
 {

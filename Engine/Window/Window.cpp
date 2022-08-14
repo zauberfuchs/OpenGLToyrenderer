@@ -1,8 +1,7 @@
-﻿#include "../../Engine/Utils/pch.h"
+﻿#include "Engine/Utils/pch.h"
 #include "Window.h"
 
-#include "../../Engine/Scene/World.h"
-#include "../../Engine/Scene/Renderer.h"
+#include "Engine/Scene/World.h"
 
 
 Window::Window(const int& width, const int& height) : m_Width(width), m_Height(height), m_DeltaTime(0.0), m_LastFrame(0.0), m_LastTime(glfwGetTime())

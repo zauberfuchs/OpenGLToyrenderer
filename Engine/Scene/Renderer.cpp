@@ -1,19 +1,19 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Renderer.h"
 #include "Skybox.h"
 
-#include "../../Engine/Components/Model.h"
+#include "Engine/Components/Model.h"
 
 void Renderer::Init()
 {
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glFrontFace(GL_CCW);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	
 	s_Data.MSAA = new int(1);
 

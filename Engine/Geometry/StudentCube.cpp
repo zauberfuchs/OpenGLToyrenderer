@@ -1,4 +1,4 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "StudentCube.h"
 
 

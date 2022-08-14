@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../Engine/Scene/ReflectionProbe.h"
+#include "Engine/Scene/ReflectionProbe.h"
 
-#include "../../Engine/Scene/World.h"
+#include "Engine/Scene/World.h"
 
 enum class MaterialType
 {

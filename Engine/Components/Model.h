@@ -5,8 +5,8 @@
 #include <assimp/postprocess.h>
 #include <string>
 #include "Mesh.h"
-#include "../../Engine/OpenGL/Texture.h"
-#include "../../Engine/Components/Material.h"
+#include "Engine/OpenGL/Texture.h"
+#include "Engine/Components/Material.h"
 
 class Model
 {
@@ -17,7 +17,7 @@ public:
 	Model(const std::string& name);
 	Model(const char* path);
 
-	virtual ~Model();
+	~Model();
 	
 	void AddMesh(Mesh* mesh);
 	Mesh* GetMesh(const int& index);

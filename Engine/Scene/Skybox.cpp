@@ -1,4 +1,4 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Skybox.h"
 
 #include "World.h"

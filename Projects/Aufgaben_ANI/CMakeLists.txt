@@ -4,17 +4,19 @@ set(CMAKE_CXX_STANDARD 17)
 
 project(Aufgaben_ANI)
 
-include_directories("../common")
+include_directories("../../")
 
 set(DATA_SRC "../../Data")
 set(CORE_SRC "../../Engine")
 
 file(GLOB_RECURSE UTIL_FILES
 	"${CORE_SRC}/Utils/*.h"
+	"${CORE_SRC}/Utils/*.cpp"
 	)
 
-file(GLOB_RECURSE INTERFACE_FILES
-	"${CORE_SRC}/Interfaces/*.h"
+file(GLOB_RECURSE GEOMETRY_FILES
+	"${CORE_SRC}/Geometry/*.h"
+	"${CORE_SRC}/Geometry/*.cpp"
 	)
 
 file(GLOB_RECURSE OPENGL_FILES
@@ -35,13 +37,14 @@ file(GLOB_RECURSE WINDOW_FILES
 	"${CORE_SRC}/Window/*.cpp"
 	)
 
-set(APPLICATION
- 	"src/main.cpp"	
+set(APPLICATION_FILES
+ 	"src/Application.cpp"	
  	)
 
 # Find *all* shaders.
 file(GLOB_RECURSE SHADERS
 	"${DATA_SRC}/*.frag"
+	"${DATA_SRC}/*.geom"
 	"${DATA_SRC}/*.vert"
 	)
 	
@@ -49,13 +52,14 @@ file(MAKE_DIRECTORY "../../bin/")
 	# execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "../../bin/")
 	
 # Separate filters.
+source_group("Application" FILES ${APPLICATION_FILES})
 source_group("Shaders" FILES ${SHADERS})
-source_group("Interfaces" FILES ${INTERFACE_FILES})
+source_group("Geometry" FILES ${GEOMETRY_FILES})
 source_group("OpenGL" FILES ${OPENGL_FILES})
 source_group("Scene" FILES ${SCENE_FILES})
 source_group("Components" FILES ${COMPONENT_FILES})
 source_group("Window" FILES ${WINDOW_FILES})
-source_group("Util" FILES ${UTIL_FILES})
+source_group("Utils" FILES ${UTIL_FILES})
 
 set(OPEN_GL_FILES 	
 	glu32
@@ -73,8 +77,8 @@ add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
 add_executable(
 	${PROJECT_NAME}
 	${SHADERS}
-	${INTERFACE_FILES}
-	${APPLICATION}
+	${GEOMETRY_FILES}
+	${APPLICATION_FILES}
 	${WINDOW_FILES}
 	${SCENE_FILES}
 	${OPENGL_FILES}

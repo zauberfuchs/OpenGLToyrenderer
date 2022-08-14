@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Engine/OpenGL/Shader.h"
+#include "Engine/OpenGL/Shader.h"
 
 class Skybox
 {

@@ -1,4 +1,4 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Plane.h"
 
 Plane::Plane(const std::string& name)
@@ -19,4 +19,10 @@ Plane::Plane(const std::string& name)
 	};
 
 	SetupMesh();
+}
+
+Plane::~Plane()
+{
+	m_Vertices.clear();
+	m_Indices.clear();
 }

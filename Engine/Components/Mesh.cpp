@@ -1,9 +1,7 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Mesh.h"
 
-
-#include "../../Engine/Scene/World.h"
-#include "../../Engine/Components/Light.h"
+#include "Engine/OpenGL/VertexBufferLayout.h"
 
 Mesh::Mesh(const std::string& name)
 	: m_Name(name)

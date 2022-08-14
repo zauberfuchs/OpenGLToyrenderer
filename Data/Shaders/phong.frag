@@ -19,6 +19,7 @@ layout(location = 0) out vec4 FragColor;
 // Material
 ///////////////////////////////////////////////////////////////////////////////
 struct Material { // Material koeffizenten
+    sampler2D albedoMap;
     vec3 color;
     vec3 ambient;
     vec3 diffuse;
@@ -59,7 +60,7 @@ void main()
     // texture
     if(hasTexture == 1)
     {
-        tex = texture(u_Texture, texCoord);
+        tex = texture(material.albedoMap, texCoord);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

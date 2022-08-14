@@ -1,7 +1,7 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Animation.h"
 
-#include "SceneObject.h"
+#include "Engine/Scene/SceneObject.h"
 
 Animation::Animation(const std::string& name, SceneObject* sceneObj, const uint16_t& fps)
 	: m_Name(name), m_CurrentFrame(0), m_Fps(fps), m_SceneObject(sceneObj), m_CurrentKeyFramePosition(0), m_State(AnimState::Finished)

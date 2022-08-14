@@ -1,19 +1,16 @@
 #pragma once
 #include <GL/glew.h>
 
-#include "../../Engine/OpenGL/VertexArray.h"
-#include "../../Engine/OpenGL/VertexBufferLayout.h"
-#include "../../Engine/OpenGL/IndexBuffer.h"
-#include "../../Engine/OpenGL/Texture.h"
-#include "../../Engine/Components/Transform.h"
-#include "../../Engine/Components/Material.h"
+#include "Engine/OpenGL/VertexArray.h"
+#include "Engine/OpenGL/IndexBuffer.h"
+#include "Engine/Components/Material.h"
 
 class Mesh
 {
 public:
 	Mesh(const std::string& name);
 	Mesh(const std::string& name, const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices);
-	~Mesh();
+	virtual ~Mesh();
 
 	void SetupMesh();
 

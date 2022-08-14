@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Animation.h"
+
 #include "Camera.h"
 #include "ReflectionProbe.h"
 #include "SceneObject.h"
-#include "../../Engine/Components/Light.h"
+#include "Engine/Components/Light.h"
 
 class Skybox;
 

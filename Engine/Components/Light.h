@@ -1,8 +1,7 @@
 #pragma once
 
-#include <GL/glew.h>
-#include "../../Engine/OpenGL/Framebuffer.h"
-#include "../../Engine/OpenGL/Texture.h"
+#include "Engine/OpenGL/Framebuffer.h"
+#include "Engine/OpenGL/Texture.h"
 
 enum class LightSourceType
 {
@@ -15,7 +14,7 @@ class Light
 public:
 
 	Light(const std::string& name);
-	virtual ~Light() = default;
+	~Light();
 
 	void CreateDirectionalDepthMap(const unsigned int& width, const unsigned int& height);
 	void CreatePointDepthMap(const unsigned int& width, const unsigned int& height);

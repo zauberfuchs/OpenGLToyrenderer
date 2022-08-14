@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include "../../Engine/OpenGL/Shader.h"
-#include "../../Engine/OpenGL/Renderbuffer.h"
-#include "../../Engine/OpenGL/Framebuffer.h"
-#include "../../Engine/OpenGL/Texture.h"
+#include "Engine/OpenGL/Shader.h"
+#include "Engine/OpenGL/Renderbuffer.h"
+#include "Engine/OpenGL/Framebuffer.h"
+#include "Engine/OpenGL/Texture.h"
 
 class IMesh;
 

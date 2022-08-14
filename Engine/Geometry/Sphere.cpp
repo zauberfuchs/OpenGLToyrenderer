@@ -1,4 +1,4 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "Sphere.h"
 
 Sphere::Sphere(const std::string& name, const uint16_t& segments)

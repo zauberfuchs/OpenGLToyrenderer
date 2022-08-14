@@ -1,4 +1,4 @@
-#include "../../Engine/Utils/pch.h"
+#include "Engine/Utils/pch.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
 
@@ -10,6 +10,7 @@ VertexArray::VertexArray()
 
 VertexArray::~VertexArray()
 {
+	glDeleteVertexArrays(1, &m_ID);
 }
 
 void VertexArray::AddBuffer(VertexBuffer& vb, const VertexBufferLayout& layout)
