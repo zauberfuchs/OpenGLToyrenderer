@@ -31,6 +31,7 @@ public:
 	
 	void SetInterpolationFunc(const std::function<float(int, int)>& func);
 
+	void SetStartKeyframe(Keyframe keyframe) { m_StartKeyframe = keyframe; }
 	void InsertKeyframe(Keyframe* keyframe);
 	void DeleteKeyframe(const int& index);
 	Keyframe* GetKeyframe(const int& index);

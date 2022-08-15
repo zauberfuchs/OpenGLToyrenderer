@@ -61,9 +61,7 @@ void ImGuiWindow::RenderScenePanel()
 			{
 				current_item = name.c_str();
 				s_ImGuiData.CurrentSceneObject = sceneObjects.at(current_item);
-				s_ImGuiData.Translation = s_ImGuiData.CurrentSceneObject->GetTransform()->GetLocalPosition();
-				s_ImGuiData.Rotation = s_ImGuiData.CurrentSceneObject->GetTransform()->GetLocalEulerAngles();
-				s_ImGuiData.Scale = s_ImGuiData.CurrentSceneObject->GetTransform()->GetLocalScale();
+				s_ImGuiData.Transform = s_ImGuiData.CurrentSceneObject->GetTransform();
 				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes().begin()->second->GetMaterial()->GetColor();
 
 			}
@@ -95,17 +93,15 @@ void ImGuiWindow::RenderScenePanel()
 
 void ImGuiWindow::RenderTransformComponent()
 {
+
+
 	ImGui::Dummy(ImVec2(20, 20));
 	ImGui::Text("Transform", 20);
 	AddUnderLine(ImColor(255, 255, 255, 255));
 	ImGui::Dummy(ImVec2(1, 1));
-	DrawVec3Control("Translation", s_ImGuiData.Translation);
-	DrawVec3Control("Rotation", s_ImGuiData.Rotation);
-	DrawVec3Control("Scale", s_ImGuiData.Scale);
-
-	s_ImGuiData.CurrentSceneObject->GetTransform()->Translate(s_ImGuiData.Translation, Space::Local);
-	s_ImGuiData.CurrentSceneObject->GetTransform()->Scale(s_ImGuiData.Scale, Space::Local);
-	s_ImGuiData.CurrentSceneObject->GetTransform()->SetRotation(s_ImGuiData.Rotation, Space::Local);
+	DrawVec3Control("Translation", s_ImGuiData.Transform->GetLocalPosition());
+	DrawVec3Control("Rotation", s_ImGuiData.Transform->GetLocalEulerAngles());
+	DrawVec3Control("Scale", s_ImGuiData.Transform->GetLocalScale());
 }
 
 void ImGuiWindow::RenderMeshComponent()
@@ -113,7 +109,6 @@ void ImGuiWindow::RenderMeshComponent()
 	if (s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes().size() != 0)
 	{
 		auto meshes = s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes();
-		//auto material = (Material*)meshes.begin()->second->GetMaterial();
 
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Material Component", 20);
@@ -253,7 +248,7 @@ void ImGuiWindow::RenderLightComponent()
 		AddUnderLine(ImColor(255, 255, 255, 255));
 		ImGui::ColorEdit3("Light Color", &s_ImGuiData.LightColor.x);
 		l->SetColor(s_ImGuiData.LightColor);
-		s_ImGuiData.CurrentSceneObject->GetLight()->SetPosition(s_ImGuiData.Translation);
+		s_ImGuiData.CurrentSceneObject->GetLight()->SetPosition(s_ImGuiData.Transform->GetLocalPosition());
 	}
 }
 
@@ -281,7 +276,7 @@ void ImGuiWindow::RenderAnimationComponent()
 			a->ResetAnimation();
 		}
 		ImGui::Dummy(ImVec2(1, 1));
-		if (ImGui::Button("Print TimeLine", { 125, 25 }))
+		if (ImGui::Button("Print TimeLine", { 135, 35 }))
 		{
 			a->PrintTimeline();
 		}

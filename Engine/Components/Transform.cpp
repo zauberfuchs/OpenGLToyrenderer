@@ -134,17 +134,17 @@ void Transform::SetParent(Transform* p)
 }
 
 
-glm::vec3 Transform::GetLocalEulerAngles()
+glm::vec3& Transform::GetLocalEulerAngles()
 {
 	return m_LocalEulerAngles;
 }
 
-glm::vec3 Transform::GetLocalPosition()
+glm::vec3& Transform::GetLocalPosition()
 {
 	return m_LocalPosition;
 }
 
-glm::vec3 Transform::GetLocalScale()
+glm::vec3& Transform::GetLocalScale()
 {
 	return m_LocalScale;
 }

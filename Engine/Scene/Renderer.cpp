@@ -134,7 +134,7 @@ void Renderer::GeometryPath()
 
 
 			s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
-			s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());
+			//s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());
 			s_Data.MeshMaterial->SetupUniforms();
 
 			DrawMesh();

@@ -9,12 +9,13 @@ Animation::Animation(const std::string& name, SceneObject* sceneObj, const uint1
 	m_InterpolationFunc = [](const float& i, const float& frames) {
 		return i / (frames - 1);
 	};
+
 	sceneObj->SetAnimation(this);
 	m_StartKeyframe.Frame = 0;
 	m_StartKeyframe.Position = m_SceneObject->GetTransform()->GetLocalPosition();
 	m_StartKeyframe.Scale = m_SceneObject->GetTransform()->GetLocalScale();
 	m_StartKeyframe.Rotation = m_SceneObject->GetTransform()->GetLocalEulerAngles();
-	m_LastKeyframe = &m_StartKeyframe;
+	m_Timeline.push_back(&m_StartKeyframe);
 }
 
 Animation::~Animation()

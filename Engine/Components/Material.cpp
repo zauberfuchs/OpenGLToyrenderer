@@ -39,6 +39,7 @@ Material::~Material()
 
 void Material::SetTexture(Texture* texture)
 {
+	m_HasTexture = 1;
 	m_Textures.insert({ texture->GetTextureType(), texture });
 }
 
@@ -124,7 +125,10 @@ void Material::SetType(const MaterialType& type)
 
 void Material::SetupTextures()
 {
-	UpdateReflectionProbe();
+	if(m_Probe != nullptr)
+	{
+		UpdateReflectionProbe();
+	}
 
 	if (m_Shader != nullptr) {
 		m_Shader->Bind();
@@ -158,6 +162,11 @@ void Material::SetupUniforms()
 		m_Shader->SetUniform3f("material.specular", m_Specular);
 		m_Shader->SetUniform1f("material.shininess", m_Shininess);
 		m_Shader->SetUniform3f("material.color", m_Color);
+
+		if(m_HasTexture)
+		{
+			SetupTextures();
+		}
 		break;
 	case MaterialType::PhysicallyBased :
 		m_Shader->SetUniform3f("material.albedo", m_Albedo);

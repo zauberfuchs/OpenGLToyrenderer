@@ -5,7 +5,7 @@
 class Model;
 class Animation;
 
-struct Light;
+class Light;
 
 class SceneObject 
 {
@@ -39,7 +39,7 @@ private:
 	SceneObject* m_Parent = nullptr;
 	std::unordered_set<SceneObject*> m_Children;
 
-	Transform m_Transform;
+	Transform* m_Transform = nullptr;
 
 	Animation* m_Animation = nullptr;
 

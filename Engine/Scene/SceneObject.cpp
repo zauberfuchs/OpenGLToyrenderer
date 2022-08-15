@@ -6,7 +6,7 @@
 
 
 SceneObject::SceneObject(std::string name)
-	: m_Name(name)
+	: m_Name(name), m_Transform(new Transform())
 {
 }
 
@@ -77,5 +77,5 @@ void SceneObject::SetAnimation(Animation* anim)
 
 Transform* SceneObject::GetTransform()
 {
-	return &m_Transform;
+	return m_Transform;
 }

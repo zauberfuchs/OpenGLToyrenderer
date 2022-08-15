@@ -39,9 +39,10 @@ public:
 	glm::mat4 GetTransformMatrix();
 	glm::mat4 GetConstrainedTransform(const bool* constraints);
 
-	glm::vec3 GetLocalEulerAngles();
-	glm::vec3 GetLocalPosition();
-	glm::vec3 GetLocalScale();
+	//Todo componnent system überarbeiten(ich gebe hier referenzen zurück)
+	glm::vec3& GetLocalEulerAngles();
+	glm::vec3& GetLocalPosition();
+	glm::vec3& GetLocalScale();
 
 	glm::vec3 GetWorldEulerAngles();
 	glm::vec3 GetWorldPosition();

@@ -7,6 +7,7 @@ class Mesh;
 class Material;
 class SceneObject;
 class Texture;
+class Transform;
 
 struct ImGuiWindowStorage
 {
@@ -16,9 +17,7 @@ struct ImGuiWindowStorage
 	glm::vec3 LightColor;
 
 	// Transform proberties
-	glm::vec3 Translation;
-	glm::vec3 Rotation;
-	glm::vec3 Scale;
+	Transform* Transform;
 
 	// Phong properties
 	glm::vec3 Ambient;
