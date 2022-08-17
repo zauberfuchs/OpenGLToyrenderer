@@ -5,7 +5,7 @@
 
 
 ReflectionProbe::ReflectionProbe(const int& width, const int& height)
-	: m_RBO(width, height), m_IrradianceMap(0), m_ReflectionMap(0), m_CaptureProjection(glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f)),
+	: m_IrradianceMap(0), m_ReflectionMap(0), m_CaptureProjection(glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f)),
 		m_CaptureViews{ glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
@@ -31,36 +31,19 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     m_FBO.Bind();
     m_RBO.Bind();
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
-
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_RBO.GetId());
+    m_RBO.CreateRenderBufferStorage(1024, 1024, FramebufferTextureFormat::Depth24);
+    m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
 
     // pbr: load the HDR environment map
     // ---------------------------------
-    stbi_set_flip_vertically_on_load(true);
-    int width, height, nrComponents;
-    float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);
-    unsigned int hdrTexture;
-    if (data)
-    {
-        glGenTextures(1, &hdrTexture);
-        glBindTexture(GL_TEXTURE_2D, hdrTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data); // note how we specify the texture's data value to be float
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Failed to load HDR image." << std::endl;
-    }
+    //todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
+    Texture tex;
+    tex.Create(path, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
 
     // pbr: setup cubemap to render to and attach to framebuffer
     // ---------------------------------------------------------
+
     glGenTextures(1, &m_ReflectionMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
     for (unsigned int i = 0; i < 6; ++i)
@@ -80,7 +63,9 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     m_EquirectangularToCubemapShader->SetUniform1i("equirectangularMap", 0);
     m_EquirectangularToCubemapShader->SetUniformMat4f("projection", m_CaptureProjection);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, hdrTexture);
+
+    tex.Bind(0);
+  //  glBindTexture(GL_TEXTURE_2D, tex.GetTextureID());
 
     //todo possible bug
     glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
@@ -216,7 +201,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     m_RBO.Bind();
     m_FBO.SetFramebufferTextureSize(512, 512);
     m_RBO.CreateRenderBufferStorage(512, 512, FramebufferTextureFormat::Depth24);
-    m_FBO.CreateColorTexture(false, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
+    m_FBO.CreateColorTexture(TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
 
     glViewport(0, 0, 512, 512);
 

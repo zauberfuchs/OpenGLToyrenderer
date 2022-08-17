@@ -32,36 +32,53 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::CreateColorTexture(bool isMultisampled, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf)
+void Framebuffer::CreateColorTexture(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf)
 {
 	//Todo function zum übersetzten von GLenum => meinen internen Enums
 	Bind();
-	if (isMultisampled) {
+	if (static_cast<GLint>(tt) == GL_TEXTURE_2D_MULTISAMPLE) {
 		glDeleteTextures(1, &m_ColorTextureID);
-		glGenTextures(1, &m_ColorTextureID);
-		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID);
-
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_SampleSize, GL_RGB, m_Width, m_Height, GL_TRUE);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID, 0);
-		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-	}
-	else 
-	{
-		//glDeleteTextures(1, &m_ID);
 		glGenTextures(1, &m_ColorTextureID);
 		glBindTexture(static_cast<GLint>(tt), m_ColorTextureID);
 
-		glTexImage2D(static_cast<GLint>(tt), 0, GL_RG16F, m_Width, m_Height, 0, GL_RG, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_WRAP_S, static_cast<GLint>(tw));
-		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_WRAP_R, static_cast<GLint>(tw));
-		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_WRAP_T, static_cast<GLint>(tw));
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_SampleSize, GL_RGB, m_Width, m_Height, GL_TRUE);
+		
 		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
 		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
 
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID, 0);
+		glBindTexture(static_cast<GLint>(tt), 0);
+
+	}
+	else if (static_cast<GLint>(tt) == GL_TEXTURE_CUBE_MAP) 
+	{
+
+		glGenTextures(1, &m_ColorTextureID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ColorTextureID);
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glCreateTextures(static_cast<GLint>(tt), 1, &m_ColorTextureID);
+
+		glTextureStorage2D(m_ColorTextureID, 1, GL_RG16F, m_Width, m_Height);
+
+		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_WRAP_S, static_cast<GLint>(tw));
+		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_WRAP_R, static_cast<GLint>(tw));
+		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_WRAP_T, static_cast<GLint>(tw));
+		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
+		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tt), m_ColorTextureID, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 

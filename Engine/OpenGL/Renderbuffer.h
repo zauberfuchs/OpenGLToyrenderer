@@ -8,7 +8,6 @@ class Renderbuffer
 {
 public:
 	Renderbuffer();
-	Renderbuffer(int width, int height);
 	~Renderbuffer();
 
 	void CreateRenderBufferStorage(int width, int height, FramebufferTextureFormat format);

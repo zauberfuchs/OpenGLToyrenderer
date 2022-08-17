@@ -24,6 +24,7 @@ enum class TextureType
 enum class TextureTarget
 {
 	Texture2D = GL_TEXTURE_2D,
+	Texture2DMultiSample = GL_TEXTURE_2D_MULTISAMPLE,
 	TextureCubeMap = GL_TEXTURE_CUBE_MAP
 };
 
@@ -56,6 +57,7 @@ public:
 	void SetName(const std::string name) { m_Name = name; }
 
 	void Load();
+	void Create(const std::string& path, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped = true);
 	
 	int GetWidth() const { return m_Width; }
 	int GetHeigth() const { return m_Height; }
@@ -69,7 +71,7 @@ public:
 	std::string GetUniformLocation() { return m_UniformLocation; }
 	void SetUniformLocation(const std::string& uniformLocation) { m_UniformLocation = uniformLocation; }
 
-	void Bind(const unsigned int& slot, TextureTarget tt) const;
+	void Bind(const unsigned int& slot) const;
 	void Unbind() const;
 
 	//Todo make  them private
@@ -80,7 +82,6 @@ public:
 
 private:
 	GLuint m_ID;
-	unsigned char* m_LocalBuffer;
 	int m_Width, m_Height, m_Components;
 	std::string m_Name;
 

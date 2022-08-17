@@ -20,8 +20,7 @@ void Renderer::Init()
 	s_Data.GeometryFramebuffer = new Framebuffer();
 	s_Data.GeometryRenderbuffer = new Renderbuffer();
 
-	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
-	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
+	
 
 
 	s_Data.ActiveScene = World::Get().GetActiveScene();
@@ -52,8 +51,10 @@ void Renderer::DepthPrePath()
 	//Todo Update Rendererdata Function?
 	UpdateViewport();
 
+	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
+	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
 	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
-	s_Data.GeometryFramebuffer->CreateColorTexture(true, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Nearest);
+	s_Data.GeometryFramebuffer->CreateColorTexture(TextureTarget::Texture2DMultiSample, TextureWrap::ClampToEdge, TextureFilter::Nearest);
 	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
 	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
