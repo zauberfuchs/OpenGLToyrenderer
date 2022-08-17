@@ -93,15 +93,8 @@ void Camera::UpdateCameraWindow(int& width, int& height)
 void Camera::UpdateMatrix(Shader* shader)
 {
 	shader->Bind();
-	//Todo Redundant?
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::mat4(1.0f);
-
-	view = GetViewMatrix();
-	projection = GetProjectionMatrix();
-
-	shader->SetUniformMat4f("view", view);
-	shader->SetUniformMat4f("projection", projection);
+	shader->SetUniformMat4f("view", GetViewMatrix());
+	shader->SetUniformMat4f("projection", GetProjectionMatrix());
 }
 
 // calculates the front vector from the Camera's (updated) Euler Angles

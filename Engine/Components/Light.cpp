@@ -61,9 +61,6 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 	m_Depthmap->SetTextureTarget(TextureTarget::TextureCubeMap);
 	m_Depthmap->SetUniformLocation("depthMap");
-
-	//Todo wrong place??
-	//World::Get().GetMaterial("pbrTextureShader")->SetTexture(m_Depthmap);
 }
 
 void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& height)

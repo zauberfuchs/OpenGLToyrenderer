@@ -102,8 +102,6 @@ void Material::UpdateReflectionProbe()
 	m_Textures.insert({ m_Probe->GetIrradianceTexture()->GetTextureType() ,m_Probe->GetIrradianceTexture() });
 }
 
-
-//Todo ergibt der name sinn?
 void Material::SetType(const MaterialType& type)
 {
 	switch(type)

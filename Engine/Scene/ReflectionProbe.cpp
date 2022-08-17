@@ -84,7 +84,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 
     //todo possible bug
     glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO.GetId());
+    m_FBO.Bind();
     for (unsigned int i = 0; i < 6; ++i)
     {
         m_EquirectangularToCubemapShader->SetUniformMat4f("view", m_CaptureViews[i]);
@@ -93,7 +93,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 
         RenderCube();
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_FBO.Unbind();
     m_EquirectangularToCubemapShader->Unbind();
 }
 
@@ -121,9 +121,9 @@ void ReflectionProbe::CreateIrradianceMap()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO.GetId());
-    glBindRenderbuffer(GL_RENDERBUFFER, m_RBO.GetId());
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
+    m_FBO.Bind();
+    m_RBO.Bind();
+    m_RBO.CreateRenderBufferStorage(32, 32, FramebufferTextureFormat::Depth24);
 
     // pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
     // -----------------------------------------------------------------------------
@@ -134,7 +134,6 @@ void ReflectionProbe::CreateIrradianceMap()
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
 
     glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO.GetId());
     for (unsigned int i = 0; i < 6; ++i)
     {
         m_IrradianceShader->SetUniformMat4f("view", m_CaptureViews[i]);
@@ -143,7 +142,7 @@ void ReflectionProbe::CreateIrradianceMap()
 
 		RenderCube();
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_FBO.Unbind();
 
 	m_IrradianceTexture.SetTextureID(m_IrradianceMap);
 	m_IrradianceTexture.SetTextureType(TextureType::IrradianceMap);
@@ -201,7 +200,7 @@ void ReflectionProbe::CreatePrefilterMap()
             RenderCube();
         }
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_FBO.Unbind();
 
     m_PrefilterTexture.SetTextureID(m_PrefilterMap);
     m_PrefilterTexture.SetTextureType(TextureType::PrefilterMap);
@@ -213,33 +212,21 @@ void ReflectionProbe::CreatePrefilterMap()
 
 void ReflectionProbe::CreateBRDFLookUpTexture()
 {
-    glGenTextures(1, &m_BrdfLUT);
-
-    // pre-allocate enough memory for the LUT texture.
-    glBindTexture(GL_TEXTURE_2D, m_BrdfLUT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
-
-    // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
-    
     m_FBO.Bind();
     m_RBO.Bind();
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_BrdfLUT, 0);
+    m_FBO.SetFramebufferTextureSize(512, 512);
+    m_RBO.CreateRenderBufferStorage(512, 512, FramebufferTextureFormat::Depth24);
+    m_FBO.CreateColorTexture(false, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
 
     glViewport(0, 0, 512, 512);
+
     m_BrdfShader->Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     RenderQuad();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    m_BrdfLookUpTexture.SetTextureID(m_BrdfLUT);
+    m_FBO.Unbind();
+    
+    m_BrdfLookUpTexture.SetTextureID(m_FBO.GetColorTextureId());
     m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
     m_BrdfLookUpTexture.SetTextureTarget(TextureTarget::Texture2D);
     m_BrdfLookUpTexture.SetUniformLocation("material.brdfLUT");

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
-
+#include "Texture.h"
 
 enum class FramebufferAttachment
 {
@@ -27,7 +27,7 @@ public:
 
 	void Bind() const;
 	void Unbind() const;
-	void CreateColorTexture(bool isMultisampled);
+	void CreateColorTexture(bool isMultisampled, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf);
 	void CreateDepthView();
 	GLuint GetColorTextureId();
 	GLuint GetId();

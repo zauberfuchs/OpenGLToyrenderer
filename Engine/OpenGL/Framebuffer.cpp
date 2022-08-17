@@ -1,6 +1,7 @@
 #include "Engine/Utils/pch.h"
 #include "Framebuffer.h"
 
+
 Framebuffer::Framebuffer()
 {
 	glGenFramebuffers(1, &m_ID);
@@ -31,9 +32,9 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::CreateColorTexture(bool isMultisampled)
+void Framebuffer::CreateColorTexture(bool isMultisampled, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf)
 {
-	
+	//Todo function zum übersetzten von GLenum => meinen internen Enums
 	Bind();
 	if (isMultisampled) {
 		glDeleteTextures(1, &m_ColorTextureID);
@@ -41,8 +42,8 @@ void Framebuffer::CreateColorTexture(bool isMultisampled)
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID);
 
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_SampleSize, GL_RGB, m_Width, m_Height, GL_TRUE);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
+		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID, 0);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
@@ -51,13 +52,16 @@ void Framebuffer::CreateColorTexture(bool isMultisampled)
 	{
 		//glDeleteTextures(1, &m_ID);
 		glGenTextures(1, &m_ColorTextureID);
-		glBindTexture(GL_TEXTURE_2D, m_ColorTextureID);
+		glBindTexture(static_cast<GLint>(tt), m_ColorTextureID);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage2D(static_cast<GLint>(tt), 0, GL_RG16F, m_Width, m_Height, 0, GL_RG, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_WRAP_S, static_cast<GLint>(tw));
+		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_WRAP_R, static_cast<GLint>(tw));
+		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_WRAP_T, static_cast<GLint>(tw));
+		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
+		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorTextureID, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tt), m_ColorTextureID, 0);
 	}
 }
 

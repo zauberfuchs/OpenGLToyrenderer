@@ -8,7 +8,6 @@ enum class LightSourceType
 	PointLight, DirectionalLight, SpotLight
 };
 
-//TOdo make class
 class Light
 {
 public:

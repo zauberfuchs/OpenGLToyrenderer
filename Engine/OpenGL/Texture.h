@@ -36,6 +36,7 @@ enum class TextureWrap
 enum class TextureFilter
 {
 	Linear = GL_LINEAR,
+	Nearest = GL_NEAREST,
 	MipMapLinear = GL_LINEAR_MIPMAP_LINEAR
 };
 

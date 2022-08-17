@@ -53,7 +53,7 @@ void Renderer::DepthPrePath()
 	UpdateViewport();
 
 	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
-	s_Data.GeometryFramebuffer->CreateColorTexture(true);
+	s_Data.GeometryFramebuffer->CreateColorTexture(true, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Nearest);
 	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
 	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
@@ -79,8 +79,6 @@ void Renderer::DepthPrePath()
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	
-	//todo maybe let the light do it
 	auto shadowMatrices = s_Data.ActiveSceneLight->CreateShadowTransformMatrices(0.1f, 50.0f);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
