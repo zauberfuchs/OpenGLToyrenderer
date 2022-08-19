@@ -48,27 +48,32 @@ void Material::SetPBRTexture(const std::string& path)
 {
 	Texture* tex;
 
-	tex = new Texture(path + "/albedo.png", TextureType::AlbedoMap);
+	tex = new Texture(path + "/albedo.png");
+	tex->SetTextureType(TextureType::AlbedoMap);
 	tex->SetUniformLocation("material.albedoMap");
 	tex->SetTextureTarget(TextureTarget::Texture2D);
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/normal.png", TextureType::NormalMap);
+	tex = new Texture(path + "/normal.png");
+	tex->SetTextureType(TextureType::NormalMap);
 	tex->SetUniformLocation("material.normalMap");
 	tex->SetTextureTarget(TextureTarget::Texture2D);
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/metallic.png", TextureType::MetallicMap);
+	tex = new Texture(path + "/metallic.png");
+	tex->SetTextureType(TextureType::MetallicMap);
 	tex->SetUniformLocation("material.metallicMap");
 	tex->SetTextureTarget(TextureTarget::Texture2D);
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/roughness.png", TextureType::RoughnessMap);
+	tex = new Texture(path + "/roughness.png");
+	tex->SetTextureType(TextureType::RoughnessMap);
 	tex->SetUniformLocation("material.roughnessMap");
 	tex->SetTextureTarget(TextureTarget::Texture2D);
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/ao.png", TextureType::AmbientOcclusionMap);
+	tex = new Texture(path + "/ao.png");
+	tex->SetTextureType(TextureType::AmbientOcclusionMap);
 	tex->SetUniformLocation("material.aoMap");
 	tex->SetTextureTarget(TextureTarget::Texture2D);
 	m_Textures.insert({ tex->GetTextureType(), tex });
@@ -135,7 +140,7 @@ void Material::SetupTextures()
 	int i = 0;
 	for(const auto& [texturetType, texture] : m_Textures)
 	{
-		texture->Bind(i, texture->GetTextureTarget());
+		texture->Bind(i);
 		m_Shader->SetUniform1i(texture->GetUniformLocation(), i);
 		i++;
 	}

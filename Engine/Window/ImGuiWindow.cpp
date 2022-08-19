@@ -23,9 +23,9 @@ void ImGuiWindow::Init()
 	// --------------------------------
 	ImGui_ImplGlfw_InitForOpenGL(World::Get().GetActiveWindow()->m_Window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
-	s_ImGuiData.ButtonTextures.insert({ std::string("playBTN"), new Texture("../Data/Textures/PlayButton.png", TextureType::AlbedoMap) });
-	s_ImGuiData.ButtonTextures.insert({ std::string("stopBTN"), new Texture("../Data/Textures/StopButton.png", TextureType::AlbedoMap) });
-	s_ImGuiData.ButtonTextures.insert({ std::string("pauseBTN"), new Texture("../Data/Textures/PauseButton.png", TextureType::AlbedoMap) });
+	s_ImGuiData.ButtonTextures.insert({ std::string("playBTN"), new Texture("../Data/Textures/PlayButton.png") });
+	s_ImGuiData.ButtonTextures.insert({ std::string("stopBTN"), new Texture("../Data/Textures/StopButton.png") });
+	s_ImGuiData.ButtonTextures.insert({ std::string("pauseBTN"), new Texture("../Data/Textures/PauseButton.png") });
 }
 
 void ImGuiWindow::AddUnderLine(ImColor color)

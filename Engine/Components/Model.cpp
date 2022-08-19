@@ -203,7 +203,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 		}
 		if (!skip)
 		{
-			Texture texture(filepath, typeName);
+			Texture texture(filepath);
 			textures.push_back(texture);
 			m_TexturesLoaded.push_back(texture);
 		}
@@ -247,5 +247,5 @@ Texture Model::TextureFromFile(const std::string& path, TextureType type)
 		stbi_image_free(data);
 	}
 
-	return Texture(path, type);
+	return Texture(path);
 }

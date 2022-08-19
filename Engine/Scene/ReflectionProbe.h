@@ -6,7 +6,7 @@
 #include "Engine/OpenGL/Framebuffer.h"
 #include "Engine/OpenGL/Texture.h"
 
-class IMesh;
+class Mesh;
 
 class ReflectionProbe
 {
@@ -42,7 +42,7 @@ private:
 	Renderbuffer m_RBO;
 	Framebuffer m_FBO;
 
-	IMesh* m_Cube;
+	Mesh* m_Cube;
 
 	unsigned int m_ReflectionMap;
 	unsigned int m_IrradianceMap;
@@ -52,6 +52,7 @@ private:
 	Texture m_IrradianceTexture;
 	Texture m_PrefilterTexture;
 	Texture m_BrdfLookUpTexture;
+	Texture m_ReflectionTexture;
 
 	Shader* m_BrdfShader;
 	Shader* m_PrefilterShader;

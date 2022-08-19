@@ -11,8 +11,6 @@ enum class FramebufferAttachment
 
 enum class FramebufferTextureFormat
 {
-	RedInteger = GL_RED,
-	Rgba8 = GL_RGB8,
 	Depth24 = GL_DEPTH_COMPONENT24,
 	Depth32 = GL_DEPTH_COMPONENT32,
 	Depth24Stencil8 = GL_DEPTH24_STENCIL8,
@@ -27,7 +25,10 @@ public:
 
 	void Bind() const;
 	void Unbind() const;
-	void CreateColorTexture(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf);
+	void CreateColorTexture2D(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf);
+	
+	void AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel = 0);
+	void AttachColorTexture2D(const Texture& tex);
 	void CreateDepthView();
 	GLuint GetColorTextureId();
 	GLuint GetId();

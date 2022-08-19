@@ -3,10 +3,16 @@
 #include "Texture.h"
 
 
-Texture::Texture(const std::string& path, TextureType type)
-	: m_FilePath(path), m_Type(type)
+Texture::Texture(const std::string& path)
+	: m_FilePath(path)
 {
 	Load();
+}
+
+Texture::Texture(TextureTarget tt)
+	: m_Target(tt)
+{
+	glCreateTextures(static_cast<GLenum>(tt), 1, &m_ID);
 }
 
 Texture::~Texture()
@@ -61,6 +67,7 @@ void Texture::Load()
 
 void Texture::Create(const std::string& path, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped)
 {
+	//load nicht create? weil er lädt eine textur!
 	m_Target = tt;
 	stbi_set_flip_vertically_on_load(isFlipped); // flipt die Texture damit es von unten anfängt
 	float* data = stbi_loadf(path.c_str(), &m_Width, &m_Height, &m_Components, 0);
@@ -102,10 +109,58 @@ void Texture::Create(const std::string& path, const TextureTarget& tt, const Tex
 		stbi_image_free(data);
 }
 
+void Texture::CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap) const
+{
+	if (hasMipMap)
+	{
+		const auto mipmapLevels = static_cast<unsigned int>(glm::floor(glm::log2(glm::max(m_Width, m_Height))));
+		glTextureStorage2D(m_ID, mipmapLevels, static_cast<GLenum>(tif), m_Width, m_Height);
+	}else
+	{
+		glTextureStorage2D(m_ID, 1, static_cast<GLenum>(tif), m_Width, m_Height);
+	}
+}
+
+void Texture::CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap) const
+{
+	if (hasMipMap)
+	{
+		const auto mipmapLevels = static_cast<unsigned int>(glm::floor(glm::log2(glm::max(m_Width, m_Height))));
+		glTextureStorage2D(m_ID, mipmapLevels, static_cast<GLenum>(tif), m_Width, m_Height);
+	}
+	else
+	{
+		glTextureStorage2D(m_ID, 1, static_cast<GLenum>(tif), m_Width, m_Height);
+	}
+}
+
+void Texture::GenerateMipMap()
+{
+	glGenerateTextureMipmap(m_ID);
+}
+
+void Texture::SetWrapMode(const TextureWrap& s, const TextureWrap& t)
+{
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, static_cast<GLint>(s));
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, static_cast<GLint>(t));
+}
+
+void Texture::SetWrapMode(const TextureWrap& s, const TextureWrap& t, const TextureWrap& r)
+{
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, static_cast<GLint>(s));
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, static_cast<GLint>(t));
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_R, static_cast<GLint>(r));
+}
+
+void Texture::SetFilter(const TextureFilter& min, const TextureFilter& mag)
+{
+	glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(min));
+	glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(mag));
+}
+
 void Texture::Bind(const unsigned int& slot) const
 {
 	glActiveTexture(GL_TEXTURE0 + slot);
-
 	glBindTexture(static_cast<GLenum>(m_Target), m_ID);
 }
 

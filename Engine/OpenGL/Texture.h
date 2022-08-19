@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <stb_image.h>
 
+
+
 enum class TextureType
 {
 	SpecularMap,
@@ -19,6 +21,15 @@ enum class TextureType
 	BrdfLookUpTexture,
 	DepthMap,
 	PrefilterMap
+};
+
+enum class TextureInternalFormat
+{
+	R8 = GL_R8,
+	Rgb8 = GL_RGB8,
+	Rgba8 = GL_RGBA8,
+	Rg16F = GL_RG16F,
+	Rgb16F = GL_RGB16F
 };
 
 enum class TextureTarget
@@ -47,20 +58,34 @@ class Texture
 
 public:
 	Texture() = default;
-	Texture(const std::string& path, TextureType type);
+	Texture(TextureTarget tt);
+	Texture(const std::string& path);
 	~Texture();
+
+	void Load();
+	void Create(const std::string& path, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped = true);
+	void CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false) const;
+	void CreateTexture2DMultiSample();
+	void CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false) const;
+	void GenerateMipMap();
+
+	void SetWrapMode(const TextureWrap& s, const TextureWrap& t);
+	void SetWrapMode(const TextureWrap& s, const TextureWrap& t, const TextureWrap& r);
+	void SetFilter(const TextureFilter& min, const TextureFilter& mag);
+	//void CreateReflectionMapFromHDR(const std::string& path);
+
 	
+
 	TextureType GetTextureType() { return m_Type; }
 	void SetTextureType(const TextureType& type) { m_Type = type; }
 
 	std::string GetName() { return m_Name; }
 	void SetName(const std::string name) { m_Name = name; }
 
-	void Load();
-	void Create(const std::string& path, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped = true);
-	
 	int GetWidth() const { return m_Width; }
 	int GetHeigth() const { return m_Height; }
+
+	void SetTexture2DSize(const int& width, const int& height) { m_Width = width; m_Height = height; }
 
 	int GetTextureID() const { return m_ID; }
 	void SetTextureID(const int& id) { m_ID = id; }
@@ -81,8 +106,10 @@ public:
 	std::string m_UniformLocation;
 
 private:
+
+	uint16_t m_MipMapLevel;
+
 	GLuint m_ID;
 	int m_Width, m_Height, m_Components;
 	std::string m_Name;
-
 };

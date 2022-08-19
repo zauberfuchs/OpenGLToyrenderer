@@ -32,9 +32,10 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::CreateColorTexture(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf)
+void Framebuffer::CreateColorTexture2D(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf)
 {
 	//Todo function zum übersetzten von GLenum => meinen internen Enums
+	// attach color texture / arc gucken wie ich es dort gemacht habe.
 	Bind();
 	if (static_cast<GLint>(tt) == GL_TEXTURE_2D_MULTISAMPLE) {
 		glDeleteTextures(1, &m_ColorTextureID);
@@ -50,22 +51,7 @@ void Framebuffer::CreateColorTexture(const TextureTarget& tt, const TextureWrap&
 		glBindTexture(static_cast<GLint>(tt), 0);
 
 	}
-	else if (static_cast<GLint>(tt) == GL_TEXTURE_CUBE_MAP) 
-	{
-
-		glGenTextures(1, &m_ColorTextureID);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_ColorTextureID);
-		for (unsigned int i = 0; i < 6; ++i)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
-		}
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	else
+	else if (static_cast<GLint>(tt) == GL_TEXTURE_2D)
 	{
 		glCreateTextures(static_cast<GLint>(tt), 1, &m_ColorTextureID);
 
@@ -80,6 +66,18 @@ void Framebuffer::CreateColorTexture(const TextureTarget& tt, const TextureWrap&
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tt), m_ColorTextureID, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+}
+
+void Framebuffer::AttachColorTexture2D(const Texture& tex)
+{
+	Bind();
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tex.GetTextureTarget()), tex.GetTextureID(), 0);
+}
+
+void Framebuffer::AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel)
+{
+	Bind();
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, tex.GetTextureID(), mipMapLevel);
 }
 
 void Framebuffer::CreateDepthView()
@@ -100,7 +98,6 @@ void Framebuffer::CreateDepthView()
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
 
 void Framebuffer::AttachRenderBuffer(const GLuint& rbo_ID, const FramebufferAttachment& attachment)

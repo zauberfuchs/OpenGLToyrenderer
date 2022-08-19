@@ -5,7 +5,12 @@
 
 
 ReflectionProbe::ReflectionProbe(const int& width, const int& height)
-	: m_IrradianceMap(0), m_ReflectionMap(0), m_CaptureProjection(glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f)),
+	: m_IrradianceMap(0), m_ReflectionMap(0),
+		m_BrdfLookUpTexture(TextureTarget::Texture2D),
+		m_IrradianceTexture(TextureTarget::TextureCubeMap),
+		m_PrefilterTexture(TextureTarget::TextureCubeMap),
+		m_ReflectionTexture(TextureTarget::TextureCubeMap),
+		m_CaptureProjection(glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f)),
 		m_CaptureViews{ glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 						glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
@@ -34,50 +39,35 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     m_RBO.CreateRenderBufferStorage(1024, 1024, FramebufferTextureFormat::Depth24);
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
 
-    // pbr: load the HDR environment map
+    // load the HDR environment map
     // ---------------------------------
-
     //todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
     Texture tex;
     tex.Create(path, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
+    tex.Bind(0);
 
-    // pbr: setup cubemap to render to and attach to framebuffer
+    // setup cubemap to render to and attach to framebuffer
     // ---------------------------------------------------------
+    m_ReflectionTexture.SetTexture2DSize(512, 512);
+    m_ReflectionTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
+    m_ReflectionTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
+    m_ReflectionTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
 
-    glGenTextures(1, &m_ReflectionMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
-    for (unsigned int i = 0; i < 6; ++i)
-    {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-    // pbr: convert HDR equirectangular environment map to cubemap equivalent
+    // convert HDR equirectangular environment map to cubemap equivalent
     // ----------------------------------------------------------------------
     m_EquirectangularToCubemapShader->Bind();
     m_EquirectangularToCubemapShader->SetUniform1i("equirectangularMap", 0);
     m_EquirectangularToCubemapShader->SetUniformMat4f("projection", m_CaptureProjection);
-    glActiveTexture(GL_TEXTURE0);
 
-    tex.Bind(0);
-  //  glBindTexture(GL_TEXTURE_2D, tex.GetTextureID());
-
-    //todo possible bug
     glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the capture dimensions.
-    m_FBO.Bind();
     for (unsigned int i = 0; i < 6; ++i)
     {
         m_EquirectangularToCubemapShader->SetUniformMat4f("view", m_CaptureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_ReflectionMap, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        m_FBO.AttachColorTexture3D(i, m_ReflectionTexture);
         RenderCube();
     }
+
+    m_ReflectionMap = m_ReflectionTexture.GetTextureID();
     m_FBO.Unbind();
     m_EquirectangularToCubemapShader->Unbind();
 }
@@ -89,89 +79,65 @@ void ReflectionProbe::SetReflectionMap(const unsigned& id)
 
 void ReflectionProbe::CreateIrradianceMap()
 {
+    m_IrradianceTexture.SetTexture2DSize(32, 32);
+    m_IrradianceTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
+    m_IrradianceTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
+    m_IrradianceTexture.SetTextureType(TextureType::IrradianceMap);
+    m_IrradianceTexture.SetUniformLocation("material.irradianceMap");
+    m_IrradianceTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
+
 	m_FBO.Bind();
 	m_RBO.Bind();
 	m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
-
-    //TODO: Texture direkt erstellen??
-    glGenTextures(1, &m_IrradianceMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_IrradianceMap);
-    for (unsigned int i = 0; i < 6; ++i)
-    {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    m_FBO.Bind();
-    m_RBO.Bind();
     m_RBO.CreateRenderBufferStorage(32, 32, FramebufferTextureFormat::Depth24);
+
 
     // pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
     // -----------------------------------------------------------------------------
     m_IrradianceShader->Bind();
     m_IrradianceShader->SetUniform1i("environmentMap", 0);
     m_IrradianceShader->SetUniformMat4f("projection", m_CaptureProjection);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
 
+    m_ReflectionTexture.Bind(0);
+    
     glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
     for (unsigned int i = 0; i < 6; ++i)
     {
         m_IrradianceShader->SetUniformMat4f("view", m_CaptureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_IrradianceMap, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        m_FBO.AttachColorTexture3D(i, m_IrradianceTexture);
 		RenderCube();
     }
     m_FBO.Unbind();
-
-	m_IrradianceTexture.SetTextureID(m_IrradianceMap);
-	m_IrradianceTexture.SetTextureType(TextureType::IrradianceMap);
-    m_IrradianceTexture.SetTextureTarget(TextureTarget::TextureCubeMap);
-    m_IrradianceTexture.SetUniformLocation("material.irradianceMap");
+    
     m_IrradianceShader->Unbind();
 }
 
 
 void ReflectionProbe::CreatePrefilterMap()
 {
-
-    //TODO: Texture direkt erstellen??
-    glGenTextures(1, &m_PrefilterMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_PrefilterMap);
-    for (unsigned int i = 0; i < 6; ++i)
-    {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // be sure to set minification filter to mip_linear 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // generate mipmaps for the cubemap so OpenGL automatically allocates the required memory.
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
+    m_PrefilterTexture.SetTexture2DSize(128, 128);
+    m_PrefilterTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
+    m_PrefilterTexture.SetFilter(TextureFilter::MipMapLinear, TextureFilter::Linear);
+    m_PrefilterTexture.SetTextureType(TextureType::PrefilterMap);
+    m_PrefilterTexture.SetUniformLocation("material.prefilterMap");
+    m_PrefilterTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F, true);
+    m_PrefilterTexture.GenerateMipMap();
+    
     // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
     // ----------------------------------------------------------------------------------------------------
     m_PrefilterShader->Bind();
     m_PrefilterShader->SetUniform1i("environmentMap", 0);
     m_PrefilterShader->SetUniformMat4f("projection", m_CaptureProjection);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_ReflectionMap);
 
-    m_FBO.Bind();
-    unsigned int maxMipLevels = 5;
+	m_ReflectionTexture.Bind(0);
+
+	constexpr unsigned int maxMipLevels = 5;
     for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
     {
-        // reisze framebuffer according to mip-level size.
-        unsigned int mipWidth = static_cast<unsigned int>(128 * std::pow(0.5, mip));
-        unsigned int mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
-        m_RBO.Bind();
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+        // resize framebuffer according to mip-level size.
+        const auto mipWidth = static_cast<unsigned int>(128 * std::pow(0.5, mip));
+        const auto mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
+        m_RBO.CreateRenderBufferStorage(mipWidth, mipHeight, FramebufferTextureFormat::Depth24);
         glViewport(0, 0, mipWidth, mipHeight);
 
         float roughness = (float)mip / (float)(maxMipLevels - 1);
@@ -179,42 +145,36 @@ void ReflectionProbe::CreatePrefilterMap()
         for (unsigned int i = 0; i < 6; ++i)
         {
             m_PrefilterShader->SetUniformMat4f("view", m_CaptureViews[i]);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_PrefilterMap, mip);
-
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            m_FBO.AttachColorTexture3D(i, m_PrefilterTexture, mip);
             RenderCube();
         }
     }
     m_FBO.Unbind();
-
-    m_PrefilterTexture.SetTextureID(m_PrefilterMap);
-    m_PrefilterTexture.SetTextureType(TextureType::PrefilterMap);
-    m_PrefilterTexture.SetTextureTarget(TextureTarget::TextureCubeMap);
-    m_PrefilterTexture.SetUniformLocation("material.prefilterMap");
+    
     m_PrefilterShader->Unbind();
 
 }
 
 void ReflectionProbe::CreateBRDFLookUpTexture()
 {
+    m_BrdfLookUpTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
+    m_BrdfLookUpTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
+    m_BrdfLookUpTexture.SetTexture2DSize(512, 512);
+    m_BrdfLookUpTexture.CreateTexture2DStorage(TextureInternalFormat::Rg16F);
+    m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
+    m_BrdfLookUpTexture.SetUniformLocation("material.brdfLUT");
+
     m_FBO.Bind();
     m_RBO.Bind();
-    m_FBO.SetFramebufferTextureSize(512, 512);
     m_RBO.CreateRenderBufferStorage(512, 512, FramebufferTextureFormat::Depth24);
-    m_FBO.CreateColorTexture(TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
-
-    glViewport(0, 0, 512, 512);
+	m_FBO.AttachColorTexture2D(m_BrdfLookUpTexture);
 
     m_BrdfShader->Bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glViewport(0, 0, 512, 512);
     RenderQuad();
 
     m_FBO.Unbind();
-    
-    m_BrdfLookUpTexture.SetTextureID(m_FBO.GetColorTextureId());
-    m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
-    m_BrdfLookUpTexture.SetTextureTarget(TextureTarget::Texture2D);
-    m_BrdfLookUpTexture.SetUniformLocation("material.brdfLUT");
     m_BrdfShader->Unbind();
 }
 
@@ -230,6 +190,7 @@ void ReflectionProbe::RenderQuad()
          1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
     };
     // setup plane VAO
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glGenVertexArrays(1, &m_QuadVAO);
     glGenBuffers(1, &m_QuadVBO);
     glBindVertexArray(m_QuadVAO);
@@ -291,7 +252,7 @@ void ReflectionProbe::RenderCube()
 	    -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
 	    -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
 	};
-	
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glGenVertexArrays(1, &m_CubeVAO);
 	glGenBuffers(1, &m_CubeVBO);
 	// fill buffer
