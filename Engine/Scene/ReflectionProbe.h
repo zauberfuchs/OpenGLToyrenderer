@@ -16,16 +16,12 @@ public:
 
 	void Create();
 	void CreateReflectionMapFromHDR(const std::string& path);
-	void SetReflectionMap(const unsigned int& id);
-
-	inline unsigned int GetIrradianceMap() { return m_IrradianceMap; }
-	inline unsigned int GetPreFilterMap() { return m_PrefilterMap; }
-	inline unsigned int GetBrdfLUT() { return m_BrdfLUT; }
-	inline unsigned int GetReflectionMap() { return m_ReflectionMap; }
+	void SetReflectionMap(const Texture& texture);
 
 	inline Texture* GetIrradianceTexture() { return &m_IrradianceTexture; }
 	inline Texture* GetPrefilterTexture() { return &m_PrefilterTexture; }
 	inline Texture* GetBrdfLookUpTexture() { return &m_BrdfLookUpTexture; }
+	inline Texture* GetReflectionTexture() { return &m_ReflectionTexture; }
 
 private:
 
@@ -43,11 +39,6 @@ private:
 	Framebuffer m_FBO;
 
 	Mesh* m_Cube;
-
-	unsigned int m_ReflectionMap;
-	unsigned int m_IrradianceMap;
-	unsigned int m_PrefilterMap;
-	unsigned int m_BrdfLUT;
 
 	Texture m_IrradianceTexture;
 	Texture m_PrefilterTexture;

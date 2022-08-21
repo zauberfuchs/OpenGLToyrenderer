@@ -194,7 +194,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 		filepath = m_Directory + '/' + str.C_Str();
 		for (unsigned int j = 0; j < m_TexturesLoaded.size(); j++)
 		{
-			if (std::strcmp(m_TexturesLoaded[j].m_FilePath.data(), filepath.c_str()) == 0)
+			if (std::strcmp(m_TexturesLoaded[j].GetFilePath().data(), filepath.c_str()) == 0)
 			{
 				textures.push_back(m_TexturesLoaded[j]);
 				skip = true;
@@ -203,7 +203,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 		}
 		if (!skip)
 		{
-			Texture texture(filepath);
+			Texture texture(filepath, TextureTarget::Texture2D);
 			textures.push_back(texture);
 			m_TexturesLoaded.push_back(texture);
 		}
@@ -247,5 +247,5 @@ Texture Model::TextureFromFile(const std::string& path, TextureType type)
 		stbi_image_free(data);
 	}
 
-	return Texture(path);
+	return Texture(path, TextureTarget::Texture2D);
 }

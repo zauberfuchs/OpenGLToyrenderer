@@ -25,10 +25,10 @@ public:
 
 	void Bind() const;
 	void Unbind() const;
-	void CreateColorTexture2D(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf);
 	
-	void AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel = 0);
 	void AttachColorTexture2D(const Texture& tex);
+	void AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel = 0);
+
 	void CreateDepthView();
 	GLuint GetColorTextureId();
 	GLuint GetId();

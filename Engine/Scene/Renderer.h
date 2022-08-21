@@ -9,6 +9,8 @@ struct RendererStorage
 {
 	Framebuffer* GeometryFramebuffer;
 	Renderbuffer* GeometryRenderbuffer;
+	Texture* ViewportTexture;
+
 
 	Scene* ActiveScene;
 	Shader* ActiveShader;

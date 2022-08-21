@@ -19,8 +19,8 @@ void Renderer::Init()
 
 	s_Data.GeometryFramebuffer = new Framebuffer();
 	s_Data.GeometryRenderbuffer = new Renderbuffer();
-
-	
+	s_Data.ViewportTexture = new Texture(TextureTarget::Texture2DMultiSample);
+	s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 
 
 	s_Data.ActiveScene = World::Get().GetActiveScene();
@@ -54,7 +54,12 @@ void Renderer::DepthPrePath()
 	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
 	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
 	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
-	s_Data.GeometryFramebuffer->CreateColorTexture2D(TextureTarget::Texture2DMultiSample, TextureWrap::ClampToEdge, TextureFilter::Nearest);
+	
+	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
+	s_Data.GeometryFramebuffer->AttachColorTexture2D(*s_Data.ViewportTexture);
+
+	
 	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
 	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
@@ -155,11 +160,10 @@ void Renderer::PostFxPath()
 	s_Data.PostFXShader->Bind();
 	s_Data.PostFXShader->SetUniform1i("sampleSize", *s_Data.MSAA);
 	s_Data.PostFXShader->SetUniform1i("screenTexture", 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, s_Data.GeometryFramebuffer->GetColorTextureId());
+	
+	s_Data.ViewportTexture->Bind(0);
 	RenderQuad();
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+	s_Data.ViewportTexture->Unbind();
 }
 
 void Renderer::DrawMesh()

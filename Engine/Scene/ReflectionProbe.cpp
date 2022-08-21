@@ -5,8 +5,7 @@
 
 
 ReflectionProbe::ReflectionProbe(const int& width, const int& height)
-	: m_IrradianceMap(0), m_ReflectionMap(0),
-		m_BrdfLookUpTexture(TextureTarget::Texture2D),
+	: m_BrdfLookUpTexture(TextureTarget::Texture2D),
 		m_IrradianceTexture(TextureTarget::TextureCubeMap),
 		m_PrefilterTexture(TextureTarget::TextureCubeMap),
 		m_ReflectionTexture(TextureTarget::TextureCubeMap),
@@ -40,21 +39,18 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
 
     // load the HDR environment map
-    // ---------------------------------
     //todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
-    Texture tex;
-    tex.Create(path, TextureTarget::Texture2D, TextureWrap::ClampToEdge, TextureFilter::Linear);
-    tex.Bind(0);
+    Texture envHDRMap(TextureTarget::Texture2D);
+    envHDRMap.Load(path, TextureWrap::ClampToEdge, TextureFilter::Linear);
+    envHDRMap.Bind(0);
 
     // setup cubemap to render to and attach to framebuffer
-    // ---------------------------------------------------------
     m_ReflectionTexture.SetTexture2DSize(512, 512);
     m_ReflectionTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
     m_ReflectionTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
     m_ReflectionTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
 
     // convert HDR equirectangular environment map to cubemap equivalent
-    // ----------------------------------------------------------------------
     m_EquirectangularToCubemapShader->Bind();
     m_EquirectangularToCubemapShader->SetUniform1i("equirectangularMap", 0);
     m_EquirectangularToCubemapShader->SetUniformMat4f("projection", m_CaptureProjection);
@@ -66,15 +62,14 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
         m_FBO.AttachColorTexture3D(i, m_ReflectionTexture);
         RenderCube();
     }
-
-    m_ReflectionMap = m_ReflectionTexture.GetTextureID();
+    
     m_FBO.Unbind();
     m_EquirectangularToCubemapShader->Unbind();
 }
 
-void ReflectionProbe::SetReflectionMap(const unsigned& id)
+void ReflectionProbe::SetReflectionMap(const Texture& texture)
 {
-	m_ReflectionMap = id;
+	
 }
 
 void ReflectionProbe::CreateIrradianceMap()
@@ -86,14 +81,12 @@ void ReflectionProbe::CreateIrradianceMap()
     m_IrradianceTexture.SetUniformLocation("material.irradianceMap");
     m_IrradianceTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
 
-	m_FBO.Bind();
-	m_RBO.Bind();
+
 	m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
     m_RBO.CreateRenderBufferStorage(32, 32, FramebufferTextureFormat::Depth24);
 
 
     // pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
-    // -----------------------------------------------------------------------------
     m_IrradianceShader->Bind();
     m_IrradianceShader->SetUniform1i("environmentMap", 0);
     m_IrradianceShader->SetUniformMat4f("projection", m_CaptureProjection);
@@ -107,8 +100,8 @@ void ReflectionProbe::CreateIrradianceMap()
         m_FBO.AttachColorTexture3D(i, m_IrradianceTexture);
 		RenderCube();
     }
+
     m_FBO.Unbind();
-    
     m_IrradianceShader->Unbind();
 }
 
@@ -124,7 +117,6 @@ void ReflectionProbe::CreatePrefilterMap()
     m_PrefilterTexture.GenerateMipMap();
     
     // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
-    // ----------------------------------------------------------------------------------------------------
     m_PrefilterShader->Bind();
     m_PrefilterShader->SetUniform1i("environmentMap", 0);
     m_PrefilterShader->SetUniformMat4f("projection", m_CaptureProjection);
@@ -149,8 +141,8 @@ void ReflectionProbe::CreatePrefilterMap()
             RenderCube();
         }
     }
+
     m_FBO.Unbind();
-    
     m_PrefilterShader->Unbind();
 
 }
@@ -163,9 +155,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     m_BrdfLookUpTexture.CreateTexture2DStorage(TextureInternalFormat::Rg16F);
     m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
     m_BrdfLookUpTexture.SetUniformLocation("material.brdfLUT");
-
-    m_FBO.Bind();
-    m_RBO.Bind();
+    
     m_RBO.CreateRenderBufferStorage(512, 512, FramebufferTextureFormat::Depth24);
 	m_FBO.AttachColorTexture2D(m_BrdfLookUpTexture);
 

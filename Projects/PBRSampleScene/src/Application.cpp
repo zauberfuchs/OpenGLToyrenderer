@@ -141,7 +141,7 @@ int main() {
 
 	ReflectionProbe probeOne(1024, 1024);
 	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	skybox.SetId(probeOne.GetReflectionMap());
+	skybox.SetId(probeOne.GetReflectionTexture()->GetTextureID());
 	probeOne.Create();
 
 	activeScene->AddRootChild(&ground);

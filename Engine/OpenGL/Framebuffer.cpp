@@ -32,42 +32,6 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::CreateColorTexture2D(const TextureTarget& tt, const TextureWrap& tw, const TextureFilter tf)
-{
-	//Todo function zum übersetzten von GLenum => meinen internen Enums
-	// attach color texture / arc gucken wie ich es dort gemacht habe.
-	Bind();
-	if (static_cast<GLint>(tt) == GL_TEXTURE_2D_MULTISAMPLE) {
-		glDeleteTextures(1, &m_ColorTextureID);
-		glGenTextures(1, &m_ColorTextureID);
-		glBindTexture(static_cast<GLint>(tt), m_ColorTextureID);
-
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_SampleSize, GL_RGB, m_Width, m_Height, GL_TRUE);
-		
-		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
-		glTexParameteri(static_cast<GLint>(tt), GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColorTextureID, 0);
-		glBindTexture(static_cast<GLint>(tt), 0);
-
-	}
-	else if (static_cast<GLint>(tt) == GL_TEXTURE_2D)
-	{
-		glCreateTextures(static_cast<GLint>(tt), 1, &m_ColorTextureID);
-
-		glTextureStorage2D(m_ColorTextureID, 1, GL_RG16F, m_Width, m_Height);
-
-		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_WRAP_S, static_cast<GLint>(tw));
-		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_WRAP_R, static_cast<GLint>(tw));
-		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_WRAP_T, static_cast<GLint>(tw));
-		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(tf));
-		glTextureParameteri(m_ColorTextureID, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(tf));
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tt), m_ColorTextureID, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-}
-
 void Framebuffer::AttachColorTexture2D(const Texture& tex)
 {
 	Bind();

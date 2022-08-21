@@ -25,9 +25,11 @@ enum class TextureType
 
 enum class TextureInternalFormat
 {
+	Rgb = GL_RGB,
 	R8 = GL_R8,
 	Rgb8 = GL_RGB8,
 	Rgba8 = GL_RGBA8,
+	Rgb16 = GL_RGB16,
 	Rg16F = GL_RG16F,
 	Rgb16F = GL_RGB16F
 };
@@ -58,21 +60,20 @@ class Texture
 
 public:
 	Texture() = default;
-	Texture(TextureTarget tt);
-	Texture(const std::string& path);
+	Texture(const TextureTarget& tt);
+	Texture(const std::string& path, const TextureTarget& tt);
 	~Texture();
 
 	void Load();
-	void Create(const std::string& path, const TextureTarget& tt, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped = true);
-	void CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false) const;
-	void CreateTexture2DMultiSample();
-	void CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false) const;
-	void GenerateMipMap();
+	void Load(const std::string& path, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped = true);
+	void LoadCubemap(const std::string& path);
+	void CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false, const uint16_t& samples = 0);
+	void CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false);
+	void GenerateMipMap() const;
 
-	void SetWrapMode(const TextureWrap& s, const TextureWrap& t);
-	void SetWrapMode(const TextureWrap& s, const TextureWrap& t, const TextureWrap& r);
-	void SetFilter(const TextureFilter& min, const TextureFilter& mag);
-	//void CreateReflectionMapFromHDR(const std::string& path);
+	void SetWrapMode(const TextureWrap& s, const TextureWrap& t) const;
+	void SetWrapMode(const TextureWrap& s, const TextureWrap& t, const TextureWrap& r) const;
+	void SetFilter(const TextureFilter& min, const TextureFilter& mag) const;
 
 	
 
@@ -99,17 +100,17 @@ public:
 	void Bind(const unsigned int& slot) const;
 	void Unbind() const;
 
-	//Todo make  them private
-	std::string m_FilePath;
+	std::string GetFilePath() { return m_FilePath; }
+	
+private:
+	GLuint m_ID;
 	TextureType m_Type;
 	TextureTarget m_Target;
+
+	std::string m_Name;
+	std::string m_FilePath;
 	std::string m_UniformLocation;
 
-private:
-
 	uint16_t m_MipMapLevel;
-
-	GLuint m_ID;
 	int m_Width, m_Height, m_Components;
-	std::string m_Name;
 };
