@@ -134,11 +134,11 @@ void Texture::LoadCubemap(const std::string& path)
 		"/back.png"
 	};
 
-	/*if(m_ID)
+	if(m_ID)
 	{
 		glDeleteTextures(1, &m_ID);
 		glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
-	}*/
+	}
 
 	glTextureStorage2D(m_ID, 1, GL_RGBA8, 1024, 1024);
 

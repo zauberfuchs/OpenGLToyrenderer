@@ -153,7 +153,12 @@ void Renderer::SkyboxPath()
 {
 	if (s_Data.SceneSkybox != nullptr)
 	{
-		s_Data.SceneSkybox->Render();
+		s_Data.ActiveShader = World::Get().GetShader("skybox");
+		s_Data.ActiveShader->Bind();
+		s_Data.ActiveShader->SetUniformMat4f("view", glm::mat4(glm::mat3(s_Data.ActiveSceneCamera->GetViewMatrix())));// this removes the translation from the view matrix
+		s_Data.ActiveShader->SetUniformMat4f("projection", s_Data.ActiveSceneCamera->GetProjectionMatrix());
+		s_Data.SceneSkybox->GetCubeMapTexture()->Bind(0);
+		RenderCube();
 	}
 	s_Data.GeometryFramebuffer->Unbind();
 }
@@ -202,7 +207,7 @@ void Renderer::SetCullMode(const uint8_t& cullMode)
 }
 
 unsigned int quadVAO = 0;
-unsigned int quadVBO;
+unsigned int quadVBO = 0;
 void Renderer::RenderQuad()
 {
 	if (quadVAO == 0)
@@ -229,4 +234,68 @@ void Renderer::RenderQuad()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+}
+
+
+unsigned int cubeVAO = 0;
+unsigned int cubeVBO = 0;
+unsigned int cubeEBO = 0;
+void Renderer::RenderCube()
+{
+	if (cubeVAO == 0)
+	{
+		float skyboxVertices[24] =
+		{
+			//   Coordinates
+			-1.0f, -1.0f,  1.0f,//        7--------6
+			 1.0f, -1.0f,  1.0f,//       /|       /|
+			 1.0f, -1.0f, -1.0f,//      4--------5 |
+			-1.0f, -1.0f, -1.0f,//      | |      | |
+			-1.0f,  1.0f,  1.0f,//      | 3------|-2
+			 1.0f,  1.0f,  1.0f,//      |/       |/
+			 1.0f,  1.0f, -1.0f,//      0--------1
+			-1.0f,  1.0f, -1.0f
+		};
+
+		unsigned int skyboxIndices[] =
+		{
+			// Right
+			6, 2, 1,
+			1, 5, 6,
+			// Left
+			7, 4, 0,
+			0, 3, 7,
+			// Top
+			6, 5, 4,
+			4, 7, 6,
+			// Bottom
+			2, 3, 0,
+			0, 1, 2,
+			// Back
+			5, 1, 0,
+			0, 4, 5,
+			// Front
+			6, 7, 3,
+			3, 2, 6
+		};
+
+		glGenVertexArrays(1, &cubeVAO);
+		glGenBuffers(1, &cubeVBO);
+		glGenBuffers(1, &cubeEBO);
+		glBindVertexArray(cubeVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(skyboxIndices), &skyboxIndices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	}
+
+	glBindVertexArray(cubeVAO);
+	glDepthFunc(GL_LEQUAL);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	glDepthFunc(GL_LESS);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -56,4 +56,5 @@ public:
 	static void Clear();
 
 	static void RenderQuad();
+	static void RenderCube();
 };
