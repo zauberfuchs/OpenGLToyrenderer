@@ -227,11 +227,13 @@ void Texture::SetFilter(const TextureFilter& min, const TextureFilter& mag) cons
 
 void Texture::Bind(const unsigned int& slot) const
 {
+	//glBindTextureUnit(GL_TEXTURE0 + slot, m_ID);
+	//glBindTextures(GL_TEXTURE0 + slot, 1, &m_ID);
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(static_cast<GLenum>(m_Target), m_ID);
 }
 
 void Texture::Unbind() const
 {
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(static_cast<GLenum>(m_Target), 0);
 }

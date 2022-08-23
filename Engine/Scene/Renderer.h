@@ -17,7 +17,7 @@ struct RendererStorage
 	Shader* PostFXShader;
 	Camera* ActiveSceneCamera;
 
-	Skybox* SceneSkybox;
+	Texture* SceneSkybox;
 
 	VertexArray* MeshVAO;
 

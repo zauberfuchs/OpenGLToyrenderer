@@ -1,6 +1,5 @@
 #include "Engine/Utils/pch.h"
 #include "Renderer.h"
-#include "Skybox.h"
 
 #include "Engine/Components/Model.h"
 
@@ -157,7 +156,7 @@ void Renderer::SkyboxPath()
 		s_Data.ActiveShader->Bind();
 		s_Data.ActiveShader->SetUniformMat4f("view", glm::mat4(glm::mat3(s_Data.ActiveSceneCamera->GetViewMatrix())));// this removes the translation from the view matrix
 		s_Data.ActiveShader->SetUniformMat4f("projection", s_Data.ActiveSceneCamera->GetProjectionMatrix());
-		s_Data.SceneSkybox->GetCubeMapTexture()->Bind(0);
+		s_Data.SceneSkybox->Bind(0);
 		RenderCube();
 	}
 	s_Data.GeometryFramebuffer->Unbind();

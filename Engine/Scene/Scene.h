@@ -31,8 +31,8 @@ public:
 	Camera* GetSceneCamera();
 	void RemoveSceneCamera();
 
-	void SetSceneSkybox (Skybox* s);
-	Skybox* GetSceneSkybox();
+	void SetSceneSkybox (Texture* s);
+	Texture* GetSceneSkybox();
 	void RemoveSceneSkybox();
 
 	void SetReflectionProbe(ReflectionProbe* rp);
@@ -42,7 +42,7 @@ private:
 	std::string m_Name;
 
 	Camera* m_SceneCamera;
-	Skybox* m_Skybox = nullptr;
+	Texture* m_Skybox = nullptr;
 
 	SceneObject* m_RootSO;
 	

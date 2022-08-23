@@ -27,7 +27,7 @@ public:
 	
 
 	void SetTexture(Texture* texture);
-	Texture* GetTexture(const TextureType& channelMap);
+	Texture* GetTexture(const TextureType& channelMap) const;
 	void SetPBRTexture(const std::string& path);
 
 	void SetReflectionProbe(ReflectionProbe* probe);

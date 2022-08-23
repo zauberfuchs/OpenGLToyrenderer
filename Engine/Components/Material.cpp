@@ -74,7 +74,7 @@ void Material::SetPBRTexture(const std::string& path)
 	m_Textures.insert({ tex->GetTextureType(), tex });
 }
 
-Texture* Material::GetTexture(const TextureType& channelMap)
+Texture* Material::GetTexture(const TextureType& channelMap) const
 {
 	return m_Textures.at(channelMap);
 }

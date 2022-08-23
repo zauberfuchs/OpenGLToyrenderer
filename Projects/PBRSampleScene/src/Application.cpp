@@ -3,7 +3,6 @@
 #include "Engine/Components/Model.h"
 #include "Engine/Geometry/StudentCube.h"
 #include "Engine/Geometry/Sphere.h"
-#include "Engine/Scene/Skybox.h"
 #include "Engine/Scene/Renderer.h"
 #include "Engine/Window/Window.h"
 #include "Engine/Window/ImGuiWindow.h"
@@ -139,13 +138,10 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
-	Skybox skyBox("universe");
-	skyBox.SetCubeMapTexture(skyBoxTexture);
-	
-
 	ReflectionProbe probeOne(1024, 1024);
-	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	probeOne.SetReflectionMap(*skyBox.GetCubeMapTexture());
+	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	//probeOne.SetReflectionMap(*skyBox.GetCubeMapTexture());
+	
 	probeOne.Create();
 
 	activeScene->AddRootChild(&ground);
@@ -154,7 +150,7 @@ int main() {
 
 	activeScene->SetReflectionProbe(&probeOne);
 	activeScene->SetSceneCamera(g_Camera);
-	activeScene->SetSceneSkybox(&skyBox);
+	activeScene->SetSceneSkybox(skyBoxTexture);
 	activeScene->AddSceneLight(pointLight);
 
 	///////////////////////////////////////////////////////////////////////////////

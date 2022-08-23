@@ -1,8 +1,6 @@
 #include "Engine/Utils/pch.h"
 #include "Scene.h"
 
-#include "Skybox.h"
-
 Scene::Scene(const std::string& name) :
 	m_Name(name),
 	m_SceneCamera(nullptr),
@@ -50,12 +48,12 @@ void Scene::RemoveRootChild(const std::string& name)
 	m_SceneObjects.erase("name");
 }
 
-void Scene::SetSceneSkybox(Skybox* s)
+void Scene::SetSceneSkybox(Texture* s)
 {
 	m_Skybox = s;
 }
 
-Skybox* Scene::GetSceneSkybox()
+Texture* Scene::GetSceneSkybox()
 {
 	return m_Skybox;
 }
