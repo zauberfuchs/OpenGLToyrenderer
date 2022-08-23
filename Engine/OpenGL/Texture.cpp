@@ -148,13 +148,11 @@ void Texture::LoadCubemap(const std::string& path)
 		if (data)
 		{
 			glTextureSubImage3D(m_ID, 0, 0, 0, i, m_Width, m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			std::cout << glGetError() << std::endl;
 			stbi_image_free(data);
 		}
 		else
 		{
 			std::cout << "Cubemap tex failed to load at path: " << path + faces[i] << std::endl;
-			stbi_image_free(data);
 		}
 	}
 	glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -6,7 +6,6 @@
 
 
 Skybox::Skybox(const std::string& name)
-	: m_Name(name), m_Skybox(TextureTarget::TextureCubeMap)
+	: m_Name(name)
 {
-	m_Skybox.LoadCubemap("../Data/Textures/Skybox/darkish");
 }

@@ -30,6 +30,8 @@ int main() {
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
 	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 
+	const auto skyBoxTexture = new Texture(TextureTarget::TextureCubeMap);
+	skyBoxTexture->LoadCubemap("../Data/Textures/Skybox/darkish");
 	
 	const auto whiteMaterial = new Material("white");
 	whiteMaterial->SetType(MaterialType::Phong);
@@ -137,13 +139,14 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
-	Skybox skybox("universe");
+	Skybox skyBox("universe");
+	skyBox.SetCubeMapTexture(skyBoxTexture);
+	
 
 	ReflectionProbe probeOne(1024, 1024);
 	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	probeOne.SetReflectionMap(*skybox.GetCubeMapTexture());
+	probeOne.SetReflectionMap(*skyBox.GetCubeMapTexture());
 	probeOne.Create();
-	//skybox.SetCubeMapTexture(*probeOne.GetReflectionTexture());
 
 	activeScene->AddRootChild(&ground);
 	activeScene->AddRootChild(&lightSphere);
@@ -151,7 +154,7 @@ int main() {
 
 	activeScene->SetReflectionProbe(&probeOne);
 	activeScene->SetSceneCamera(g_Camera);
-	activeScene->SetSceneSkybox(&skybox);
+	activeScene->SetSceneSkybox(&skyBox);
 	activeScene->AddSceneLight(pointLight);
 
 	///////////////////////////////////////////////////////////////////////////////
