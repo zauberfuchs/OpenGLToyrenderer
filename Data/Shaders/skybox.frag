@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 
 // required by GLSL spec Sect 4.5.3 (though nvidia does not, amd does)
 precision highp float;
@@ -22,14 +22,14 @@ uniform samplerCube skybox;
 
 void main()
 {    
-   // FragColor = texture(skybox, TexCoords);
+//    FragColor = texture(skybox, vec4(TexCoords, 1));
+    FragColor = texture(skybox, TexCoords);
 
-    vec3 envColor = textureLod(skybox, WorldPos, 0.0).rgb;
-    
-    // HDR tonemap and gamma correct
-    envColor = envColor / (envColor + vec3(1.0));
-    envColor = pow(envColor, vec3(1.0/2.2)); 
-    
-    FragColor = vec4(envColor, 1.0);
-
+//    vec3 envColor = textureLod(skybox, WorldPos, 0.0).rgb;
+//    
+//    // HDR tonemap and gamma correct
+//    envColor = envColor / (envColor + vec3(1.0));
+//    envColor = pow(envColor, vec3(1.0/2.2)); 
+//    
+//    FragColor = vec4(envColor, 1.0);
 }

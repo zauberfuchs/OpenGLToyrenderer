@@ -27,14 +27,15 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials
 	///////////////////////////////////////////////////////////////////////////////
-
+	
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
+	//MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 
-	auto wheelTexture = new Texture("../Data/Textures/wheel_bump.png", TextureType::AlbedoMap);
+	auto wheelTexture = new Texture("../Data/Textures/wheel_bump.png", TextureTarget::Texture2D);
 	wheelTexture->SetTextureTarget(TextureTarget::Texture2D);
 	wheelTexture->SetUniformLocation("material.albedoMap");
 
-	auto basketballTexture = new Texture("../Data/Textures/basketball.png", TextureType::AlbedoMap);
+	auto basketballTexture = new Texture("../Data/Textures/basketball.png", TextureTarget::Texture2D);
 	basketballTexture->SetTextureTarget(TextureTarget::Texture2D);
 	basketballTexture->SetUniformLocation("material.albedoMap");
 
@@ -156,24 +157,24 @@ int main() {
 	Animation anim("wheel", &wheel, FPS);
 
 	
-	//f(t) = -2t³ + 3t²
+	//f(t) = -2tï¿½ + 3tï¿½
 	auto hermiteSplineFunc = [](const float& i, const float& frames) {
 		return -2 * glm::pow(i / (frames - 1), 3) + 3 * glm::pow(i / (frames - 1), 2);
 	};
 	anim.SetInterpolationFunc(hermiteSplineFunc);
 
 	// Keys setzten und Reifen animieren
-	// Wir müssen hier kein Start Keyframe setzen, da unsere Animation automatisch bei frame 0 Startet, falls wir das ändern möchten, ist dies aber möglich.
+	// Wir mï¿½ssen hier kein Start Keyframe setzen, da unsere Animation automatisch bei frame 0 Startet, falls wir das ï¿½ndern mï¿½chten, ist dies aber mï¿½glich.
 	Keyframe endKey;
 	endKey.Frame = dauerSekunden * FPS;
 	endKey.Position = glm::vec3(0.0f, 0.4f, endPositionZ);
 	endKey.Rotation = glm::vec3(rotationX, 0.0f, 0.0f);
 
-	// Keys der Animation hinzufügen
+	// Keys der Animation hinzufï¿½gen
 	anim.InsertKeyframe(&endKey);
 
 	///////////////////////////////////////////////////////////////////////////////
-	// Animation 2 //todo sofern nichts anderes gesetzt wurde übernehme werte vom objekt
+	// Animation 2 //todo sofern nichts anderes gesetzt wurde ï¿½bernehme werte vom objekt
 	///////////////////////////////////////////////////////////////////////////////
 
 	// Variablen
@@ -244,7 +245,7 @@ int main() {
 
 		window->FrameRateLimit(FPS);
 
-		// Animation update, könnte die welt verwalten oder ein manager
+		// Animation update, kï¿½nnte die welt verwalten oder ein manager
 		anim.Update();
 		animBall.Update();
 

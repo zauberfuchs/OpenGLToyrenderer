@@ -38,7 +38,8 @@ enum class TextureTarget
 {
 	Texture2D = GL_TEXTURE_2D,
 	Texture2DMultiSample = GL_TEXTURE_2D_MULTISAMPLE,
-	TextureCubeMap = GL_TEXTURE_CUBE_MAP
+	TextureCubeMap = GL_TEXTURE_CUBE_MAP,
+	TextureCubeMapArray = GL_TEXTURE_CUBE_MAP_ARRAY
 };
 
 enum class TextureWrap

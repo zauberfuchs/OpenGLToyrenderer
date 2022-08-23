@@ -5,12 +5,11 @@
 
 
 Skybox::Skybox(const std::string& name)
-	: m_Name(name)
+	: m_Name(name), m_Skybox(TextureTarget::TextureCubeMap)
 {
 	m_Shader = World::Get().GetShader("skybox");
-	glGenTextures(1, &m_ID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
-	Load();
+
+	m_Skybox.LoadCubemap("../Data/Textures/Skybox/darkish");
 	SetupSkybox();
 }
 
@@ -76,34 +75,10 @@ void Skybox::Render()
 	m_Shader->SetUniformMat4f("view", view);
 	m_Shader->SetUniformMat4f("projection", camera->GetProjectionMatrix());
 	glBindVertexArray(m_SkyboxVAO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
+	m_Skybox.Bind(0);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glDepthFunc(GL_LESS);
-}
-
-void Skybox::Load()
-{
-	stbi_set_flip_vertically_on_load(0);
-	for (unsigned int i = 0; i < m_Faces.size(); i++)
-	{
-		m_LocalBuffer = stbi_load(m_Faces[i].c_str(), &m_Width, &m_Height, &m_Components, 0);
-		if (m_LocalBuffer)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer);
-			stbi_image_free(m_LocalBuffer);
-		}
-		else
-		{
-			std::cout << "Cubemap tex failed to load at path: " << m_Faces[i] << std::endl;
-			stbi_image_free(m_LocalBuffer);
-		}
-	}
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }

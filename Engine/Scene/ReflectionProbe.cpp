@@ -36,7 +36,6 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     m_RBO.Bind();
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
     m_RBO.CreateRenderBufferStorage(1024, 1024, FramebufferTextureFormat::Depth24);
-    m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
 
     // load the HDR environment map
     //todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
@@ -69,7 +68,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 
 void ReflectionProbe::SetReflectionMap(const Texture& texture)
 {
-	
+    m_ReflectionTexture = texture;
 }
 
 void ReflectionProbe::CreateIrradianceMap()

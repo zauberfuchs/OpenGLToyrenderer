@@ -121,6 +121,7 @@ void Texture::Load(const std::string& path, const TextureWrap& tw, const Texture
 void Texture::LoadCubemap(const std::string& path)
 {
 	stbi_set_flip_vertically_on_load(0);
+
 	unsigned char* data;
 
 	std::vector<std::string> faces
@@ -133,12 +134,21 @@ void Texture::LoadCubemap(const std::string& path)
 		"/back.png"
 	};
 
+	/*if(m_ID)
+	{
+		glDeleteTextures(1, &m_ID);
+		glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
+	}*/
+
+	glTextureStorage2D(m_ID, 1, GL_RGBA8, 1024, 1024);
+
 	for (unsigned int i = 0; i < faces.size(); i++)
 	{
 		data = stbi_load((path + faces[i]).c_str(), &m_Width, &m_Height, &m_Components, 0);
 		if (data)
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			glTextureSubImage3D(m_ID, 0, 0, 0, i, m_Width, m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			std::cout << glGetError() << std::endl;
 			stbi_image_free(data);
 		}
 		else
@@ -147,12 +157,11 @@ void Texture::LoadCubemap(const std::string& path)
 			stbi_image_free(data);
 		}
 	}
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
 void Texture::CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap, const uint16_t& samples) 

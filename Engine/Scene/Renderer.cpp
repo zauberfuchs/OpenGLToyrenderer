@@ -151,7 +151,10 @@ void Renderer::GeometryPath()
 
 void Renderer::SkyboxPath()
 {
-	s_Data.SceneSkybox->Render();
+	if (s_Data.SceneSkybox != nullptr)
+	{
+		s_Data.SceneSkybox->Render();
+	}
 	s_Data.GeometryFramebuffer->Unbind();
 }
 

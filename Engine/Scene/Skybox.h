@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/OpenGL/Shader.h"
+#include "Engine/OpenGL/Texture.h"
 
 class Skybox
 {
@@ -9,13 +10,15 @@ public:
 	~Skybox() = default;
 
 	void Render();
-	inline unsigned int GetId() { return m_ID; }
-	inline void SetId(const unsigned int& id) { m_ID = id; }
+	inline void SetCubeMapTexture(const Texture& texture) { m_Skybox.~Texture(); m_Skybox = texture; }
+	inline Texture* GetCubeMapTexture() { return &m_Skybox; }
 
 private:
 	std::string m_Name;
 	unsigned char* m_LocalBuffer;
 	int m_Width, m_Height, m_Components;
+
+	Texture m_Skybox;
 
 	Shader* m_Shader;
 
@@ -31,8 +34,7 @@ private:
 			"../Data/Textures/Skybox/darkish/front.png",
 			"../Data/Textures/Skybox/darkish/back.png"
 	};
-	
-	void Load();
+
 	void SetupSkybox();
 };
 

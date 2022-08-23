@@ -140,9 +140,10 @@ int main() {
 	Skybox skybox("universe");
 
 	ReflectionProbe probeOne(1024, 1024);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	skybox.SetId(probeOne.GetReflectionTexture()->GetTextureID());
+	//probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	probeOne.SetReflectionMap(*skybox.GetCubeMapTexture());
 	probeOne.Create();
+	//skybox.SetCubeMapTexture(*probeOne.GetReflectionTexture());
 
 	activeScene->AddRootChild(&ground);
 	activeScene->AddRootChild(&lightSphere);
