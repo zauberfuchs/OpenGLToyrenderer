@@ -29,10 +29,7 @@ private:
 	void CreatePrefilterMap();
 	void CreateBRDFLookUpTexture();
 	void RenderCube();
-	void RenderQuad();
-
-	unsigned int m_QuadVAO;
-	unsigned int m_QuadVBO;
+	
 	unsigned int m_CubeVAO;
 	unsigned int m_CubeVBO;
 	Renderbuffer m_RBO;

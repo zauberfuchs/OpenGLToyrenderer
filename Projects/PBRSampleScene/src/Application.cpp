@@ -150,7 +150,7 @@ int main() {
 
 	activeScene->SetReflectionProbe(&probeOne);
 	activeScene->SetSceneCamera(g_Camera);
-	activeScene->SetSceneSkybox(skyBoxTexture);
+	activeScene->SetSceneSkybox(probeOne.GetReflectionTexture());
 	activeScene->AddSceneLight(pointLight);
 
 	///////////////////////////////////////////////////////////////////////////////

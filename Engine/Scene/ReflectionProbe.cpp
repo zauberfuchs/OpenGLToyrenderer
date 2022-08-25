@@ -1,6 +1,7 @@
 #include "Engine/Utils/pch.h"
 #include "ReflectionProbe.h"
 
+#include "Renderer.h"
 #include "World.h"
 
 
@@ -59,6 +60,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     {
         m_EquirectangularToCubemapShader->SetUniformMat4f("view", m_CaptureViews[i]);
         m_FBO.AttachColorTexture3D(i, m_ReflectionTexture);
+        //Renderer::RenderCube();
         RenderCube();
     }
     
@@ -97,6 +99,7 @@ void ReflectionProbe::CreateIrradianceMap()
     {
         m_IrradianceShader->SetUniformMat4f("view", m_CaptureViews[i]);
         m_FBO.AttachColorTexture3D(i, m_IrradianceTexture);
+        //Renderer::RenderCube();
 		RenderCube();
     }
 
@@ -137,7 +140,8 @@ void ReflectionProbe::CreatePrefilterMap()
         {
             m_PrefilterShader->SetUniformMat4f("view", m_CaptureViews[i]);
             m_FBO.AttachColorTexture3D(i, m_PrefilterTexture, mip);
-            RenderCube();
+            //Renderer::RenderCube();
+        	RenderCube();
         }
     }
 
@@ -161,38 +165,10 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     m_BrdfShader->Bind();
     
     glViewport(0, 0, 512, 512);
-    RenderQuad();
+    Renderer::RenderQuad();
 
     m_FBO.Unbind();
     m_BrdfShader->Unbind();
-}
-
-
-void ReflectionProbe::RenderQuad()
-{
-
-    float quadVertices[] = {
-        // positions        // texture Coords
-        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-         1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-    };
-    // setup plane VAO
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glGenVertexArrays(1, &m_QuadVAO);
-    glGenBuffers(1, &m_QuadVBO);
-    glBindVertexArray(m_QuadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_QuadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    
-    glBindVertexArray(m_QuadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
 }
 
 void ReflectionProbe::RenderCube()
@@ -241,25 +217,29 @@ void ReflectionProbe::RenderCube()
 	    -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
 	    -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
 	};
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glGenVertexArrays(1, &m_CubeVAO);
-	glGenBuffers(1, &m_CubeVBO);
-	// fill buffer
-	glBindBuffer(GL_ARRAY_BUFFER, m_CubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// link vertex attributes
-	glBindVertexArray(m_CubeVAO);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-    
-    // render Cube
+
+    glCreateBuffers(1, &m_CubeVBO);
+    glNamedBufferData(m_CubeVBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glCreateVertexArrays(1, &m_CubeVAO);
+
+    glVertexArrayVertexBuffer(m_CubeVAO, 0, m_CubeVBO, 0, 8 * sizeof(float));
+
+    glEnableVertexArrayAttrib(m_CubeVAO, 0);
+    glEnableVertexArrayAttrib(m_CubeVAO, 1);
+
+    glVertexArrayAttribFormat(m_CubeVAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
+    glVertexArrayAttribFormat(m_CubeVAO, 1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
+    glVertexArrayAttribFormat(m_CubeVAO, 2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float));
+
+    glVertexArrayAttribBinding(m_CubeVAO, 0, 0);
+    glVertexArrayAttribBinding(m_CubeVAO, 1, 0);
+    glVertexArrayAttribBinding(m_CubeVAO, 2, 0);
+
     glBindVertexArray(m_CubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
+
 }
