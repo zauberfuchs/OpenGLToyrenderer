@@ -60,8 +60,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     {
         m_EquirectangularToCubemapShader->SetUniformMat4f("view", m_CaptureViews[i]);
         m_FBO.AttachColorTexture3D(i, m_ReflectionTexture);
-        //Renderer::RenderCube();
-        RenderCube();
+        Renderer::RenderCube();
     }
     
     m_FBO.Unbind();
@@ -99,8 +98,7 @@ void ReflectionProbe::CreateIrradianceMap()
     {
         m_IrradianceShader->SetUniformMat4f("view", m_CaptureViews[i]);
         m_FBO.AttachColorTexture3D(i, m_IrradianceTexture);
-        //Renderer::RenderCube();
-		RenderCube();
+        Renderer::RenderCube();
     }
 
     m_FBO.Unbind();
@@ -140,8 +138,7 @@ void ReflectionProbe::CreatePrefilterMap()
         {
             m_PrefilterShader->SetUniformMat4f("view", m_CaptureViews[i]);
             m_FBO.AttachColorTexture3D(i, m_PrefilterTexture, mip);
-            //Renderer::RenderCube();
-        	RenderCube();
+            Renderer::RenderCube();
         }
     }
 
@@ -169,77 +166,4 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
 
     m_FBO.Unbind();
     m_BrdfShader->Unbind();
-}
-
-void ReflectionProbe::RenderCube()
-{
-	float vertices[] = {
-	    // back face
-	    -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-	     1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-	     1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-	     1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-	    -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-	    -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-	    // front face
-	    -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-	     1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-	     1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-	     1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-	    -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-	    -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-	    // left face
-	    -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-	    -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-	    -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-	    -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-	    -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-	    -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-	    // right face
-	     1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-	     1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-	     1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-	     1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-	     1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-	     1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
-	    // bottom face
-	    -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-	     1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-	     1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-	     1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-	    -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-	    -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-	    // top face
-	    -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-	     1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-	     1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-	     1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-	    -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-	    -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
-	};
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glCreateBuffers(1, &m_CubeVBO);
-    glNamedBufferData(m_CubeVBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glCreateVertexArrays(1, &m_CubeVAO);
-
-    glVertexArrayVertexBuffer(m_CubeVAO, 0, m_CubeVBO, 0, 8 * sizeof(float));
-
-    glEnableVertexArrayAttrib(m_CubeVAO, 0);
-    glEnableVertexArrayAttrib(m_CubeVAO, 1);
-
-    glVertexArrayAttribFormat(m_CubeVAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
-    glVertexArrayAttribFormat(m_CubeVAO, 1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
-    glVertexArrayAttribFormat(m_CubeVAO, 2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float));
-
-    glVertexArrayAttribBinding(m_CubeVAO, 0, 0);
-    glVertexArrayAttribBinding(m_CubeVAO, 1, 0);
-    glVertexArrayAttribBinding(m_CubeVAO, 2, 0);
-
-    glBindVertexArray(m_CubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
-
 }

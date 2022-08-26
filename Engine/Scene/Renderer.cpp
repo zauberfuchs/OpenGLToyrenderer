@@ -157,7 +157,7 @@ void Renderer::SkyboxPath()
 		s_Data.ActiveShader->SetUniformMat4f("view", glm::mat4(glm::mat3(s_Data.ActiveSceneCamera->GetViewMatrix())));// this removes the translation from the view matrix
 		s_Data.ActiveShader->SetUniformMat4f("projection", s_Data.ActiveSceneCamera->GetProjectionMatrix());
 		s_Data.SceneSkybox->Bind(0);
-		RenderCube();
+		RenderSkyBox();
 	}
 	s_Data.GeometryFramebuffer->Unbind();
 }
@@ -242,15 +242,14 @@ void Renderer::RenderQuad()
 	glBindVertexArray(0);
 }
 
-
-unsigned int cubeVAO = 0;
-unsigned int cubeVBO = 0;
-unsigned int cubeEBO = 0;
-void Renderer::RenderCube()
+unsigned int skyBoxVAO = 0;
+unsigned int skyBoxVBO = 0;
+unsigned int skyBoxEBO = 0;
+void Renderer::RenderSkyBox()
 {
-	if (cubeVAO == 0)
+	if (skyBoxVAO == 0)
 	{
-		float skyboxVertices[24] =
+		float vertices[24] =
 		{
 			//   Coordinates
 			-1.0f, -1.0f,  1.0f,//        7--------6
@@ -263,7 +262,7 @@ void Renderer::RenderCube()
 			-1.0f,  1.0f, -1.0f
 		};
 
-		unsigned int skyboxIndices[] =
+		unsigned int indices[] =
 		{
 			// Right
 			6, 2, 1,
@@ -285,27 +284,102 @@ void Renderer::RenderCube()
 			3, 2, 6
 		};
 
+		glCreateBuffers(1, &skyBoxVBO);
+		glNamedBufferData(skyBoxVBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glCreateBuffers(1, &skyBoxEBO);
+		glNamedBufferData(skyBoxEBO, sizeof(indices), indices, GL_STATIC_DRAW);
 
+		glCreateVertexArrays(1, &skyBoxVAO);
 
-		glGenVertexArrays(1, &cubeVAO);
-		glGenBuffers(1, &cubeVBO);
-		glGenBuffers(1, &cubeEBO);
-		glBindVertexArray(cubeVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(skyboxIndices), &skyboxIndices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glVertexArrayVertexBuffer(skyBoxVAO, 0, skyBoxVBO, 0, 3 * sizeof(float));
+		glVertexArrayElementBuffer(skyBoxVAO, skyBoxEBO);
+
+		glEnableVertexArrayAttrib(skyBoxVAO, 0);
+		glVertexArrayAttribFormat(skyBoxVAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
+		glVertexArrayAttribBinding(skyBoxVAO, 0, 0);
+
 	}
 
-	glBindVertexArray(cubeVAO);
+	glBindVertexArray(skyBoxVAO);
 	glDepthFunc(GL_LEQUAL);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	glDepthFunc(GL_LESS);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
+}
 
+unsigned int cubeVAO = 0;
+unsigned int cubeVBO = 0;
+void Renderer::RenderCube()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if(cubeVAO == 0)
+	{
+		float vertices[] = {
+			// back face
+			-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+			 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+			 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+			 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+			-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+			-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+			// front face
+			-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+			 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+			 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+			 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+			-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+			-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+			// left face
+			-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+			-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+			-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+			-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+			-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+			-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+			// right face
+			 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+			 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+			 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
+			 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+			 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+			 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+			// bottom face
+			-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+			 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+			 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+			 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+			-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+			-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+			// top face
+			-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+			 1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+			 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
+			 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+			-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+			-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
+		};
+
+		glCreateBuffers(1, &cubeVBO);
+		glNamedBufferData(cubeVBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glCreateVertexArrays(1, &cubeVAO);
+
+		glVertexArrayVertexBuffer(cubeVAO, 0, cubeVBO, 0, 8 * sizeof(float));
+
+		glEnableVertexArrayAttrib(cubeVAO, 0);
+		glEnableVertexArrayAttrib(cubeVAO, 1);
+
+		glVertexArrayAttribFormat(cubeVAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
+		glVertexArrayAttribFormat(cubeVAO, 1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
+		glVertexArrayAttribFormat(cubeVAO, 2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float));
+
+		glVertexArrayAttribBinding(cubeVAO, 0, 0);
+		glVertexArrayAttribBinding(cubeVAO, 1, 0);
+		glVertexArrayAttribBinding(cubeVAO, 2, 0);
+	}
+
+	glBindVertexArray(cubeVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
 }

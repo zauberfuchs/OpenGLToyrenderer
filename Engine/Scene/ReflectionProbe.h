@@ -28,10 +28,7 @@ private:
 	void CreateIrradianceMap();
 	void CreatePrefilterMap();
 	void CreateBRDFLookUpTexture();
-	void RenderCube();
 	
-	unsigned int m_CubeVAO;
-	unsigned int m_CubeVBO;
 	Renderbuffer m_RBO;
 	Framebuffer m_FBO;
 
