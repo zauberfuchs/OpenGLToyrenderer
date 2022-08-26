@@ -4,8 +4,6 @@
 
 class IndexBuffer
 {
-private:
-	GLuint m_ID;
 public:
 	IndexBuffer(std::vector<GLuint>& indices);
 	~IndexBuffer();
@@ -13,5 +11,9 @@ public:
 	void Bind() const;
 	void Unbind() const;
 	void Delete() const;
-	GLenum s;
+
+	GLuint GetID() const { return m_ID; }
+
+private:
+	GLuint m_ID;
 };

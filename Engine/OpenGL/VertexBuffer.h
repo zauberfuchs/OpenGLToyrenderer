@@ -19,6 +19,8 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
+	GLuint GetID() const { return m_ID; }
+
 private:
 	GLuint m_ID;
 };

@@ -6,8 +6,6 @@
 #include "Engine/OpenGL/Framebuffer.h"
 #include "Engine/OpenGL/Texture.h"
 
-class Mesh;
-
 class ReflectionProbe
 {
 public:
@@ -31,8 +29,6 @@ private:
 	
 	Renderbuffer m_RBO;
 	Framebuffer m_FBO;
-
-	Mesh* m_Cube;
 
 	Texture m_IrradianceTexture;
 	Texture m_PrefilterTexture;
