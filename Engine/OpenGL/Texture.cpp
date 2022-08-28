@@ -190,6 +190,12 @@ void Texture::CreateTexture2DStorage(const TextureInternalFormat& tif, const boo
 
 void Texture::CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap)
 {
+
+	if (m_ID)
+	{
+		glDeleteTextures(1, &m_ID);
+		glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
+	}
 	if (hasMipMap)
 	{
 		const auto mipmapLevels = static_cast<unsigned int>(glm::floor(glm::log2(glm::max(m_Width, m_Height))));

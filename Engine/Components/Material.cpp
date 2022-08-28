@@ -31,8 +31,8 @@ Material::~Material()
 		if(textureType != TextureType::DepthMap)
 		{
 			//todo assetmanager
-//			delete texture;
-	//		texture = nullptr;
+			//delete texture;
+			//texture = nullptr;
 		}
 	}
 }
@@ -43,7 +43,6 @@ void Material::SetTexture(Texture* texture)
 	m_Textures.insert({ texture->GetTextureType(), texture });
 }
 
-// mehr parameter?? type/ target / uniform
 void Material::SetPBRTexture(const std::string& path)
 {
 	Texture* tex;

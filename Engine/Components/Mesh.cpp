@@ -16,7 +16,6 @@ Mesh::Mesh(const std::string& name, const std::vector <Vertex>& vertices, const 
 
 Mesh::~Mesh()
 {
-
 	delete m_VAO;
 	delete m_IBO;
 	delete m_VBO;

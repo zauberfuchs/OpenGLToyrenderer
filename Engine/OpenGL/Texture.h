@@ -31,7 +31,8 @@ enum class TextureInternalFormat
 	Rgba8 = GL_RGBA8,
 	Rgb16 = GL_RGB16,
 	Rg16F = GL_RG16F,
-	Rgb16F = GL_RGB16F
+	Rgb16F = GL_RGB16F,
+	DepthComponent16 = GL_DEPTH_COMPONENT16
 };
 
 enum class TextureTarget

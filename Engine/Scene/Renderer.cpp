@@ -21,7 +21,6 @@ void Renderer::Init()
 	s_Data.ViewportTexture = new Texture(TextureTarget::Texture2DMultiSample);
 	s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 
-
 	s_Data.ActiveScene = World::Get().GetActiveScene();
 	s_Data.ActiveSceneCamera = s_Data.ActiveScene->GetSceneCamera();
 
@@ -47,21 +46,8 @@ void Renderer::Shutdown()
 
 void Renderer::DepthPrePath()
 {
-	//Todo Update Rendererdata Function?
+	// safes the current viewport size.
 	UpdateViewport();
-
-	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
-	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
-	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
-	
-	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
-	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
-	s_Data.GeometryFramebuffer->AttachColorTexture2D(*s_Data.ViewportTexture);
-
-	
-	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
-	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
-
 
 	switch(s_Data.ActiveSceneLight->GetType()) {
 	case LightSourceType::DirectionalLight:
@@ -77,9 +63,9 @@ void Renderer::DepthPrePath()
 		s_Data.ActiveShader->Bind();
 		break;
 	}
-	
 
-	glViewport(0, 0, s_Data.ActiveSceneLight->GetShadowWidth(), s_Data.ActiveSceneLight->GetShadowHeight());
+	//set the Viewport size to shadow texture size
+	SetViewport(0, 0, s_Data.ActiveSceneLight->GetShadowWidth(), s_Data.ActiveSceneLight->GetShadowHeight());
 	s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
 
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -91,7 +77,6 @@ void Renderer::DepthPrePath()
 	}
 	s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
 	s_Data.ActiveShader->SetUniform3f("lightPos", s_Data.ActiveSceneLight->GetPosition());
-
 
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
@@ -110,12 +95,29 @@ void Renderer::DepthPrePath()
 	}
 	s_Data.ActiveSceneLight->GetFramebuffer()->Unbind();
 
+	// restore old Viewport size
 	SetViewport(s_Data.RenderViewport[0], s_Data.RenderViewport[1], s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 }
 
 void Renderer::GeometryPath()
 {
 	s_Data.GeometryFramebuffer->Bind();
+	
+	// setzt die anzahl der Samples pro Pixel
+	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
+	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
+
+	// setzt die Texture groeße
+	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+
+	// fügt die textur als color attachment dem framebuffer hintu
+	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
+	s_Data.GeometryFramebuffer->AttachColorTexture2D(*s_Data.ViewportTexture);
+
+	// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen
+	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
+	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
 	Clear();
 

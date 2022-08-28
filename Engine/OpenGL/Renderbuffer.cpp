@@ -8,8 +8,9 @@ Renderbuffer::Renderbuffer()
 
 void Renderbuffer::CreateRenderBufferStorage(int width, int height, FramebufferTextureFormat format)
 {
-	glBindRenderbuffer(GL_RENDERBUFFER, m_ID);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, m_SampleSize, static_cast<GLenum>(format), width, height);
+	Bind();
+	glNamedRenderbufferStorageMultisample(m_ID, m_SampleSize, static_cast<GLenum>(format), width, height);
+	Unbind();
 }
 
 Renderbuffer::~Renderbuffer()
@@ -19,12 +20,12 @@ Renderbuffer::~Renderbuffer()
 
 void Renderbuffer::Bind() const
 {
-	glBindRenderbuffer(GL_FRAMEBUFFER, m_ID);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_ID);
 }
 
 void Renderbuffer::Unbind() const
 {
-	glBindRenderbuffer(GL_FRAMEBUFFER, 0);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 GLuint Renderbuffer::GetId() const

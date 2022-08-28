@@ -5,7 +5,6 @@
 #include "Engine/Geometry/Plane.h"
 #include "Engine/Geometry/StudentCube.h"
 #include "Engine/Geometry/Sphere.h"
-#include "Engine/Scene/Skybox.h"
 #include "Engine/Scene/Renderer.h"
 #include "Engine/Window/Window.h"
 #include "Engine/Window/ImGuiWindow.h"
@@ -30,6 +29,9 @@ int main() {
 	
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
 	//MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
+
+	const auto skyBoxTexture = new Texture(TextureTarget::TextureCubeMap);
+	skyBoxTexture->LoadCubemap("../Data/Textures/Skybox/darkish");
 
 	auto wheelTexture = new Texture("../Data/Textures/wheel_bump.png", TextureTarget::Texture2D);
 	wheelTexture->SetTextureTarget(TextureTarget::Texture2D);
@@ -126,10 +128,8 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
-
-	Skybox skybox("universe");
 	
-	//activeScene->AddRootChild(&cube);
+	
 	activeScene->AddRootChild(&wheel);
 	activeScene->AddRootChild(&basketball);
 	activeScene->AddRootChild(&plane);
@@ -137,7 +137,7 @@ int main() {
 
 	activeScene->AddSceneLight(pointLight);
 	activeScene->SetSceneCamera(g_Camera);
-	activeScene->SetSceneSkybox(&skybox);
+	activeScene->SetSceneSkybox(skyBoxTexture);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Animation 1

@@ -53,6 +53,9 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO->GetId());
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+
+	
+
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -66,33 +69,19 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& height)
 {
 	m_FBO = new Framebuffer();
-	//Todo create depthmap texture in texture class
 	m_ShadowWidth = width;
 	m_ShadowHeight = height;
-	unsigned int depthMap;
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMap);
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, m_ShadowWidth, m_ShadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO->GetId());
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMap, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	m_Depthmap = new Texture();
-	m_Depthmap->SetTextureID(depthMap);
+	m_Depthmap = new Texture(TextureTarget::TextureCubeMap);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
-	m_Depthmap->SetTextureTarget(TextureTarget::TextureCubeMap);
+	m_Depthmap->SetTexture2DSize(m_ShadowWidth, m_ShadowHeight);
+	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::DepthComponent16);
+	m_Depthmap->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
+	m_Depthmap->SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
 	m_Depthmap->SetUniformLocation("depthMap");
+
+	m_FBO->AttachDepthTexture(*m_Depthmap);
+	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
+	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
 }
 
 glm::mat4 Light::CreateLightSpaceMatrix(const float& nearPlane, const float& farPlane)

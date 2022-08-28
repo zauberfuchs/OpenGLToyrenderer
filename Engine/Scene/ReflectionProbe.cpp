@@ -26,20 +26,21 @@ ReflectionProbe::ReflectionProbe(const int& width, const int& height)
 
 void ReflectionProbe::Create()
 {
+    m_FBO.Bind();
 	CreateIrradianceMap();
 	CreatePrefilterMap();
 	CreateBRDFLookUpTexture();
+	m_FBO.Unbind();
 }
 
 void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 {
     m_FBO.Bind();
-    m_RBO.Bind();
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
     m_RBO.CreateRenderBufferStorage(1024, 1024, FramebufferTextureFormat::Depth24);
 
     // load the HDR environment map
-    //todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
+    // todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
     Texture envHDRMap(TextureTarget::Texture2D);
     envHDRMap.Load(path, TextureWrap::ClampToEdge, TextureFilter::Linear);
     envHDRMap.Bind(0);
@@ -62,7 +63,7 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
         m_FBO.AttachColorTexture3D(i, m_ReflectionTexture);
         Renderer::RenderCube();
     }
-    
+
     m_FBO.Unbind();
     m_EquirectangularToCubemapShader->Unbind();
 }
@@ -100,8 +101,7 @@ void ReflectionProbe::CreateIrradianceMap()
         m_FBO.AttachColorTexture3D(i, m_IrradianceTexture);
         Renderer::RenderCube();
     }
-
-    m_FBO.Unbind();
+    
     m_IrradianceShader->Unbind();
 }
 
@@ -141,8 +141,7 @@ void ReflectionProbe::CreatePrefilterMap()
             Renderer::RenderCube();
         }
     }
-
-    m_FBO.Unbind();
+    
     m_PrefilterShader->Unbind();
 
 }
@@ -163,7 +162,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     
     glViewport(0, 0, 512, 512);
     Renderer::RenderQuad();
-
-    m_FBO.Unbind();
+    //geht nicht??
+  //  m_FBO.Unbind();
     m_BrdfShader->Unbind();
 }
