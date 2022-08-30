@@ -51,6 +51,7 @@ void Framebuffer::SetDrawBuffer(const FramebufferColorBuffer& fc)
 {
 	glNamedFramebufferDrawBuffer(m_ID, static_cast<GLint>(fc));
 }
+
 void Framebuffer::SetReadBuffer(const FramebufferColorBuffer& fc)
 {
 	glNamedFramebufferReadBuffer(m_ID, static_cast<GLint>(fc));

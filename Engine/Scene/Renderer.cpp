@@ -13,17 +13,22 @@ void Renderer::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
-	
-	s_Data.MSAA = new int(1);
+	StoreViewportSize();
 
+	s_Data.MSAA = new int(1);
 	s_Data.GeometryFramebuffer = new Framebuffer();
 	s_Data.GeometryRenderbuffer = new Renderbuffer();
-	s_Data.ViewportTexture = new Texture(TextureTarget::Texture2DMultiSample);
-	s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
+	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
+	
+	s_Data.ViewportTexture = new Texture(TextureTarget::Texture2DMultiSample);
+	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
+
+	s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
+	std::cout << glGetError() << std::endl;
 	s_Data.ActiveScene = World::Get().GetActiveScene();
 	s_Data.ActiveSceneCamera = s_Data.ActiveScene->GetSceneCamera();
-
 	for(auto m : World::Get().GetMaterials())
 	{
 		m.second->SetReflectionProbe(s_Data.ActiveScene->GetReflectionProbe());
@@ -47,7 +52,9 @@ void Renderer::Shutdown()
 void Renderer::DepthPrePath()
 {
 	// safes the current viewport size.
-	UpdateViewport();
+	StoreViewportSize();
+
+	s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
 
 	switch(s_Data.ActiveSceneLight->GetType()) {
 	case LightSourceType::DirectionalLight:
@@ -66,6 +73,7 @@ void Renderer::DepthPrePath()
 
 	//set the Viewport size to shadow texture size
 	SetViewport(0, 0, s_Data.ActiveSceneLight->GetShadowWidth(), s_Data.ActiveSceneLight->GetShadowHeight());
+
 	s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
 
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -117,7 +125,7 @@ void Renderer::GeometryPath()
 
 	// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen
 	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
-	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
+//	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
 	Clear();
 
@@ -187,7 +195,7 @@ void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t heig
 	glViewport(x, y, width, height);
 }
 
-void Renderer::UpdateViewport()
+void Renderer::StoreViewportSize()
 {
 	glGetIntegerv(GL_VIEWPORT, s_Data.RenderViewport);
 }
@@ -314,7 +322,6 @@ unsigned int cubeVBO = 0;
 void Renderer::RenderCube()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	if(cubeVAO == 0)
 	{
 		float vertices[] = {
@@ -361,26 +368,19 @@ void Renderer::RenderCube()
 			-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
 			-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
 		};
-
 		glCreateBuffers(1, &cubeVBO);
 		glNamedBufferData(cubeVBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
 		glCreateVertexArrays(1, &cubeVAO);
-
 		glVertexArrayVertexBuffer(cubeVAO, 0, cubeVBO, 0, 8 * sizeof(float));
-
 		glEnableVertexArrayAttrib(cubeVAO, 0);
 		glEnableVertexArrayAttrib(cubeVAO, 1);
-
 		glVertexArrayAttribFormat(cubeVAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
 		glVertexArrayAttribFormat(cubeVAO, 1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
 		glVertexArrayAttribFormat(cubeVAO, 2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float));
-
 		glVertexArrayAttribBinding(cubeVAO, 0, 0);
 		glVertexArrayAttribBinding(cubeVAO, 1, 0);
 		glVertexArrayAttribBinding(cubeVAO, 2, 0);
 	}
-
 	glBindVertexArray(cubeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);

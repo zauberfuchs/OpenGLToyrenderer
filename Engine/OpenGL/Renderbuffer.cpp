@@ -3,14 +3,13 @@
 
 Renderbuffer::Renderbuffer()
 {
-	glGenRenderbuffers(1, &m_ID);
+	glCreateRenderbuffers(1, &m_ID);
 }
 
 void Renderbuffer::CreateRenderBufferStorage(int width, int height, FramebufferTextureFormat format)
 {
-	Bind();
 	glNamedRenderbufferStorageMultisample(m_ID, m_SampleSize, static_cast<GLenum>(format), width, height);
-	Unbind();
+
 }
 
 Renderbuffer::~Renderbuffer()

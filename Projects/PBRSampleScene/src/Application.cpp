@@ -10,7 +10,6 @@
 #define FPS 30
 
 int main() {
-
 	const auto window = new Window(1600, 1200);
 	World::Get().SetActiveWindow(window);
 	const int error = window->InitOpenGLContext();
@@ -21,14 +20,17 @@ int main() {
 	World::Get().SetActiveScene(activeScene);
 
 	srand(time(nullptr));
-
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials
 	///////////////////////////////////////////////////////////////////////////////
 	
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
-	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 
+	ReflectionProbe probeOne(1024, 1024);
+	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	probeOne.Create();
+
+	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 	const auto skyBoxTexture = new Texture(TextureTarget::TextureCubeMap);
 	skyBoxTexture->LoadCubemap("../Data/Textures/Skybox/darkish");
 	
@@ -56,7 +58,6 @@ int main() {
 	const unsigned int maxColumns = 3;
 	
 	SceneObject* shaderBalls[maxRows][maxColumns];
-
 
 	int i = 1;
 	for (int row = 0; row < maxRows; row++)
@@ -138,11 +139,10 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
-	ReflectionProbe probeOne(1024, 1024);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	//probeOne.SetReflectionMap(*skyBox.GetCubeMapTexture());
 	
-	probeOne.Create();
+	//probeOne.SetReflectionMap(*skyBoxTexture);
+	
+	
 
 	activeScene->AddRootChild(&ground);
 	activeScene->AddRootChild(&lightSphere);
@@ -152,11 +152,10 @@ int main() {
 	activeScene->SetSceneCamera(g_Camera);
 	activeScene->SetSceneSkybox(probeOne.GetReflectionTexture());
 	activeScene->AddSceneLight(pointLight);
-
 	///////////////////////////////////////////////////////////////////////////////
 	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
-
+	
 	ImGuiWindow::Init();
 	Renderer::Init();
 

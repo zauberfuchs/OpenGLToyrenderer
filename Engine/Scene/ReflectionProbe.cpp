@@ -36,8 +36,8 @@ void ReflectionProbe::Create()
 void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 {
     m_FBO.Bind();
+    m_RBO.CreateRenderBufferStorage(512, 512, FramebufferTextureFormat::Depth24);
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
-    m_RBO.CreateRenderBufferStorage(1024, 1024, FramebufferTextureFormat::Depth24);
 
     // load the HDR environment map
     // todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
@@ -82,10 +82,7 @@ void ReflectionProbe::CreateIrradianceMap()
     m_IrradianceTexture.SetUniformLocation("material.irradianceMap");
     m_IrradianceTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
 
-
-	m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
     m_RBO.CreateRenderBufferStorage(32, 32, FramebufferTextureFormat::Depth24);
-
 
     // pbr: solve diffuse integral by convolution to create an irradiance (cube)map.
     m_IrradianceShader->Bind();
@@ -162,7 +159,5 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     
     glViewport(0, 0, 512, 512);
     Renderer::RenderQuad();
-    //geht nicht??
-  //  m_FBO.Unbind();
     m_BrdfShader->Unbind();
 }

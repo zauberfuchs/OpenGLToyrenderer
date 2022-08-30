@@ -100,29 +100,34 @@ int Shader::GetUniformLocation(const std::string& name)
 void Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryShader)
 {
 	unsigned int program = glCreateProgram();
+	GLint isLinked = 0;
 	unsigned int gs = 0;
 	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
 	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
 	if(geometryShader != "")
 	{
 		gs = CompileShader(GL_GEOMETRY_SHADER, geometryShader);
 		glAttachShader(program, gs);
 	}
-
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
 	glLinkProgram(program);
+
+	glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+	if (isLinked == GL_FALSE)
+	{
+		GLchar infoLog[1024];
+		glGetProgramInfoLog(program, 1024, NULL, infoLog);
+		std::cout << "ERROR::PROGRAM_LINKING_ERROR" << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+	}
 	glValidateProgram(program);
 
 	glDeleteShader(vs);
 	glDeleteShader(fs);
-
 	if (geometryShader != "")
 	{
 		glDeleteShader(gs);
 	}
-
 	m_ID = program;
 	World::Get().AddShader(this);
 
@@ -167,7 +172,6 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 	const char* src = source.c_str();
 	glShaderSource(id, 1, &src, nullptr);
 	glCompileShader(id);
-
 	int result;
 	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
 	if (result == GL_FALSE)
@@ -177,18 +181,10 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 		char* message = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(id, length, &length, message);
 		std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " sharder!" << std::endl;
-		std::cout << message << std::endl;
 		glDeleteShader(id);
 		return 0;
 	}
-	GLchar infoLog[1024];
-	glGetProgramiv(id, GL_LINK_STATUS, &result);
-	if (result == GL_FALSE)
-	{
-		glGetProgramInfoLog(id, 1024, NULL, infoLog);
-		std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 	
-	}
 	return id;
 }
 
