@@ -40,7 +40,6 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
     m_FBO.AttachRenderBuffer(m_RBO.GetId(), FramebufferAttachment::Depth);
 
     // load the HDR environment map
-    // todo Texture erstellung überarbeiten, was soll der konstruktor bekommen und was die create methode.
     Texture envHDRMap(TextureTarget::Texture2D);
     envHDRMap.Load(path, TextureWrap::ClampToEdge, TextureFilter::Linear);
     envHDRMap.Bind(0);

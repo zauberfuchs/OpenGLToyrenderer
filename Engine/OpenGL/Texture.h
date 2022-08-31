@@ -46,7 +46,8 @@ enum class TextureTarget
 enum class TextureWrap
 {
 	Repeat = GL_REPEAT,
-	ClampToEdge = GL_CLAMP_TO_EDGE
+	ClampToEdge = GL_CLAMP_TO_EDGE,
+	ClampToBorder = GL_CLAMP_TO_BORDER
 };
 
 enum class TextureFilter
@@ -76,6 +77,7 @@ public:
 	void SetWrapMode(const TextureWrap& s, const TextureWrap& t) const;
 	void SetWrapMode(const TextureWrap& s, const TextureWrap& t, const TextureWrap& r) const;
 	void SetFilter(const TextureFilter& min, const TextureFilter& mag) const;
+	void SetBorderColor(const float* borderColor) const;
 
 	
 

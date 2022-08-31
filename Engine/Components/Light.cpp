@@ -31,43 +31,40 @@ Light::~Light()
 	
 }
 
-//Todo eigene klassen nutzen wie Texture??
 void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned int& height)
 {
-	//todo memory leak?
+	if(m_FBO)
+	{
+		delete m_FBO;
+	}
 	m_FBO = new Framebuffer();
-	//Todo create depthmap texture in texture class
 	m_ShadowWidth = width;
 	m_ShadowHeight = height;
-	unsigned int depthMap;
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		m_ShadowWidth, m_ShadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	constexpr float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
-	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO->GetId());
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-
-	
-
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	m_Depthmap = new Texture();
-	m_Depthmap->SetTextureID(depthMap);
+	m_FBO = new Framebuffer();
+	m_ShadowWidth = width;
+	m_ShadowHeight = height;
+	m_Depthmap = new Texture(TextureTarget::Texture2D);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
-	m_Depthmap->SetTextureTarget(TextureTarget::TextureCubeMap);
+	m_Depthmap->SetTexture2DSize(m_ShadowWidth, m_ShadowHeight);
+	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::DepthComponent16);
+	m_Depthmap->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
+	m_Depthmap->SetWrapMode(TextureWrap::ClampToBorder, TextureWrap::ClampToBorder);
+	m_Depthmap->SetBorderColor(borderColor);
 	m_Depthmap->SetUniformLocation("depthMap");
+
+	m_FBO->AttachDepthTexture(*m_Depthmap);
+	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
+	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
 }
 
 void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& height)
 {
+	if (m_FBO)
+	{
+		delete m_FBO;
+	}
 	m_FBO = new Framebuffer();
 	m_ShadowWidth = width;
 	m_ShadowHeight = height;

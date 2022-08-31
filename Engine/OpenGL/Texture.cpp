@@ -231,6 +231,12 @@ void Texture::SetFilter(const TextureFilter& min, const TextureFilter& mag) cons
 	glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(mag));
 }
 
+void Texture::SetBorderColor(const float* borderColor) const
+{
+	glTextureParameterfv(m_ID, GL_TEXTURE_BORDER_COLOR, borderColor);
+}
+
+
 void Texture::Bind(const unsigned int& slot) const
 {
 	glActiveTexture(GL_TEXTURE0 + slot);
