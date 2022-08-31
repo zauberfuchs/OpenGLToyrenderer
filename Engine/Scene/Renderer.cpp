@@ -25,6 +25,7 @@ void Renderer::Init()
 	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
 
+	//todo wirft nen fehler
 	s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 	std::cout << glGetError() << std::endl;
 	s_Data.ActiveScene = World::Get().GetActiveScene();
@@ -111,21 +112,24 @@ void Renderer::GeometryPath()
 {
 	s_Data.GeometryFramebuffer->Bind();
 	
-	// setzt die anzahl der Samples pro Pixel
-	s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
-	s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
+	
 
-	// setzt die Texture groeße
-	s_Data.GeometryFramebuffer->SetFramebufferTextureSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+	// wenn der viewport sich verändert oder die samplesize
+	if (s_Data.ViewportTexture->GetWidth() != s_Data.RenderViewport[2] || s_Data.ViewportTexture->GetHeight() != s_Data.RenderViewport[3] || s_Data.GeometryFramebuffer->GetSampleSize() != *s_Data.MSAA)
+	{
+		// setzt die anzahl der Samples pro Pixel
+		s_Data.GeometryFramebuffer->SetSampleSize(*s_Data.MSAA);
+		s_Data.GeometryRenderbuffer->SetSampleSize(*s_Data.MSAA);
 
-	// fügt die textur als color attachment dem framebuffer hintu
-	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
-	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
-	s_Data.GeometryFramebuffer->AttachColorTexture2D(*s_Data.ViewportTexture);
+		// fügt die textur als color attachment dem framebuffer hintu
+		s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
+		s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
+		s_Data.GeometryFramebuffer->AttachColorTexture2D(*s_Data.ViewportTexture);
+		s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 
-	// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen
-	s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
-//	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
+		// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen
+		s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
+	}
 
 	Clear();
 

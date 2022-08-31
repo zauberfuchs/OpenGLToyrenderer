@@ -86,7 +86,7 @@ public:
 	void SetName(const std::string name) { m_Name = name; }
 
 	int GetWidth() const { return m_Width; }
-	int GetHeigth() const { return m_Height; }
+	int GetHeight() const { return m_Height; }
 
 	void SetTexture2DSize(const int& width, const int& height) { m_Width = width; m_Height = height; }
 

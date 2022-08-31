@@ -36,21 +36,16 @@ public:
 	void AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel = 0);
 
 	//void CreateDepthView();
-	GLuint GetColorTextureId();
-	GLuint GetId();
+	GLuint GetId() { return m_ID; }
 
 	void SetDrawBuffer(const FramebufferColorBuffer& fc);
 	void SetReadBuffer(const FramebufferColorBuffer& fc);
 	void AttachRenderBuffer(const GLuint& rbo_ID, const FramebufferAttachment& attachment);
-	void SetFramebufferTextureSize(const int& width, const int& height);
-	void SetSampleSize(unsigned int samples);
+	void SetSampleSize(const unsigned int& samples) { m_SampleSize = samples; }
+	unsigned int GetSampleSize() { return m_SampleSize; }
 
 private:
 	GLuint m_ID;
-	GLuint m_ColorTextureID;
-	GLuint m_DepthTextureID;
-
-	unsigned int m_Width;
-	unsigned int m_Height;
+	
 	unsigned int m_SampleSize = 1;
 };

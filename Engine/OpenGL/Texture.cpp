@@ -4,15 +4,15 @@
 
 
 Texture::Texture(const std::string& path, const TextureTarget& tt)
-	: m_FilePath(path), m_Target(tt)
+	: m_FilePath(path), m_Target(tt), m_ID(0)
 {
 	Load();
 }
 
 Texture::Texture(const TextureTarget& tt)
-	: m_Target(tt)
+	: m_Target(tt), m_ID(0)
 {
-	glCreateTextures(static_cast<GLenum>(tt), 1, &m_ID);
+	//glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 }
 
 Texture::~Texture()
@@ -137,8 +137,8 @@ void Texture::LoadCubemap(const std::string& path)
 	if(m_ID)
 	{
 		glDeleteTextures(1, &m_ID);
-		glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 	}
+	glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 
 	glTextureStorage2D(m_ID, 1, GL_RGBA8, 1024, 1024);
 
@@ -167,8 +167,8 @@ void Texture::CreateTexture2DStorage(const TextureInternalFormat& tif, const boo
 	if(m_ID)
 	{
 		glDeleteTextures(1, &m_ID);
-		glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 	}
+	glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 
 	if (hasMipMap)
 	{
@@ -190,6 +190,12 @@ void Texture::CreateTexture2DStorage(const TextureInternalFormat& tif, const boo
 
 void Texture::CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap)
 {
+	if (m_ID)
+	{
+		glDeleteTextures(1, &m_ID);
+	}
+	glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
+
 	if (hasMipMap)
 	{
 		const auto mipmapLevels = static_cast<unsigned int>(glm::floor(glm::log2(glm::max(m_Width, m_Height))));

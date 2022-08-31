@@ -23,7 +23,7 @@ uniform samplerCube skybox;
 void main()
 {    
 //    FragColor = texture(skybox, vec4(TexCoords, 1)); // cubemap Array call not used
-//    FragColor = texture(skybox, TexCoords);
+   // FragColor = texture(skybox, TexCoords);
 
     vec3 envColor = textureLod(skybox, WorldPos, 0.0).rgb;
     

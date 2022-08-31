@@ -25,12 +25,10 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
-
-	ReflectionProbe probeOne(1024, 1024);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	probeOne.Create();
-
 	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
+
+	
+
 	const auto skyBoxTexture = new Texture(TextureTarget::TextureCubeMap);
 	skyBoxTexture->LoadCubemap("../Data/Textures/Skybox/darkish");
 	
@@ -139,8 +137,10 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
-	
+	ReflectionProbe probeOne(1024, 1024);
+	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
 	//probeOne.SetReflectionMap(*skyBoxTexture);
+	probeOne.Create();
 	
 	
 

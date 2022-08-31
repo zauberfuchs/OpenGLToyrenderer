@@ -22,16 +22,6 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-GLuint Framebuffer::GetColorTextureId() 
-{
-	return m_ColorTextureID;
-}
-
-GLuint Framebuffer::GetId()
-{
-	return m_ID;
-}
-
 void Framebuffer::AttachDepthTexture(const Texture& tex)
 {
 	glNamedFramebufferTexture(m_ID, GL_DEPTH_ATTACHMENT, tex.GetTextureID(), 0);
@@ -60,17 +50,6 @@ void Framebuffer::SetReadBuffer(const FramebufferColorBuffer& fc)
 void Framebuffer::AttachRenderBuffer(const GLuint& rbo_ID, const FramebufferAttachment& attachment)
 {
 	glNamedFramebufferRenderbuffer(m_ID, static_cast<GLenum>(attachment), GL_RENDERBUFFER, rbo_ID);
-}
-
-void Framebuffer::SetSampleSize(unsigned int samples)
-{
-	m_SampleSize = samples;
-}
-
-void Framebuffer::SetFramebufferTextureSize(const int& width, const int& height)
-{
-	m_Width = width;
-	m_Height = height;
 }
 
 //void Framebuffer::CreateDepthView()

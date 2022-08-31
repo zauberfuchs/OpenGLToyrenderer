@@ -47,9 +47,9 @@ void ReflectionProbe::CreateReflectionMapFromHDR(const std::string& path)
 
     // setup cubemap to render to and attach to framebuffer
     m_ReflectionTexture.SetTexture2DSize(512, 512);
+    m_ReflectionTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
     m_ReflectionTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
     m_ReflectionTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
-    m_ReflectionTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
 
     // convert HDR equirectangular environment map to cubemap equivalent
     m_EquirectangularToCubemapShader->Bind();
@@ -76,11 +76,11 @@ void ReflectionProbe::SetReflectionMap(const Texture& texture)
 void ReflectionProbe::CreateIrradianceMap()
 {
     m_IrradianceTexture.SetTexture2DSize(32, 32);
+    m_IrradianceTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
     m_IrradianceTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
     m_IrradianceTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
     m_IrradianceTexture.SetTextureType(TextureType::IrradianceMap);
     m_IrradianceTexture.SetUniformLocation("material.irradianceMap");
-    m_IrradianceTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F);
 
     m_RBO.CreateRenderBufferStorage(32, 32, FramebufferTextureFormat::Depth24);
 
@@ -106,11 +106,11 @@ void ReflectionProbe::CreateIrradianceMap()
 void ReflectionProbe::CreatePrefilterMap()
 {
     m_PrefilterTexture.SetTexture2DSize(128, 128);
+    m_PrefilterTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F, true);
     m_PrefilterTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
     m_PrefilterTexture.SetFilter(TextureFilter::MipMapLinear, TextureFilter::Linear);
     m_PrefilterTexture.SetTextureType(TextureType::PrefilterMap);
     m_PrefilterTexture.SetUniformLocation("material.prefilterMap");
-    m_PrefilterTexture.CreateTextureCubeMapStorage(TextureInternalFormat::Rgb16F, true);
     m_PrefilterTexture.GenerateMipMap();
     
     // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
@@ -145,10 +145,10 @@ void ReflectionProbe::CreatePrefilterMap()
 
 void ReflectionProbe::CreateBRDFLookUpTexture()
 {
-    m_BrdfLookUpTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
-    m_BrdfLookUpTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
     m_BrdfLookUpTexture.SetTexture2DSize(512, 512);
     m_BrdfLookUpTexture.CreateTexture2DStorage(TextureInternalFormat::Rg16F);
+    m_BrdfLookUpTexture.SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
+    m_BrdfLookUpTexture.SetFilter(TextureFilter::Linear, TextureFilter::Linear);
     m_BrdfLookUpTexture.SetTextureType(TextureType::BrdfLookUpTexture);
     m_BrdfLookUpTexture.SetUniformLocation("material.brdfLUT");
     
