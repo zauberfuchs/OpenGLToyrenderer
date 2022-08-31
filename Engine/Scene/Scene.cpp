@@ -20,14 +20,12 @@ void Scene::UpdateScene()
 {
 }
 
-
 void Scene::AddRootChild(SceneObject* s)
 {
 	m_RootSO->AddChildren(s);
 	m_SceneObjects.insert({ s->GetName(), s });
 }
 
-//Todo ?? redundant
 void Scene::AddSceneObject(SceneObject* s)
 {
 	m_SceneObjects.insert({ s->GetName(), s });

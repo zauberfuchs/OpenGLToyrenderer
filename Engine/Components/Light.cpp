@@ -15,7 +15,8 @@ Light::Light(const std::string& name) :
 	m_Linear(0.0f),
 	m_Quadratic(0.0f),
 	m_CutOff(0.0f),
-	m_OuterCutOff(0.0f)
+	m_OuterCutOff(0.0f),
+	m_FBO(nullptr)
 {
 }
 
@@ -33,7 +34,7 @@ Light::~Light()
 
 void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned int& height)
 {
-	if(m_FBO)
+	if(m_FBO != nullptr)
 	{
 		delete m_FBO;
 	}
@@ -61,7 +62,7 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 
 void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& height)
 {
-	if (m_FBO)
+	if (m_FBO != nullptr)
 	{
 		delete m_FBO;
 	}

@@ -1,5 +1,4 @@
 #pragma once
-//TODO dlete glew?? move to cpp
 #include <GL/glew.h>
 
 enum class ShaderType
