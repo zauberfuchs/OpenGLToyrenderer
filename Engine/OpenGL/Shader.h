@@ -33,6 +33,7 @@ public:
 
 	std::string GetName();
 	void CreateShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryPath = "");
+
 private:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	int GetUniformLocation(const std::string& name);

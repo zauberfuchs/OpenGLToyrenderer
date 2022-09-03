@@ -39,7 +39,7 @@ public:
 	glm::mat4 GetTransformMatrix();
 	glm::mat4 GetConstrainedTransform(const bool* constraints);
 
-	//Todo componnent system überarbeiten(ich gebe hier referenzen zurück)
+	//Todo component system überarbeiten(ich gebe hier referenzen zurück)
 	glm::vec3& GetLocalEulerAngles();
 	glm::vec3& GetLocalPosition();
 	glm::vec3& GetLocalScale();

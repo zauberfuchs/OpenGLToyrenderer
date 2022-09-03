@@ -176,7 +176,6 @@ void Material::SetupUniforms()
 		break;
 	}
 
-	//todo light pass
 	int i = 0;
 	for (auto& l : lights)
 	{
