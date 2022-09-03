@@ -12,10 +12,9 @@ SceneObject::SceneObject(std::string name)
 
 SceneObject::~SceneObject()
 {
-	delete m_Model;
 }
 
-void SceneObject::AddModel(Model* model)
+void SceneObject::AddModel(Ref<Model> model)
 {
 	m_Model = model;
 }
@@ -30,7 +29,7 @@ Light* SceneObject::GetLight()
 	return m_Light;
 }
 
-void SceneObject::AddChildren(SceneObject* sceneObject)
+void SceneObject::AddChildren(Ref<SceneObject> sceneObject)
 {
 	World::Get().GetActiveScene()->AddSceneObject(sceneObject);
 	m_Children.insert(sceneObject);
@@ -38,7 +37,7 @@ void SceneObject::AddChildren(SceneObject* sceneObject)
 	sceneObject->SetParent(this);
 }
 
-std::unordered_set<SceneObject*> SceneObject::GetChildren()
+std::unordered_set<Ref<SceneObject>> SceneObject::GetChildren()
 {
 	return m_Children;
 }
@@ -58,10 +57,9 @@ std::string SceneObject::GetName()
 	return m_Name;
 }
 
-
-Model& SceneObject::GetModel()
+Ref<Model> SceneObject::GetModel()
 {
-	return *m_Model;
+	return m_Model;
 }
 
 Animation* SceneObject::GetAnimation()

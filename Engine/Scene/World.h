@@ -17,16 +17,16 @@ public:
 	void AddShader(Shader* shader);
 	Shader* GetShader(const std::string& name);
 
-	void AddMaterial(Material* m);
-	Material* GetMaterial(const std::string& name);
-	Material* GetMaterial(const int& index);
-	std::unordered_map<std::string, Material*> GetMaterials() { return m_MaterialCache; }
+	void AddMaterial(Ref<Material> m);
+	Ref<Material> GetMaterial(const std::string& name);
+	Ref<Material> GetMaterial(const int& index);
+	std::unordered_map<std::string, Ref<Material>> GetMaterials() { return m_MaterialCache; }
 
-	void SetActiveScene(Scene* s);
-	Scene* GetActiveScene();
+	void SetActiveScene(Ref<Scene> s);
+	Ref<Scene> GetActiveScene();
 
-	void SetActiveWindow(Window* w) { m_Window = w; }
-	Window* GetActiveWindow() { return m_Window; };
+	void SetActiveWindow(Ref<Window> w) { m_Window = w; }
+	Ref<Window> GetActiveWindow() { return m_Window; };
 
 	static auto& Get() {
 		static World world;
@@ -37,10 +37,10 @@ private:
 	World();
 	virtual ~World();
 
-	std::unordered_map<std::string, Material*> m_MaterialCache;
+	std::unordered_map<std::string, Ref<Material>> m_MaterialCache;
 	std::unordered_map<std::string, Shader*> m_ShaderCache;
 
-	Window* m_Window;
-	Scene* m_ActiveScene;
+	Ref<Window> m_Window;
+	Ref<Scene> m_ActiveScene;
 	glm::mat4 m_CoordinateSystem = glm::mat4(1.0f);
 };

@@ -12,10 +12,10 @@ struct RendererStorage
 	Texture* ViewportTexture;
 
 
-	Scene* ActiveScene;
+	Ref<Scene> ActiveScene;
 	Shader* ActiveShader;
 	Shader* PostFXShader;
-	Camera* ActiveSceneCamera;
+	Ref<Camera> ActiveSceneCamera;
 
 	Texture* SceneSkybox;
 
@@ -24,7 +24,7 @@ struct RendererStorage
 	uint32_t MeshIndexCount;
 	uint16_t MeshRenderMode;
 
-	Material* MeshMaterial;
+	Ref<Material> MeshMaterial;
 	Transform* MeshTransform;
 
 	Light* ActiveSceneLight;

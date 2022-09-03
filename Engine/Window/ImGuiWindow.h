@@ -11,7 +11,7 @@ class Transform;
 
 struct ImGuiWindowStorage
 {
-	SceneObject* CurrentSceneObject;
+	Ref<SceneObject> CurrentSceneObject;
 
 	glm::vec3 MaterialColor;
 	glm::vec3 LightColor;
@@ -34,8 +34,8 @@ struct ImGuiWindowStorage
 	// Material Textures
 	std::vector<Texture*> textures;
 	bool MaterialWindowState = false;
-	Mesh* SelectedMesh;
-	std::unordered_set<Material*> materials;
+	Ref<Mesh> SelectedMesh;
+	std::unordered_set<Ref<Material>> materials;
 
 	std::unordered_map<std::string, Texture*> ButtonTextures;
 

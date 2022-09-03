@@ -4,29 +4,25 @@
 Scene::Scene(const std::string& name) :
 	m_Name(name),
 	m_SceneCamera(nullptr),
-	m_RootSO(new SceneObject("root"))
+	m_RootSO(CreateRef<SceneObject>("root"))
 {
 }
 
 Scene::~Scene()
 {
-	if (m_RootSO != nullptr) {
-		delete m_RootSO;
-		m_RootSO = nullptr;
-	}
 }
 
 void Scene::UpdateScene()
 {
 }
 
-void Scene::AddRootChild(SceneObject* s)
+void Scene::AddRootChild(Ref<SceneObject> s)
 {
 	m_RootSO->AddChildren(s);
 	m_SceneObjects.insert({ s->GetName(), s });
 }
 
-void Scene::AddSceneObject(SceneObject* s)
+void Scene::AddSceneObject(Ref<SceneObject> s)
 {
 	m_SceneObjects.insert({ s->GetName(), s });
 }
@@ -56,7 +52,7 @@ Texture* Scene::GetSceneSkybox()
 	return m_Skybox;
 }
 
-void Scene::SetSceneCamera(Camera* c)
+void Scene::SetSceneCamera(Ref<Camera> c)
 {
 	m_SceneCamera = c;
 }
@@ -72,12 +68,12 @@ ReflectionProbe* Scene::GetReflectionProbe()
 }
 
 
-std::unordered_map<std::string, SceneObject*> Scene::GetSceneObjects()
+std::unordered_map<std::string, Ref<SceneObject>> Scene::GetSceneObjects()
 {
 	return m_SceneObjects;
 }
 
-SceneObject* Scene::GetSceneObject(const std::string& name)
+Ref<SceneObject> Scene::GetSceneObject(const std::string& name)
 {
 	return m_SceneObjects.at(name);
 }
@@ -87,12 +83,12 @@ std::unordered_map<std::string, Light*> Scene::GetSceneLightSources()
 	return m_LightSources;
 }
 
-SceneObject* Scene::GetRootSceneNode()
+Ref<SceneObject> Scene::GetRootSceneNode()
 {
 	return m_RootSO;
 }
 
-Camera* Scene::GetSceneCamera()
+Ref<Camera> Scene::GetSceneCamera()
 {
 	return m_SceneCamera;
 }

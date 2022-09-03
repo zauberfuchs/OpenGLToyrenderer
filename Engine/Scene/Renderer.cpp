@@ -90,7 +90,7 @@ void Renderer::DepthPrePath()
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
 		s_Data.MeshTransform = s.second->GetTransform(); 
-		for (const auto& m : s.second->GetModel().GetMeshes())
+		for (const auto& m : s.second->GetModel()->GetMeshes())
 		{
 			s_Data.MeshVAO = m.second->GetVAO();
 			s_Data.MeshIndexCount = m.second->GetIndicesSize();
@@ -136,7 +136,7 @@ void Renderer::GeometryPath()
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
 		s_Data.MeshTransform = s.second->GetTransform();
-		for (const auto& m : s.second->GetModel().GetMeshes())
+		for (const auto& m : s.second->GetModel()->GetMeshes())
 		{
 			s_Data.ActiveShader = m.second->GetMaterial()->GetShader();
 			s_Data.MeshVAO = m.second->GetVAO();

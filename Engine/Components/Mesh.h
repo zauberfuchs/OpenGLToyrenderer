@@ -17,8 +17,8 @@ public:
 	void SetName(const std::string& name);
 	std::string GetName();
 
-	void SetMaterial(Material* material);
-	Material* GetMaterial();
+	void SetMaterial(Ref<Material> material);
+	Ref<Material> GetMaterial();
 
 	VertexArray* GetVAO() { return m_VAO; }
 	uint16_t GetRenderMode() { return m_RenderMode; }
@@ -37,5 +37,5 @@ protected:
 	
 	uint16_t m_RenderMode = GL_TRIANGLES;
 
-	Material* m_Material = nullptr;
+	Ref<Material> m_Material = nullptr;
 };

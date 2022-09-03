@@ -17,28 +17,26 @@ Model::Model(const char* path)
 
 Model::~Model()
 {
-	for (auto& m : m_Meshes)
-		delete m.second;
 }
 
-void Model::AddMesh(Mesh* mesh)
+void Model::AddMesh(Ref<Mesh> mesh)
 {
 	m_Meshes.insert({mesh->GetName(), mesh});
 }
 
-Mesh* Model::GetMesh(const int& index)
+Ref<Mesh> Model::GetMesh(const int& index)
 {
 	auto it = m_Meshes.begin();
 	std::advance(it, index);
 	return it->second;
 }
 
-Mesh* Model::GetMesh(const std::string& name)
+Ref<Mesh> Model::GetMesh(const std::string& name)
 {
 	return m_Meshes.at(name);
 };
 
-std::unordered_map<std::string, Mesh*> Model::GetMeshes()
+std::unordered_map<std::string, Ref<Mesh>> Model::GetMeshes()
 {
 	return m_Meshes;
 }
@@ -83,13 +81,13 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	
 }
 
-Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Ref<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
 	// data to fill
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	std::vector<Texture> textures;
-	Material* m;
+	Ref<Material> m;
 
 	// walk through each of the mesh's vertices
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -152,7 +150,8 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, TextureType::AmbientOcclusionMap);
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
-	Mesh* _mesh = new Mesh(mesh->mName.C_Str(), vertices, indices);
+
+	Ref<Mesh> _mesh = CreateRef<Mesh>(mesh->mName.C_Str(), vertices, indices);
 
 	_mesh->SetMaterial(m);
 	_mesh->GetMaterial()->SetShader(World::Get().GetShader("simpleMaterialShader"));
@@ -160,8 +159,8 @@ Mesh* Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return _mesh;
 }
 
-Material* Model::LoadMaterial(aiMaterial* mat) {
-	auto material = new Material();
+Ref<Material> Model::LoadMaterial(aiMaterial* mat) {
+	auto material = CreateRef<Material>();
 	aiColor3D color(0.f, 0.f, 0.f);
 	float shininess;
 

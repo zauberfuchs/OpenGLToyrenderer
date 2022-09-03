@@ -34,7 +34,7 @@ public:
 
 };
 
-inline Camera* g_Camera;
+inline Ref<Camera> g_Camera;
 
 inline const char* glsl_version = "#version 330 core";
 

@@ -20,15 +20,16 @@ public:
 	void RemoveSceneLight(const std::string& name);
 	std::unordered_map<std::string, Light*> GetSceneLightSources();
 
-	SceneObject* GetRootSceneNode();
-	void AddRootChild(SceneObject* s);
+	Ref<SceneObject> GetRootSceneNode();
+	void AddRootChild(Ref<SceneObject> s);
 	void RemoveRootChild(const std::string& name);
-	SceneObject* GetSceneObject(const std::string& name);
-	std::unordered_map<std::string, SceneObject*> GetSceneObjects();
-	void AddSceneObject(SceneObject*);
 
-	void SetSceneCamera(Camera* s);
-	Camera* GetSceneCamera();
+	Ref<SceneObject> GetSceneObject(const std::string& name);
+	std::unordered_map<std::string, Ref<SceneObject>> GetSceneObjects();
+	void AddSceneObject(Ref<SceneObject>);
+
+	void SetSceneCamera(Ref<Camera> s);
+	Ref<Camera> GetSceneCamera();
 	void RemoveSceneCamera();
 
 	void SetSceneSkybox (Texture* s);
@@ -41,12 +42,12 @@ public:
 private:
 	std::string m_Name;
 
-	Camera* m_SceneCamera;
+	Ref<Camera> m_SceneCamera;
 	Texture* m_Skybox = nullptr;
 
-	SceneObject* m_RootSO;
+	Ref<SceneObject> m_RootSO = CreateRef<SceneObject>("root");
 	
-	std::unordered_map<std::string, SceneObject*> m_SceneObjects;
+	std::unordered_map<std::string, Ref<SceneObject>> m_SceneObjects;
 	std::unordered_map<std::string, Light*> m_LightSources;
 
 	ReflectionProbe* m_ReflectionProbe;

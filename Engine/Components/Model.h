@@ -19,23 +19,23 @@ public:
 
 	~Model();
 	
-	void AddMesh(Mesh* mesh);
-	Mesh* GetMesh(const int& index);
-	Mesh* GetMesh(const std::string& name);
-	std::unordered_map<std::string, Mesh*> GetMeshes();
+	void AddMesh(Ref<Mesh> mesh);
+	Ref<Mesh> GetMesh(const int& index = 0);
+	Ref<Mesh> GetMesh(const std::string& name);
+	std::unordered_map<std::string, Ref<Mesh>> GetMeshes();
 
 private:
 	void LoadModel(std::string path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	Ref<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType typeName);
 	Texture TextureFromFile(const std::string& path, TextureType type);
-	Material* LoadMaterial(aiMaterial* mat);
+	Ref<Material> LoadMaterial(aiMaterial* mat);
 
 
 	// model data
 	std::vector<Texture> m_TexturesLoaded;
-	std::unordered_map<std::string, Mesh*> m_Meshes;
+	std::unordered_map<std::string, Ref<Mesh>> m_Meshes;
 	std::string m_Directory;
 
 	std::string m_Name;

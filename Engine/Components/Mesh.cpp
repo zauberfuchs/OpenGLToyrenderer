@@ -36,12 +36,12 @@ void Mesh::SetupMesh()
 	m_VAO->AddVertexBuffer(*m_VBO, layout);
 }
 
-void Mesh::SetMaterial(Material* material)
+void Mesh::SetMaterial(Ref<Material> material)
 {
 	m_Material = material;
 }
 
-Material* Mesh::GetMaterial()
+Ref<Material> Mesh::GetMaterial()
 {
 	return m_Material;
 }

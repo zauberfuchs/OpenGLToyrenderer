@@ -129,7 +129,7 @@ void Shader::CreateShader(const std::string& vertexShader, const std::string& fr
 		glDeleteShader(gs);
 	}
 	m_ID = program;
-	World::Get().AddShader(this);-
+	World::Get().AddShader(this);
 }
 
 

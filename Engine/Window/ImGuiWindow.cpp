@@ -62,7 +62,7 @@ void ImGuiWindow::RenderScenePanel()
 				current_item = name.c_str();
 				s_ImGuiData.CurrentSceneObject = sceneObjects.at(current_item);
 				s_ImGuiData.Transform = s_ImGuiData.CurrentSceneObject->GetTransform();
-				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes().begin()->second->GetMaterial()->GetColor();
+				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes().begin()->second->GetMaterial()->GetColor();
 
 			}
 			if (is_selected)
@@ -106,16 +106,16 @@ void ImGuiWindow::RenderTransformComponent()
 
 void ImGuiWindow::RenderMeshComponent()
 {
-	if (s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes().size() != 0)
+	if (s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes().size() != 0)
 	{
-		auto meshes = s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes();
+		auto meshes = s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes();
 
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Material Component", 20);
 		AddUnderLine(ImColor(255, 255, 255, 255));
 		for(auto m : meshes)
 		{
-			auto material = (Material*)m.second->GetMaterial();
+			auto material = m.second->GetMaterial();
 			s_ImGuiData.materials.insert(material);
 
 			ImGui::Dummy(ImVec2(1, 1));
@@ -231,7 +231,7 @@ void ImGuiWindow::RenderMeshComponent()
 
 	}
 
-	for (auto [name, mesh] : s_ImGuiData.CurrentSceneObject->GetModel().GetMeshes())
+	for (auto [name, mesh] : s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes())
 	{
 		mesh->GetMaterial()->GetColor() = s_ImGuiData.MaterialColor;
 	}
