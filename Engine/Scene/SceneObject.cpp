@@ -19,12 +19,12 @@ void SceneObject::AddModel(Ref<Model> model)
 	m_Model = model;
 }
 
-void SceneObject::AddLight(Light* light)
+void SceneObject::AddLight(Ref<Light> light)
 {
 	m_Light = light;
 }
 
-Light* SceneObject::GetLight()
+Ref<Light> SceneObject::GetLight()
 {
 	return m_Light;
 }

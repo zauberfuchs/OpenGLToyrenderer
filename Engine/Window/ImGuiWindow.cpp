@@ -241,7 +241,7 @@ void ImGuiWindow::RenderLightComponent()
 {
 	if (s_ImGuiData.CurrentSceneObject->GetLight() != nullptr)
 	{
-		Light* l = s_ImGuiData.CurrentSceneObject->GetLight();
+		auto l = s_ImGuiData.CurrentSceneObject->GetLight();
 		s_ImGuiData.LightColor = l->GetColor();
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Light Component", 20);

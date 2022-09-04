@@ -55,7 +55,7 @@ public:
 	inline int GetShadowHeight() { return m_ShadowHeight; }
 
 	inline Framebuffer* GetFramebuffer() { return m_FBO; }
-	inline Texture* GetDepthmap() { return m_Depthmap; }
+	inline Ref<Texture> GetDepthmap() { return m_Depthmap; }
 
 
 	inline float GetNearPlane() { return m_NearPlane; }
@@ -85,7 +85,7 @@ private:
 	float m_FarPlane;
 
 	Framebuffer* m_FBO;
-	Texture* m_Depthmap;
+	Ref<Texture> m_Depthmap;
 
 
 	std::string m_Name = "noname";

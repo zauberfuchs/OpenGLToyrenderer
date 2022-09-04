@@ -17,8 +17,8 @@ public:
 
 	void AddModel(Ref<Model> model);
 
-	void AddLight(Light* light);
-	Light* GetLight();
+	void AddLight(Ref<Light> light);
+	Ref<Light> GetLight();
 	
 	void AddChildren(Ref<SceneObject> sceneObject);
 	std::unordered_set<Ref<SceneObject>> GetChildren();
@@ -43,6 +43,6 @@ private:
 
 	Animation* m_Animation = nullptr;
 
-	Light* m_Light = nullptr;
+	Ref<Light> m_Light = nullptr;
 	Ref<Model> m_Model = nullptr;
 };

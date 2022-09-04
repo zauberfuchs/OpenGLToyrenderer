@@ -110,7 +110,7 @@ int main() {
 	// Light
 	///////////////////////////////////////////////////////////////////////////////
 
-	const auto pointLight = new Light("pointLight");
+	const auto pointLight = CreateRef<Light>("pointLight");
 	pointLight->SetType(LightSourceType::PointLight);
 	pointLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
 	pointLight->SetConstant(1.0f);
@@ -137,19 +137,19 @@ int main() {
 	// Setup Scene
 	///////////////////////////////////////////////////////////////////////////////
 
-	ReflectionProbe probeOne(1024, 1024);
-	probeOne.CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
+	Ref<ReflectionProbe> probeOne = CreateRef<ReflectionProbe>(1024, 1024);
+	probeOne->CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
 	//probeOne.SetReflectionMap(*skyBoxTexture);
-	probeOne.Create();
+	probeOne->Create();
 
 
 	activeScene->AddRootChild(ground);
 	activeScene->AddRootChild(lightSphere);
 	activeScene->AddRootChild(teapot);
 
-	activeScene->SetReflectionProbe(&probeOne);
+	activeScene->SetReflectionProbe(probeOne);
 	activeScene->SetSceneCamera(g_Camera);
-	activeScene->SetSceneSkybox(probeOne.GetReflectionTexture());
+	activeScene->SetSceneSkybox(probeOne->GetReflectionTexture());
 	activeScene->AddSceneLight(pointLight);
 	///////////////////////////////////////////////////////////////////////////////
 	// Init Window & Rendering
@@ -183,9 +183,6 @@ int main() {
 	}
 
 	Renderer::Shutdown();
-
-	// cleanup
-	delete pointLight;
 	
 	return error;
 }

@@ -21,7 +21,7 @@ void Renderer::Init()
 	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
 	
-	s_Data.ViewportTexture = new Texture(TextureTarget::Texture2DMultiSample);
+	s_Data.ViewportTexture = CreateRef<Texture>(TextureTarget::Texture2DMultiSample);
 	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
 
@@ -124,7 +124,7 @@ void Renderer::GeometryPath()
 		// fügt die textur als color attachment dem framebuffer hintu
 		s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 		s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
-		s_Data.GeometryFramebuffer->AttachColorTexture2D(*s_Data.ViewportTexture);
+		s_Data.GeometryFramebuffer->AttachColorTexture2D(s_Data.ViewportTexture);
 		s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 
 		// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen

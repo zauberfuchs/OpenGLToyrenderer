@@ -24,8 +24,6 @@ Light::~Light()
 {
 	if(m_Depthmap != nullptr)
 	{
-		delete m_Depthmap;
-		m_Depthmap = nullptr;
 		delete m_FBO;
 		m_FBO = nullptr;
 	}
@@ -46,7 +44,7 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 	m_FBO = new Framebuffer();
 	m_ShadowWidth = width;
 	m_ShadowHeight = height;
-	m_Depthmap = new Texture(TextureTarget::Texture2D);
+	m_Depthmap = CreateRef<Texture>(TextureTarget::Texture2D);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 	m_Depthmap->SetTexture2DSize(m_ShadowWidth, m_ShadowHeight);
 	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::DepthComponent16);
@@ -55,7 +53,7 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 	m_Depthmap->SetBorderColor(borderColor);
 	m_Depthmap->SetUniformLocation("depthMap");
 
-	m_FBO->AttachDepthTexture(*m_Depthmap);
+	m_FBO->AttachDepthTexture(m_Depthmap);
 	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
 	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
 }
@@ -69,7 +67,7 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 	m_FBO = new Framebuffer();
 	m_ShadowWidth = width;
 	m_ShadowHeight = height;
-	m_Depthmap = new Texture(TextureTarget::TextureCubeMap);
+	m_Depthmap = CreateRef<Texture>(TextureTarget::TextureCubeMap);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 	m_Depthmap->SetTexture2DSize(m_ShadowWidth, m_ShadowHeight);
 	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::DepthComponent16);
@@ -77,7 +75,7 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 	m_Depthmap->SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
 	m_Depthmap->SetUniformLocation("depthMap");
 
-	m_FBO->AttachDepthTexture(*m_Depthmap);
+	m_FBO->AttachDepthTexture(m_Depthmap);
 	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
 	m_FBO->SetDrawBuffer(FramebufferColorBuffer::None);
 }

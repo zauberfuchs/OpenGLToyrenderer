@@ -16,9 +16,9 @@ public:
 	
 	void UpdateScene();
 
-	void AddSceneLight(Light* l);
+	void AddSceneLight(Ref<Light> l);
 	void RemoveSceneLight(const std::string& name);
-	std::unordered_map<std::string, Light*> GetSceneLightSources();
+	std::unordered_map<std::string, Ref<Light>> GetSceneLightSources();
 
 	Ref<SceneObject> GetRootSceneNode();
 	void AddRootChild(Ref<SceneObject> s);
@@ -32,23 +32,23 @@ public:
 	Ref<Camera> GetSceneCamera();
 	void RemoveSceneCamera();
 
-	void SetSceneSkybox (Texture* s);
-	Texture* GetSceneSkybox();
+	void SetSceneSkybox (Ref<Texture> s);
+	Ref<Texture> GetSceneSkybox();
 	void RemoveSceneSkybox();
 
-	void SetReflectionProbe(ReflectionProbe* rp);
-	ReflectionProbe* GetReflectionProbe();
+	void SetReflectionProbe(Ref<ReflectionProbe> rp);
+	Ref<ReflectionProbe> GetReflectionProbe();
 	
 private:
 	std::string m_Name;
 
 	Ref<Camera> m_SceneCamera;
-	Texture* m_Skybox = nullptr;
+	Ref<Texture> m_Skybox = nullptr;
 
 	Ref<SceneObject> m_RootSO = CreateRef<SceneObject>("root");
 	
 	std::unordered_map<std::string, Ref<SceneObject>> m_SceneObjects;
-	std::unordered_map<std::string, Light*> m_LightSources;
+	std::unordered_map<std::string, Ref<Light>> m_LightSources;
 
-	ReflectionProbe* m_ReflectionProbe;
+	Ref<ReflectionProbe> m_ReflectionProbe;
 };

@@ -37,7 +37,7 @@ Material::~Material()
 	}
 }
 
-void Material::SetTexture(Texture* texture)
+void Material::SetTexture(Ref<Texture> texture)
 {
 	m_HasTexture = 1;
 	m_Textures.insert({ texture->GetTextureType(), texture });
@@ -45,35 +45,35 @@ void Material::SetTexture(Texture* texture)
 
 void Material::SetPBRTexture(const std::string& path)
 {
-	Texture* tex;
+	Ref<Texture> tex;
 
-	tex = new Texture(path + "/albedo.png", TextureTarget::Texture2D);
+	tex = CreateRef<Texture>(path + "/albedo.png", TextureTarget::Texture2D);
 	tex->SetTextureType(TextureType::AlbedoMap);
 	tex->SetUniformLocation("material.albedoMap");
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/normal.png", TextureTarget::Texture2D);
+	tex = CreateRef<Texture>(path + "/normal.png", TextureTarget::Texture2D);
 	tex->SetTextureType(TextureType::NormalMap);
 	tex->SetUniformLocation("material.normalMap");
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/metallic.png", TextureTarget::Texture2D);
+	tex = CreateRef<Texture>(path + "/metallic.png", TextureTarget::Texture2D);
 	tex->SetTextureType(TextureType::MetallicMap);
 	tex->SetUniformLocation("material.metallicMap");
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/roughness.png", TextureTarget::Texture2D);
+	tex = CreateRef<Texture>(path + "/roughness.png", TextureTarget::Texture2D);
 	tex->SetTextureType(TextureType::RoughnessMap);
 	tex->SetUniformLocation("material.roughnessMap");
 	m_Textures.insert({ tex->GetTextureType(), tex });
 
-	tex = new Texture(path + "/ao.png", TextureTarget::Texture2D);
+	tex = CreateRef<Texture>(path + "/ao.png", TextureTarget::Texture2D);
 	tex->SetTextureType(TextureType::AmbientOcclusionMap);
 	tex->SetUniformLocation("material.aoMap");
 	m_Textures.insert({ tex->GetTextureType(), tex });
 }
 
-Texture* Material::GetTexture(const TextureType& channelMap) const
+Ref<Texture> Material::GetTexture(const TextureType& channelMap) const
 {
 	return m_Textures.at(channelMap);
 }
@@ -89,7 +89,7 @@ void Material::SetReflections(ReflectionType r)
 	}
 }
 
-void Material::SetReflectionProbe(ReflectionProbe* probe)
+void Material::SetReflectionProbe(Ref<ReflectionProbe> probe)
 {
 	m_Probe = probe;
 }
@@ -179,7 +179,7 @@ void Material::SetupUniforms()
 	int i = 0;
 	for (auto& l : lights)
 	{
-		Light* light = l.second;
+		auto light = l.second;
 		
 		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].position", light->GetPosition());
 		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].color", light->GetColor());

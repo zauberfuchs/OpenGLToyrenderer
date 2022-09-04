@@ -9,7 +9,7 @@ struct RendererStorage
 {
 	Framebuffer* GeometryFramebuffer;
 	Renderbuffer* GeometryRenderbuffer;
-	Texture* ViewportTexture;
+	Ref<Texture> ViewportTexture;
 
 
 	Ref<Scene> ActiveScene;
@@ -17,9 +17,9 @@ struct RendererStorage
 	Shader* PostFXShader;
 	Ref<Camera> ActiveSceneCamera;
 
-	Texture* SceneSkybox;
+	Ref<Texture> SceneSkybox;
 
-	VertexArray* MeshVAO;
+	Ref<VertexArray> MeshVAO;
 
 	uint32_t MeshIndexCount;
 	uint16_t MeshRenderMode;
@@ -27,7 +27,7 @@ struct RendererStorage
 	Ref<Material> MeshMaterial;
 	Transform* MeshTransform;
 
-	Light* ActiveSceneLight;
+	Ref<Light> ActiveSceneLight;
 
 	int* MSAA;
 

@@ -14,12 +14,12 @@ public:
 
 	void Create();
 	void CreateReflectionMapFromHDR(const std::string& path);
-	void SetReflectionMap(const Texture& texture);
+	void SetReflectionMap(Ref<Texture> texture);
 
-	inline Texture* GetIrradianceTexture() { return &m_IrradianceTexture; }
-	inline Texture* GetPrefilterTexture() { return &m_PrefilterTexture; }
-	inline Texture* GetBrdfLookUpTexture() { return &m_BrdfLookUpTexture; }
-	inline Texture* GetReflectionTexture() { return &m_ReflectionTexture; }
+	inline Ref<Texture> GetIrradianceTexture() { return m_IrradianceTexture; }
+	inline Ref<Texture> GetPrefilterTexture() { return m_PrefilterTexture; }
+	inline Ref<Texture> GetBrdfLookUpTexture() { return m_BrdfLookUpTexture; }
+	inline Ref<Texture> GetReflectionTexture() { return m_ReflectionTexture; }
 
 private:
 
@@ -30,10 +30,10 @@ private:
 	Renderbuffer m_RBO;
 	Framebuffer m_FBO;
 
-	Texture m_IrradianceTexture;
-	Texture m_PrefilterTexture;
-	Texture m_BrdfLookUpTexture;
-	Texture m_ReflectionTexture;
+	Ref<Texture> m_IrradianceTexture;
+	Ref<Texture> m_PrefilterTexture;
+	Ref<Texture> m_BrdfLookUpTexture;
+	Ref<Texture> m_ReflectionTexture;
 
 	Shader* m_BrdfShader;
 	Shader* m_PrefilterShader;

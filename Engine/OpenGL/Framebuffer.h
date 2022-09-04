@@ -31,9 +31,9 @@ public:
 	void Bind() const;
 	void Unbind() const;
 
-	void AttachDepthTexture(const Texture& tex);
-	void AttachColorTexture2D(const Texture& tex);
-	void AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel = 0);
+	void AttachDepthTexture(Ref<Texture> tex);
+	void AttachColorTexture2D(Ref<Texture> tex);
+	void AttachColorTexture3D(const uint16_t& face, Ref<Texture> tex, const uint16_t& mipMapLevel = 0);
 
 	//void CreateDepthView();
 	GLuint GetId() { return m_ID; }

@@ -26,11 +26,11 @@ public:
 	~Material();
 	
 
-	void SetTexture(Texture* texture);
-	Texture* GetTexture(const TextureType& channelMap) const;
+	void SetTexture(Ref<Texture> texture);
+	Ref<Texture> GetTexture(const TextureType& channelMap) const;
 	void SetPBRTexture(const std::string& path);
 
-	void SetReflectionProbe(ReflectionProbe* probe);
+	void SetReflectionProbe(Ref<ReflectionProbe> probe);
 	void UpdateReflectionProbe();
 
 	void SetupTextures();
@@ -111,13 +111,9 @@ private:
 	float m_Roughness;
 	float m_Ao;
 
+	Ref<ReflectionProbe> m_Probe = nullptr;
 
-	// Physically Based Textured Rendering propoerties
-	Texture* m_TextureShadowDepth = nullptr;
-
-	ReflectionProbe* m_Probe = nullptr;
-
-	std::unordered_map<TextureType, Texture*> m_Textures;
+	std::unordered_map<TextureType, Ref<Texture>> m_Textures;
 
 };
 

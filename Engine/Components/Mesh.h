@@ -20,7 +20,7 @@ public:
 	void SetMaterial(Ref<Material> material);
 	Ref<Material> GetMaterial();
 
-	VertexArray* GetVAO() { return m_VAO; }
+	Ref<VertexArray> GetVAO() { return m_VAO; }
 	uint16_t GetRenderMode() { return m_RenderMode; }
 	uint32_t GetIndicesSize() { return static_cast<uint32_t>(m_Indices.size()); }
 
@@ -31,9 +31,10 @@ protected:
 	std::vector <Vertex> m_Vertices;
 	std::vector <GLuint> m_Indices;
 
-	VertexArray* m_VAO;
-	IndexBuffer* m_IBO;
-	VertexBuffer* m_VBO;
+	
+	Ref<VertexArray> m_VAO;
+	Ref<IndexBuffer> m_IBO;
+	Ref<VertexBuffer> m_VBO;
 	
 	uint16_t m_RenderMode = GL_TRIANGLES;
 

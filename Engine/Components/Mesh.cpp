@@ -16,16 +16,13 @@ Mesh::Mesh(const std::string& name, const std::vector <Vertex>& vertices, const 
 
 Mesh::~Mesh()
 {
-	delete m_VAO;
-	delete m_IBO;
-	delete m_VBO;
 }
 
 void Mesh::SetupMesh()
 {
-	m_VAO = new VertexArray();
-	m_VBO = new VertexBuffer(m_Vertices);
-	m_IBO = new IndexBuffer(m_Indices);
+	m_VAO = CreateRef<VertexArray>();
+	m_VBO = CreateRef<VertexBuffer>(m_Vertices);
+	m_IBO = CreateRef<IndexBuffer>(m_Indices);
 	
 	m_VAO->AddIndexBuffer(*m_IBO);
 

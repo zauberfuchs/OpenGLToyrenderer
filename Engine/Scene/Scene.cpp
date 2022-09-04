@@ -27,7 +27,7 @@ void Scene::AddSceneObject(Ref<SceneObject> s)
 	m_SceneObjects.insert({ s->GetName(), s });
 }
 
-void Scene::AddSceneLight(Light* l)
+void Scene::AddSceneLight(Ref<Light> l)
 {
 	m_LightSources.insert( {l->GetName(), l} );
 }
@@ -42,12 +42,12 @@ void Scene::RemoveRootChild(const std::string& name)
 	m_SceneObjects.erase("name");
 }
 
-void Scene::SetSceneSkybox(Texture* s)
+void Scene::SetSceneSkybox(Ref<Texture> s)
 {
 	m_Skybox = s;
 }
 
-Texture* Scene::GetSceneSkybox()
+Ref<Texture> Scene::GetSceneSkybox()
 {
 	return m_Skybox;
 }
@@ -57,12 +57,12 @@ void Scene::SetSceneCamera(Ref<Camera> c)
 	m_SceneCamera = c;
 }
 
-void Scene::SetReflectionProbe(ReflectionProbe* rp)
+void Scene::SetReflectionProbe(Ref<ReflectionProbe> rp)
 {
 	m_ReflectionProbe = rp;
 }
 
-ReflectionProbe* Scene::GetReflectionProbe()
+Ref<ReflectionProbe> Scene::GetReflectionProbe()
 {
 	return m_ReflectionProbe;
 }
@@ -78,7 +78,7 @@ Ref<SceneObject> Scene::GetSceneObject(const std::string& name)
 	return m_SceneObjects.at(name);
 }
 
-std::unordered_map<std::string, Light*> Scene::GetSceneLightSources()
+std::unordered_map<std::string, Ref<Light>> Scene::GetSceneLightSources()
 {
 	return m_LightSources;
 }

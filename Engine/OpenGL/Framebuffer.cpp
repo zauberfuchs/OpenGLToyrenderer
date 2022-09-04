@@ -22,19 +22,19 @@ void Framebuffer::Unbind() const
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::AttachDepthTexture(const Texture& tex)
+void Framebuffer::AttachDepthTexture(Ref<Texture> tex)
 {
-	glNamedFramebufferTexture(m_ID, GL_DEPTH_ATTACHMENT, tex.GetTextureID(), 0);
+	glNamedFramebufferTexture(m_ID, GL_DEPTH_ATTACHMENT, tex->GetTextureID(), 0);
 }
 
-void Framebuffer::AttachColorTexture2D(const Texture& tex)
+void Framebuffer::AttachColorTexture2D(Ref<Texture> tex)
 {
-	glNamedFramebufferTexture2DEXT(m_ID, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tex.GetTextureTarget()), tex.GetTextureID(), 0);
+	glNamedFramebufferTexture2DEXT(m_ID, GL_COLOR_ATTACHMENT0, static_cast<GLint>(tex->GetTextureTarget()), tex->GetTextureID(), 0);
 }
 
-void Framebuffer::AttachColorTexture3D(const uint16_t& face, const Texture& tex, const uint16_t& mipMapLevel)
+void Framebuffer::AttachColorTexture3D(const uint16_t& face, Ref<Texture> tex, const uint16_t& mipMapLevel)
 {
-	glNamedFramebufferTexture2DEXT(m_ID, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, tex.GetTextureID(), mipMapLevel);
+	glNamedFramebufferTexture2DEXT(m_ID, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, tex->GetTextureID(), mipMapLevel);
 }
 
 void Framebuffer::SetDrawBuffer(const FramebufferColorBuffer& fc)
