@@ -3,7 +3,7 @@
 
 #include "Engine/Scene/SceneObject.h"
 
-Animation::Animation(const std::string& name, SceneObject* sceneObj, const uint16_t& fps)
+Animation::Animation(const std::string& name, Ref<SceneObject> sceneObj, const uint16_t& fps)
 	: m_Name(name), m_CurrentFrame(0), m_Fps(fps), m_SceneObject(sceneObj), m_CurrentKeyFramePosition(0), m_State(AnimState::Finished)
 {
 	m_InterpolationFunc = [](const float& i, const float& frames) {

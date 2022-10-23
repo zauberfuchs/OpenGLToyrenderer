@@ -19,7 +19,7 @@ enum class AnimState
 class Animation
 {
 public:
-	Animation(const std::string& name, SceneObject* sceneObj, const uint16_t& fps);
+	Animation(const std::string& name, Ref<SceneObject> sceneObj, const uint16_t& fps);
 	~Animation();
 
 	void Update();
@@ -60,6 +60,6 @@ private:
 	Keyframe* m_CurrentKeyframe;
 	Keyframe* m_LastKeyframe;
 
-	SceneObject* m_SceneObject;
+	Ref<SceneObject> m_SceneObject;
 
 };
