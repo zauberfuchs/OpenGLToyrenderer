@@ -199,7 +199,7 @@ void ImGuiWindow::RenderMeshComponent()
 				material->SetAo(s_ImGuiData.AmbientOcclusion);
 				break;
 			case MaterialType::TexturedPhysicallyBased :
-				if(ImGui::ImageButton((ImTextureID)material->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
+				if(ImGui::ImageButton((ImTextureID)(intptr_t)material->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
 				{
 					s_ImGuiData.SelectedMesh = m.second;
 					s_ImGuiData.MaterialWindowState = true;
@@ -214,7 +214,7 @@ void ImGuiWindow::RenderMeshComponent()
 			{
 				i++;
 
-				if (ImGui::ImageButton((ImTextureID)m.second->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
+				if (ImGui::ImageButton((ImTextureID)(intptr_t)m.second->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
 				{
 					s_ImGuiData.SelectedMesh->SetMaterial(m.second);
 					s_ImGuiData.MaterialWindowState = false;
@@ -261,17 +261,17 @@ void ImGuiWindow::RenderAnimationComponent()
 		ImGui::Text("Animation Component", 20);
 		AddUnderLine(ImColor(255, 255, 255, 255));
 		ImGui::Dummy(ImVec2(1, 1));
-		if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("playBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
+		if (ImGui::ImageButton((ImTextureID)(intptr_t)s_ImGuiData.ButtonTextures.at("playBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
 		{
 			a->StartAnimation();
 		}
 		ImGui::SameLine();
-		if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("pauseBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
+		if (ImGui::ImageButton((ImTextureID)(intptr_t)s_ImGuiData.ButtonTextures.at("pauseBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
 		{
 			a->PauseAnimation();
 		}
 		ImGui::SameLine();
-		if (ImGui::ImageButton((ImTextureID)s_ImGuiData.ButtonTextures.at("stopBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
+		if (ImGui::ImageButton((ImTextureID)(intptr_t)s_ImGuiData.ButtonTextures.at("stopBTN")->GetTextureID(), { 25, 25 }, { 0, 1 }, { 1, 0 }))
 		{
 			a->ResetAnimation();
 		}

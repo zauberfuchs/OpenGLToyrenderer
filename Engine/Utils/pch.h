@@ -23,7 +23,6 @@
 #include <map>
 #include <set>
 #include <unordered_set>
-#include <span>
 #include <any>
 
 #include <glm/ext.hpp>

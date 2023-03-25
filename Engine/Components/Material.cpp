@@ -202,9 +202,9 @@ void MaterialLoader::LoadMaterialFolder(const std::string& path)
 {
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		auto m = CreateRef<Material>(entry.path().filename().stem().u8string());
+		auto m = CreateRef<Material>(entry.path().filename().stem().string());
 		m->SetType(MaterialType::TexturedPhysicallyBased);
-		m->SetPBRTexture(entry.path().u8string());
+		m->SetPBRTexture(entry.path().string());
 		World::Get().AddMaterial(m);
 	}
 }

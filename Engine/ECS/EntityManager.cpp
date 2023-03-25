@@ -1,54 +1,62 @@
 #include "EntityManager.h"
 
-	EntityManager::EntityManager() {
-		entity_mask.fill(false);
+	EntityManager::EntityManager() 
+	{
+		entity_mask.reset();
 	}
 
-	Entity EntityManager::create_entity() {
+	Entity EntityManager::create_entity() 
+	{
 		assert(entity_count < MAX_ENTITIES);
 		EntityID id = entity_count++;
+		entity_mask[id] = true;
 		return Entity(*this, id);
 	}
 
-	void EntityManager::destroy_entity(EntityID entity_id) {
+	void EntityManager::destroy_entity(EntityID entity_id) 
+	{
 		assert(entity_id < entity_count);
-		for (auto& storage : component_storages) {
-			storage.second.remove_component(entity_id);
+		for (auto& storage : component_storages) 
+		{
+			storage.second->remove_component(entity_id);
 		}
 		entity_mask[entity_id] = false;
 	}
 
 	template <typename Component>
-	void EntityManager::add_component(EntityID entity_id, Component component) {
-		component_storage<Component>().add_component(entity_id, std::move(component));
-		entity_mask[entity_id] = true;
+	void EntityManager::add_component(EntityID entity_id, Component component) 
+	{
+		//component_storage<Component>().add_component(entity_id, std::move(component));
 	}
 
 	template <typename Component>
-	void EntityManager::remove_component(EntityID entity_id) {
+	void EntityManager::remove_component(EntityID entity_id) 
+	{
 		component_storage<Component>().remove_component(entity_id);
-		entity_mask[entity_id] = any_component(entity_mask());
 	}
 	template <typename Component>
-	Component& EntityManager::get_component(EntityID entity_id) {
+	Component& EntityManager::get_component(EntityID entity_id) 
+	{
 		return component_storage<Component>().get_component(entity_id);
 	}
 
 	template <typename Component>
-	bool EntityManager::has_component(EntityID entity_id) const {
+	bool EntityManager::has_component(EntityID entity_id) const 
+	{
 		return component_storage<Component>().has_component(entity_id);
 	}
 
 	void EntityManager::clear() {
 		entity_count = 0;
-		entity_mask.fill(false);
+		entity_mask.reset();
 		for (auto& storage : component_storages) {
-			storage.second.clear();
+			storage.second->clear();
 		}
 	}
 
 	template <typename Component>
-	ComponentStorage<Component>& EntityManager::component_storage() {
+	ComponentStorage<Component>& EntityManager::component_storage() 
+	{
 		std::size_t type_id = typeid(Component).hash_code();
 		auto it = component_storages.find(type_id);
 		if (it == component_storages.end()) {
@@ -58,27 +66,31 @@
 		}
 		return *static_cast<ComponentStorage<Component>*>(it->second.get());
 	}
-
-	std::bitset<MAX_ENTITIES> EntityManager::any_component_mask() const {
-		std::bitset<MAX_ENTITIES> mask;
-		for (const auto& storage : component_storages) {
-			mask |= component_mask(storage.first);
-		}
-		return mask;
-	}
-
-	std::bitset<MAX_ENTITIES> EntityManager::component_mask(std::size_t type_id) const {
-		auto it = component_storages.find(type_id);
-		if (it == component_storages.end()) {
-			return std::bitset<MAX_ENTITIES>{};
-		} else {
-			const auto& storage = *static_cast<const ComponentStorageBase*>(it->second.get());
-			std::bitset<MAX_ENTITIES> mask;
-			for (std::size_t i = 0; i < storage.size; ++i) {
-				if (storage.has_component(i)) {
-					mask[i] = true;
-				}
-			}
-			return mask;
-		}
-	}
+	
+	////A function that returns a bitset indicating which entities have at least one component.
+	//std::bitset<MAX_ENTITIES> EntityManager::any_component_mask() const 
+	//{
+	//	std::bitset<MAX_ENTITIES> mask;
+	//	for (const auto& storage : component_storages) {
+	//		mask |= component_mask(storage.first);
+	//	}
+	//	return mask;
+	//}
+//
+	//// component_mask(type_id): A function that returns a bitset indicating which entities have a component of the specified type. The type_id parameter is an index into the component_storages map.
+	//std::bitset<MAX_ENTITIES> EntityManager::component_mask(std::size_t type_id) const 
+	//{
+	//	auto it = component_storages.find(type_id);
+	//	if (it == component_storages.end()) {
+	//		return std::bitset<MAX_ENTITIES>{};
+	//	} else {
+	//		const auto& storage = *static_cast<const ComponentStorage<void>*>(it->second.get());
+	//		std::bitset<MAX_ENTITIES> mask;
+	//		for (std::size_t i = 0; i < storage.size; ++i) {
+	//			if (storage.has_component(i)) {
+	//				mask[i] = true;
+	//			}
+	//		}
+	//		return mask;
+	//	}
+	//}

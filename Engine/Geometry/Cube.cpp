@@ -1,9 +1,9 @@
 #include "Engine/Utils/pch.h"
-#include "StudentCube.h"
+#include "Cube.h"
 
 
 
-StudentCube::StudentCube(const std::string& name, const float& w)
+Cube::Cube(const std::string& name, const float& w)
 	: Mesh(name)
 {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ StudentCube::StudentCube(const std::string& name, const float& w)
 	SetupMesh();
 }
 
-StudentCube::~StudentCube()
+Cube::~Cube()
 {
 	m_Vertices.clear();
 	m_Indices.clear();

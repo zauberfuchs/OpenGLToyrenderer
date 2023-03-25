@@ -71,7 +71,7 @@ void Animation::ResetAnimation()
 }
 
 // set the interpolation function
-void Animation::SetInterpolationFunc(const std::function<float(int, int)>& func)
+void Animation::SetInterpolationFunc(const std::function<float(float, float)>& func)
 {
 	m_InterpolationFunc = func;
 }

@@ -4,7 +4,7 @@
 
 constexpr std::size_t MAX_ENTITIES = 10000;
 
-using EntityID = std::uint32_t;
+using EntityID = std::size_t;
 
 class Entity;
 class EntityManager;
@@ -12,26 +12,20 @@ class EntityManager;
 class ComponentStorageBase {
 public:
 	virtual ~ComponentStorageBase() = default;
-};
 
-template<typename Component>
-class ComponentArrayStorage : public ComponentStorageBase {
-public:
-	std::vector<Component> components;
-};
-
-template<typename... Components>
-class ComponentTupleStorage : public ComponentStorageBase {
-public:
-	std::tuple<std::vector<Components>...> components;
+	virtual void remove_component(EntityID entityid) = 0;
+	virtual void clear() = 0;
 };
 
 template <typename Component>
-struct ComponentStorage {
+struct ComponentStorage : public ComponentStorageBase
+{
 
 	std::unique_ptr<Component[]> data;
+	//std::unique_ptr<std::array<Component,3>> data;
 	std::size_t size = 0;
 	std::size_t capacity = 0;
+
 
 	void reserve(std::size_t new_capacity) {
 		if (new_capacity > capacity) {

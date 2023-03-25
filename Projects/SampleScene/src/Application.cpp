@@ -1,11 +1,26 @@
 #include "Engine/Utils/pch.h"
 
 #include "Engine/Components/Model.h"
-#include "Engine/Geometry/StudentCube.h"
+#include "Engine/Geometry/Cube.h"
 #include "Engine/Geometry/Sphere.h"
 #include "Engine/Scene/Renderer.h"
 #include "Engine/Window/Window.h"
 #include "Engine/Window/ImGuiWindow.h"
+#include "Engine/ECS/EntityManager.h"
+#include "Engine/ECS/Entity.h"
+
+struct Position {
+	float x;
+	float y;
+	float z;
+};
+//
+//struct Velocity {
+//	Velocity(float x, float y, float z) {}
+//	float x;
+//	float y;
+//	float z;
+//};
 
 #define FPS 30
 
@@ -14,12 +29,25 @@ int main() {
 	World::Get().SetActiveWindow(window);
 	const int error = window->InitOpenGLContext();
 
-	g_Camera = CreateRef<Camera>(glm::vec3(0.0f, 20.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0);
+	g_Camera = CreateRef<Camera>(glm::vec3(0.0f, 20.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -25.0f);
 
 	Ref<Scene> activeScene = CreateRef<Scene>("Main Scene");
 	World::Get().SetActiveScene(activeScene);
 
-	srand(time(nullptr));
+//
+//	EntityManager entManager;
+//	Entity e = entManager.create_entity();
+//
+//	e.add_component<TestComponent>();
+
+	EntityManager entity_manager;
+	//Velocity v(1.0f, 2.0f, 3.0f);
+
+	Entity entity1 = entity_manager.create_entity();
+	entity1.add_component<Velocity>(1.0f, 2.0f, 3.0f);
+//
+	//Entity entity2 = entity_manager.create_entity();
+	//entity2.add_component<Position>(-1.0f, -2.0f, -3.0f);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials
@@ -97,7 +125,7 @@ int main() {
 	auto ground = CreateRef<SceneObject>("ground");
 
 	ground->AddModel(CreateRef<Model>(std::string("ground")));
-	ground->GetModel()->AddMesh(CreateRef<StudentCube>("ground"));
+	ground->GetModel()->AddMesh(CreateRef<Cube>("ground"));
 
 	ground->GetModel()->GetMesh()->SetMaterial(World::Get().GetMaterial("ceramictile"));
 

@@ -29,7 +29,7 @@ public:
 	void PauseAnimation();
 	void ResetAnimation();
 	
-	void SetInterpolationFunc(const std::function<float(int, int)>& func);
+	void SetInterpolationFunc(const std::function<float(float, float)>& func);
 
 	void SetStartKeyframe(Keyframe keyframe) { m_StartKeyframe = keyframe; }
 	void InsertKeyframe(Keyframe* keyframe);
