@@ -5,14 +5,14 @@
 
 void Renderer::Init()
 {
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CCW);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	StoreViewportSize();
 
 	s_Data.MSAA = new int(1);
@@ -151,7 +151,7 @@ void Renderer::GeometryPath()
 
 
 			s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
-			//s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());
+			s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());
 			s_Data.MeshMaterial->SetupUniforms();
 
 			DrawMesh();

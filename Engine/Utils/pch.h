@@ -11,12 +11,14 @@
 #include <chrono>
 #include <array>
 #include <string>
+#include <typeindex>
 #include <sstream>
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <vector>
 #include <optional>
+#include <bitset>
 #include <unordered_map>
 #include <map>
 #include <set>

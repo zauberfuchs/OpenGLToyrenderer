@@ -28,7 +28,6 @@ int main() {
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
 	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 
-
 	const auto skyBoxTexture = CreateRef<Texture>(TextureTarget::TextureCubeMap);
 	skyBoxTexture->LoadCubemap("../Data/Textures/Skybox/darkish");
 	
@@ -145,7 +144,7 @@ int main() {
 
 	activeScene->AddRootChild(ground);
 	activeScene->AddRootChild(lightSphere);
-	activeScene->AddRootChild(teapot);
+	//activeScene->AddRootChild(teapot);
 
 	activeScene->SetReflectionProbe(probeOne);
 	activeScene->SetSceneCamera(g_Camera);

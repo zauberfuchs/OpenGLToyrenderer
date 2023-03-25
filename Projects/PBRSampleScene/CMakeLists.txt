@@ -9,6 +9,11 @@ include_directories("../../")
 set(DATA_SRC "../../Data")
 set(CORE_SRC "../../Engine")
 
+file(GLOB_RECURSE ECS_FILES
+	"${CORE_SRC}/ECS/*.h"
+	"${CORE_SRC}/ECS/*.cpp"
+	)
+
 file(GLOB_RECURSE UTIL_FILES
 	"${CORE_SRC}/Utils/*.h"
 	"${CORE_SRC}/Utils/*.cpp"
@@ -23,6 +28,7 @@ file(GLOB_RECURSE OPENGL_FILES
 	"${CORE_SRC}/OpenGL/*.h"
 	"${CORE_SRC}/OpenGL/*.cpp"
 	)
+
 file(GLOB_RECURSE SCENE_FILES
 	"${CORE_SRC}/Scene/*.h"
 	"${CORE_SRC}/Scene/*.cpp"
@@ -58,6 +64,7 @@ source_group("Geometry" FILES ${GEOMETRY_FILES})
 source_group("OpenGL" FILES ${OPENGL_FILES})
 source_group("Scene" FILES ${SCENE_FILES})
 source_group("Components" FILES ${COMPONENT_FILES})
+source_group("ECS" FILES ${ECS_FILES})
 source_group("Window" FILES ${WINDOW_FILES})
 source_group("Utils" FILES ${UTIL_FILES})
 
@@ -83,6 +90,7 @@ add_executable(
 	${SCENE_FILES}
 	${OPENGL_FILES}
 	${COMPONENT_FILES}
+	${ECS_FILES}
 	${UTIL_FILES}
 	../../Engine/utils/glm.natvis
 	)
