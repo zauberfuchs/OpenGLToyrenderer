@@ -31,7 +31,6 @@ public:
 	double m_DeltaTime, m_LastFrame, m_LastTime;
 
 
-
 };
 
 inline Ref<Camera> g_Camera;

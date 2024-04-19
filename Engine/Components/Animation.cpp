@@ -12,9 +12,9 @@ Animation::Animation(const std::string& name, Ref<SceneObject> sceneObj, const u
 
 	sceneObj->SetAnimation(this);
 	m_StartKeyframe.Frame = 0;
-	m_StartKeyframe.Position = m_SceneObject->GetTransform()->GetLocalPosition();
-	m_StartKeyframe.Scale = m_SceneObject->GetTransform()->GetLocalScale();
-	m_StartKeyframe.Rotation = m_SceneObject->GetTransform()->GetLocalEulerAngles();
+	m_StartKeyframe.Position = m_SceneObject->GetComponent<Transform>().GetLocalPosition();
+	m_StartKeyframe.Scale = m_SceneObject->GetComponent<Transform>().GetLocalScale();
+	m_StartKeyframe.Rotation = m_SceneObject->GetComponent<Transform>().GetLocalEulerAngles();
 	m_Timeline.push_back(&m_StartKeyframe);
 }
 
@@ -62,9 +62,9 @@ void Animation::ResetAnimation()
 {
 	m_CurrentFrame = 0;
 	m_CurrentKeyFramePosition = 0;
-	m_SceneObject->GetTransform()->Translate(m_StartKeyframe.Position);
-	m_SceneObject->GetTransform()->Scale(m_StartKeyframe.Scale);
-	m_SceneObject->GetTransform()->SetRotation(m_StartKeyframe.Rotation);
+	m_SceneObject->GetComponent<Transform>().Translate(m_StartKeyframe.Position);
+	m_SceneObject->GetComponent<Transform>().Scale(m_StartKeyframe.Scale);
+	m_SceneObject->GetComponent<Transform>().SetRotation(m_StartKeyframe.Rotation);
 	
 
 	m_State = AnimState::Finished;
@@ -118,10 +118,10 @@ void Animation::Interpolate()
 {
 	if (m_CurrentFrame < m_CurrentKeyframe->Frame)
 	{
-		float interpolation = m_InterpolationFunc(m_CurrentFrame - m_LastKeyframe->Frame, m_CurrentKeyframe->Frame - m_LastKeyframe->Frame);
-		m_SceneObject->GetTransform()->Translate(m_LastKeyframe->Position + (m_CurrentKeyframe->Position - m_LastKeyframe->Position) * interpolation);
-		m_SceneObject->GetTransform()->Scale(m_LastKeyframe->Scale + (m_CurrentKeyframe->Scale - m_LastKeyframe->Scale) * interpolation);
-		m_SceneObject->GetTransform()->SetRotation(m_LastKeyframe->Rotation + (m_CurrentKeyframe->Rotation - m_LastKeyframe->Rotation) * interpolation);
+		float interpolation = m_InterpolationFunc((float)m_CurrentFrame - (float)m_LastKeyframe->Frame, (float)m_CurrentKeyframe->Frame - (float)m_LastKeyframe->Frame);
+		m_SceneObject->GetComponent<Transform>().Translate(m_LastKeyframe->Position + (m_CurrentKeyframe->Position - m_LastKeyframe->Position) * interpolation);
+		m_SceneObject->GetComponent<Transform>().Scale(m_LastKeyframe->Scale + (m_CurrentKeyframe->Scale - m_LastKeyframe->Scale) * interpolation);
+		m_SceneObject->GetComponent<Transform>().SetRotation(m_LastKeyframe->Rotation + (m_CurrentKeyframe->Rotation - m_LastKeyframe->Rotation) * interpolation);
 	}
 	else if (m_CurrentKeyFramePosition < m_Timeline.size() - 1)
 	{

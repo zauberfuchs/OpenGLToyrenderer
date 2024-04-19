@@ -8,26 +8,20 @@ void Renderer::Init()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
 	StoreViewportSize();
-
 	s_Data.MSAA = new int(1);
 	s_Data.GeometryFramebuffer = new Framebuffer();
 	s_Data.GeometryRenderbuffer = new Renderbuffer();
 	s_Data.GeometryFramebuffer->AttachRenderBuffer(s_Data.GeometryRenderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 
-	
 	s_Data.ViewportTexture = CreateRef<Texture>(TextureTarget::Texture2DMultiSample);
 	s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 	s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
 
-	//todo wirft nen fehler
-	s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
-	std::cout << glGetError() << std::endl;
 	s_Data.ActiveScene = World::Get().GetActiveScene();
 	s_Data.ActiveSceneCamera = s_Data.ActiveScene->GetSceneCamera();
 	for(auto m : World::Get().GetMaterials())
@@ -41,7 +35,8 @@ void Renderer::Init()
 	}
 
 	s_Data.PostFXShader = World::Get().GetShader("postFX");
-	s_Data.ActiveSceneLight = World::Get().GetActiveScene()->GetSceneLightSources().begin()->second;
+	
+	s_Data.activeLights = World::Get().GetEntityManager()->GetActiveComponents<Light>();
 
 }
 
@@ -55,9 +50,10 @@ void Renderer::DepthPrePath()
 	// safes the current viewport size.
 	StoreViewportSize();
 
-	s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
+	//s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
+	s_Data.activeLights.begin()->second->GetFramebuffer()->Bind();
 
-	switch(s_Data.ActiveSceneLight->GetType()) {
+	switch(s_Data.activeLights.begin()->second->GetType()) {
 	case LightSourceType::DirectionalLight:
 		s_Data.ActiveShader = World::Get().GetShader("dirLightDepthMap");
 		s_Data.ActiveShader->Bind();
@@ -73,36 +69,44 @@ void Renderer::DepthPrePath()
 	}
 
 	//set the Viewport size to shadow texture size
-	SetViewport(0, 0, s_Data.ActiveSceneLight->GetShadowWidth(), s_Data.ActiveSceneLight->GetShadowHeight());
+	SetViewport(0, 0, s_Data.activeLights.begin()->second->GetShadowWidth(), s_Data.activeLights.begin()->second->GetShadowHeight());
 
-	s_Data.ActiveSceneLight->GetFramebuffer()->Bind();
+	//s_Data.activeLights.begin()->second->GetFramebuffer()->Bind();
 
 	glClear(GL_DEPTH_BUFFER_BIT);
-
-	auto shadowMatrices = s_Data.ActiveSceneLight->CreateShadowTransformMatrices(0.1f, 50.0f);
+	EntityID eID = s_Data.activeLights.begin()->first;
+	Transform& t = World::Get().GetEntityManager()->GetComponent<Transform>(eID);
+	auto shadowMatrices = s_Data.activeLights.begin()->second->CreateShadowTransformMatrices(0.1f, 50.0f, t.GetLocalPosition());
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		s_Data.ActiveShader->SetUniformMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowMatrices[i]);
 	}
-	s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
-	s_Data.ActiveShader->SetUniform3f("lightPos", s_Data.ActiveSceneLight->GetPosition());
-
+	
+	s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.activeLights.begin()->second->GetFarPlane());
+	
+	s_Data.ActiveShader->SetUniform3f("lightPos", t.GetLocalPosition());
+	
+	
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
-		s_Data.MeshTransform = s.second->GetTransform(); 
-		for (const auto& m : s.second->GetModel()->GetMeshes())
+		s_Data.MeshTransform = s.second->GetComponent<Transform>(); 
+		if (s.second->HasComponent<Model>()) 
 		{
-			s_Data.MeshVAO = m.second->GetVAO();
-			s_Data.MeshIndexCount = m.second->GetIndicesSize();
-			s_Data.MeshRenderMode = m.second->GetRenderMode();
-			s_Data.MeshMaterial = nullptr;
-			
-			s_Data.MeshVAO->Bind();
+			for (const auto& m : s.second->GetComponent<Model>().GetMeshes())
+			{
+				s_Data.MeshVAO = m.second->GetVAO();
+				s_Data.MeshIndexCount = m.second->GetIndicesSize();
+				s_Data.MeshRenderMode = m.second->GetRenderMode();
+				s_Data.MeshMaterial = nullptr;
 
-			DrawMesh();
+				s_Data.MeshVAO->Bind();
+
+				DrawMesh();
+			}
 		}
+		
 	}
-	s_Data.ActiveSceneLight->GetFramebuffer()->Unbind();
+	s_Data.activeLights.begin()->second->GetFramebuffer()->Unbind();
 
 	// restore old Viewport size
 	SetViewport(s_Data.RenderViewport[0], s_Data.RenderViewport[1], s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
@@ -125,7 +129,6 @@ void Renderer::GeometryPath()
 		s_Data.ViewportTexture->SetTexture2DSize(s_Data.RenderViewport[2], s_Data.RenderViewport[3]);
 		s_Data.ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, *s_Data.MSAA);
 		s_Data.GeometryFramebuffer->AttachColorTexture2D(s_Data.ViewportTexture);
-		s_Data.ViewportTexture->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 
 		// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen
 		s_Data.GeometryRenderbuffer->CreateRenderBufferStorage(s_Data.RenderViewport[2], s_Data.RenderViewport[3], FramebufferTextureFormat::Depth32Stencil8);
@@ -135,28 +138,60 @@ void Renderer::GeometryPath()
 
 	for (const auto& s : s_Data.ActiveScene->GetSceneObjects())
 	{
-		s_Data.MeshTransform = s.second->GetTransform();
-		for (const auto& m : s.second->GetModel()->GetMeshes())
+		s_Data.MeshTransform = s.second->GetComponent<Transform>();
+		if (s.second->HasComponent<Model>())
 		{
-			s_Data.ActiveShader = m.second->GetMaterial()->GetShader();
-			s_Data.MeshVAO = m.second->GetVAO();
-			s_Data.MeshIndexCount = m.second->GetIndicesSize();
-			s_Data.MeshRenderMode = m.second->GetRenderMode();
-			s_Data.MeshMaterial = m.second->GetMaterial();
+			for (const auto& m : s.second->GetComponent<Model>().GetMeshes())
+			{
+				s_Data.ActiveShader = m.second->GetMaterial()->GetShader();
+				s_Data.MeshVAO = m.second->GetVAO();
+				s_Data.MeshIndexCount = m.second->GetIndicesSize();
+				s_Data.MeshRenderMode = m.second->GetRenderMode();
+				s_Data.MeshMaterial = m.second->GetMaterial();
 
-			s_Data.ActiveShader->Bind();
-			s_Data.MeshVAO->Bind();
-			s_Data.ActiveSceneCamera->UpdateMatrix(s_Data.ActiveShader);
-			s_Data.ActiveShader->SetUniform3f("camPos", s_Data.ActiveSceneCamera->Position);
+				s_Data.ActiveShader->Bind();
+				s_Data.MeshVAO->Bind();
+				s_Data.ActiveSceneCamera->UpdateMatrix(s_Data.ActiveShader);
+				s_Data.ActiveShader->SetUniform3f("camPos", s_Data.ActiveSceneCamera->Position);
 
 
-			s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.ActiveSceneLight->GetFarPlane());
-			s_Data.MeshMaterial->SetTexture(s_Data.ActiveSceneLight->GetDepthmap());
-			s_Data.MeshMaterial->SetupUniforms();
+				s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.activeLights.begin()->second->GetFarPlane());
+				s_Data.MeshMaterial->SetTexture(s_Data.activeLights.begin()->second->GetDepthmap());
+				s_Data.MeshMaterial->SetupUniforms();
 
-			DrawMesh();
+				DrawMesh();
 
-			s_Data.MeshMaterial->UnbindTextures();
+				s_Data.MeshMaterial->UnbindTextures();
+			}
+		}
+
+		if(s.second->GetName() == "entity")
+		{
+			Model& m2 = s.second->GetComponent<Model>();
+
+			for (const auto& m : m2.GetMeshes()) 
+			{
+				s_Data.ActiveShader = m.second->GetMaterial()->GetShader();
+				s_Data.MeshVAO = m.second->GetVAO();
+				s_Data.MeshIndexCount = m.second->GetIndicesSize();
+				s_Data.MeshRenderMode = m.second->GetRenderMode();
+				s_Data.MeshMaterial = m.second->GetMaterial();
+
+				s_Data.ActiveShader->Bind();
+				s_Data.MeshVAO->Bind();
+				s_Data.ActiveSceneCamera->UpdateMatrix(s_Data.ActiveShader);
+				s_Data.ActiveShader->SetUniform3f("camPos", s_Data.ActiveSceneCamera->Position);
+
+				// TODO Farplane hat camera nicht light
+				// TODO camera is component
+				s_Data.ActiveShader->SetUniform1f("farPlane", s_Data.activeLights.begin()->second->GetFarPlane());
+				s_Data.MeshMaterial->SetTexture(s_Data.activeLights.begin()->second->GetDepthmap());
+				s_Data.MeshMaterial->SetupUniforms();
+
+				DrawMesh();
+
+				s_Data.MeshMaterial->UnbindTextures();
+			}
 		}
 	}
 	
@@ -189,7 +224,7 @@ void Renderer::PostFxPath()
 
 void Renderer::DrawMesh()
 {
-	s_Data.ActiveShader->SetUniformMat4f("model", s_Data.MeshTransform->GetTransformMatrix());
+	s_Data.ActiveShader->SetUniformMat4f("model", s_Data.MeshTransform.GetTransformMatrix());
 	
 	glDrawElements(s_Data.MeshRenderMode, s_Data.MeshIndexCount, GL_UNSIGNED_INT, nullptr);
 }

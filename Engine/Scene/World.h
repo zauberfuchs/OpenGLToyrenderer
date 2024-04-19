@@ -5,6 +5,7 @@
 
 class Material;
 class Window;
+class EntityManager;
 
 class World
 {
@@ -24,7 +25,9 @@ public:
 
 	void SetActiveScene(Ref<Scene> s);
 	Ref<Scene> GetActiveScene();
-
+	
+	Ref<EntityManager> GetEntityManager() { return m_EntityManager; }
+	
 	void SetActiveWindow(Ref<Window> w) { m_Window = w; }
 	Ref<Window> GetActiveWindow() { return m_Window; };
 
@@ -42,5 +45,6 @@ private:
 
 	Ref<Window> m_Window;
 	Ref<Scene> m_ActiveScene;
+	Ref<EntityManager> m_EntityManager;
 	glm::mat4 m_CoordinateSystem = glm::mat4(1.0f);
 };

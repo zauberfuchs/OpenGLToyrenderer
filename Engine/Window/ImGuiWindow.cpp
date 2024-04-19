@@ -61,8 +61,8 @@ void ImGuiWindow::RenderScenePanel()
 			{
 				current_item = name.c_str();
 				s_ImGuiData.CurrentSceneObject = sceneObjects.at(current_item);
-				s_ImGuiData.Transform = s_ImGuiData.CurrentSceneObject->GetTransform();
-				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes().begin()->second->GetMaterial()->GetColor();
+				s_ImGuiData.transform = &s_ImGuiData.CurrentSceneObject->GetComponent<Transform>();
+				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes().begin()->second->GetMaterial()->GetColor();
 
 			}
 			if (is_selected)
@@ -93,22 +93,21 @@ void ImGuiWindow::RenderScenePanel()
 
 void ImGuiWindow::RenderTransformComponent()
 {
-
-
+	Transform& transform = s_ImGuiData.CurrentSceneObject->GetComponent<Transform>();
 	ImGui::Dummy(ImVec2(20, 20));
 	ImGui::Text("Transform", 20);
 	AddUnderLine(ImColor(255, 255, 255, 255));
 	ImGui::Dummy(ImVec2(1, 1));
-	DrawVec3Control("Translation", s_ImGuiData.Transform->GetLocalPosition());
-	DrawVec3Control("Rotation", s_ImGuiData.Transform->GetLocalEulerAngles());
-	DrawVec3Control("Scale", s_ImGuiData.Transform->GetLocalScale());
+	DrawVec3Control("Translation", transform.GetLocalPosition());
+	DrawVec3Control("Rotation", transform.GetLocalEulerAngles());
+	DrawVec3Control("Scale", transform.GetLocalScale());
 }
 
 void ImGuiWindow::RenderMeshComponent()
 {
-	if (s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes().size() != 0)
+	if (s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes().size() != 0)
 	{
-		auto meshes = s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes();
+		auto meshes = s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes();
 
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Material Component", 20);
@@ -231,7 +230,7 @@ void ImGuiWindow::RenderMeshComponent()
 
 	}
 
-	for (auto [name, mesh] : s_ImGuiData.CurrentSceneObject->GetModel()->GetMeshes())
+	for (auto [name, mesh] : s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes())
 	{
 		mesh->GetMaterial()->GetColor() = s_ImGuiData.MaterialColor;
 	}
@@ -239,16 +238,16 @@ void ImGuiWindow::RenderMeshComponent()
 
 void ImGuiWindow::RenderLightComponent()
 {
-	if (s_ImGuiData.CurrentSceneObject->GetLight() != nullptr)
+	if (s_ImGuiData.CurrentSceneObject->HasComponent<Light>())
 	{
-		auto l = s_ImGuiData.CurrentSceneObject->GetLight();
-		s_ImGuiData.LightColor = l->GetColor();
+		auto& l = s_ImGuiData.CurrentSceneObject->GetComponent<Light>();
+		s_ImGuiData.LightColor = l.GetColor();
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Light Component", 20);
 		AddUnderLine(ImColor(255, 255, 255, 255));
 		ImGui::ColorEdit3("Light Color", &s_ImGuiData.LightColor.x);
-		l->SetColor(s_ImGuiData.LightColor);
-		s_ImGuiData.CurrentSceneObject->GetLight()->SetPosition(s_ImGuiData.Transform->GetLocalPosition());
+		l.SetColor(s_ImGuiData.LightColor);
+		//s_ImGuiData.CurrentSceneObject->GetComponent<Light>().SetPosition(s_ImGuiData.transform->GetLocalPosition());
 	}
 }
 

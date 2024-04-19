@@ -9,19 +9,6 @@
 #include "Engine/ECS/EntityManager.h"
 #include "Engine/ECS/Entity.h"
 
-struct Position {
-	float x;
-	float y;
-	float z;
-};
-//
-//struct Velocity {
-//	Velocity(float x, float y, float z) {}
-//	float x;
-//	float y;
-//	float z;
-//};
-
 #define FPS 30
 
 int main() {
@@ -33,21 +20,8 @@ int main() {
 
 	Ref<Scene> activeScene = CreateRef<Scene>("Main Scene");
 	World::Get().SetActiveScene(activeScene);
-
-//
-//	EntityManager entManager;
-//	Entity e = entManager.create_entity();
-//
-//	e.add_component<TestComponent>();
-
-	EntityManager entity_manager;
-	//Velocity v(1.0f, 2.0f, 3.0f);
-
-	Entity entity1 = entity_manager.create_entity();
-	entity1.add_component<Velocity>(1.0f, 2.0f, 3.0f);
-//
-	//Entity entity2 = entity_manager.create_entity();
-	//entity2.add_component<Position>(-1.0f, -2.0f, -3.0f);
+	
+	//ToDo asset handler der nur materialien lädt wenn sie genutzt werden
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Shader / Materials
@@ -66,14 +40,7 @@ int main() {
 	whiteMaterial->SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
 	whiteMaterial->SetShininess(32.0f);
 	whiteMaterial->SetReflections(ReflectionType::Phong);
-	whiteMaterial->SetColor(glm::vec3(1.0f));
-
-	const auto pbrMaterial = CreateRef<Material>("pbr");
-	pbrMaterial->SetType(MaterialType::PhysicallyBased);
-	pbrMaterial->SetAlbedo(glm::vec3(1.0f, 0.0f, 0.0f));
-	pbrMaterial->SetMetallic(0.140f);
-	pbrMaterial->SetRoughness(0.2f);
-	pbrMaterial->SetAo(0.250f);
+	whiteMaterial->SetColor(glm::vec3(1.0f));\
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
@@ -81,6 +48,8 @@ int main() {
 
 	const unsigned int maxRows = 3;
 	const unsigned int maxColumns = 3;
+
+	//TODO AddComponent<Mesh> im model laden / hinzufügen zusammen mit der Entity. ?? kann man mehrere MeshComponents haben?
 	
 	Ref<SceneObject> shaderBalls[maxRows][maxColumns];
 
@@ -99,9 +68,9 @@ int main() {
 		for (int col = 0; col < maxColumns; col++)
 		{
 			activeScene->AddRootChild(shaderBalls[row][col]);
-			shaderBalls[row][col]->AddModel(CreateRef<Model>("../Data/Models/test-models/ShaderballUnreal.obj"));
-			shaderBalls[row][col]->GetTransform()->Translate(glm::vec3(col * 5.0f, 0.0f, row * 5.0f), Space::Local);
-			shaderBalls[row][col]->GetTransform()->Scale(glm::vec3(0.01f, 0.01f, 0.01f), Space::Local);
+			shaderBalls[row][col]->AddComponent<Model>("../Data/Models/test-models/ShaderballUnreal.obj");
+			shaderBalls[row][col]->GetComponent<Transform>().Translate(glm::vec3(col * 5.0f, 0.0f, row * 5.0f), Space::Local);
+			shaderBalls[row][col]->GetComponent<Transform>().Scale(glm::vec3(0.01f, 0.01f, 0.01f), Space::Local);
 		}
 	}
 	
@@ -109,14 +78,10 @@ int main() {
 	{
 		if (s.first.find("shaderball") == 0)
 		{
-			s.second->GetModel()->GetMesh(0)->SetMaterial(World::Get().GetMaterial(rand() % 17));
-			s.second->GetModel()->GetMesh(1)->SetMaterial(World::Get().GetMaterial(rand() % 17));
+			s.second->GetComponent<Model>().GetMesh(0)->SetMaterial(World::Get().GetMaterial(rand() % 17));
+			s.second->GetComponent<Model>().GetMesh(1)->SetMaterial(World::Get().GetMaterial(rand() % 17));
 		}
 	}
-
-	auto teapot = CreateRef<SceneObject>("teapot");
-	teapot->AddModel(CreateRef<Model>("../Data/Models/test-models/teapot.obj"));
-	teapot->GetModel()->GetMesh()->SetMaterial(pbrMaterial);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// ground
@@ -124,41 +89,38 @@ int main() {
 
 	auto ground = CreateRef<SceneObject>("ground");
 
-	ground->AddModel(CreateRef<Model>(std::string("ground")));
-	ground->GetModel()->AddMesh(CreateRef<Cube>("ground"));
+	ground->AddComponent<Model>(std::string("ground"));
+	ground->GetComponent<Model>().AddMesh(CreateRef<Cube>("ground"));
 
-	ground->GetModel()->GetMesh()->SetMaterial(World::Get().GetMaterial("ceramictile"));
+	ground->GetComponent<Model>().GetMesh()->SetMaterial(World::Get().GetMaterial("ceramictile"));
 
-	ground->GetTransform()->Scale(glm::vec3(30.00f, .625f, 30.00f), Space::Local);
-	ground->GetTransform()->Translate(glm::vec3(10.0f, 0.0f, 4.0f), Space::Local);
+	ground->GetComponent<Transform>().Scale(glm::vec3(30.00f, .625f, 30.00f), Space::Local);
+	ground->GetComponent<Transform>().Translate(glm::vec3(10.0f, 0.0f, 4.0f), Space::Local);
 
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Light
 	///////////////////////////////////////////////////////////////////////////////
-
-	const auto pointLight = CreateRef<Light>("pointLight");
-	pointLight->SetType(LightSourceType::PointLight);
-	pointLight->SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
-	pointLight->SetConstant(1.0f);
-	pointLight->SetLinear(0.9f);
-	pointLight->SetQuadratic(0.032f);
-	pointLight->SetColor(glm::vec3(1.0f));
-	pointLight->CreatePointDepthMap(1024, 1024);
-
-
+	
 	auto lightSphere = CreateRef<SceneObject>("lightSphere");
 
-	lightSphere->AddModel(CreateRef<Model>(std::string("lightSphere")));
-	lightSphere->GetModel()->AddMesh(CreateRef<Sphere>("Sphere", 32));
-	lightSphere->AddLight(pointLight);
+	lightSphere->AddComponent<Model>(std::string("lightSphere"));
+	lightSphere->GetComponent<Model>().AddMesh(CreateRef<Sphere>("Sphere", 32));
+	lightSphere->GetComponent<Model>().GetMesh()->SetMaterial(whiteMaterial);
 
-	lightSphere->GetModel()->GetMesh()->SetMaterial(whiteMaterial);
+	lightSphere->GetComponent<Transform>().Translate({ 10.2f, 4.0f, 2.0f }, Space::Local);
+	lightSphere->GetComponent<Transform>().Scale(glm::vec3(0.2f), Space::Local);
 
-	lightSphere->GetTransform()->Translate(pointLight->GetPosition(), Space::Local);
-	lightSphere->GetTransform()->Scale(glm::vec3(0.2f), Space::Local);
-
-
+	lightSphere->AddComponent<Light>("pointLight");
+	
+	Light& pointLight = lightSphere->GetComponent<Light>();
+	pointLight.SetType(LightSourceType::PointLight);
+	//pointLight.SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
+	pointLight.SetConstant(1.0f);
+	pointLight.SetLinear(0.9f);
+	pointLight.SetQuadratic(0.032f);
+	pointLight.SetColor(glm::vec3(1.0f));
+	pointLight.CreatePointDepthMap(1024, 1024);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Setup Scene
@@ -169,20 +131,17 @@ int main() {
 	//probeOne.SetReflectionMap(*skyBoxTexture);
 	probeOne->Create();
 
-
 	activeScene->AddRootChild(ground);
 	activeScene->AddRootChild(lightSphere);
-	//activeScene->AddRootChild(teapot);
 
 	activeScene->SetReflectionProbe(probeOne);
 	activeScene->SetSceneCamera(g_Camera);
 	activeScene->SetSceneSkybox(probeOne->GetReflectionTexture());
-	activeScene->AddSceneLight(pointLight);
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
-	
+
 	ImGuiWindow::Init();
 	Renderer::Init();
 

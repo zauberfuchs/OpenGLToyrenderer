@@ -17,7 +17,7 @@ struct ImGuiWindowStorage
 	glm::vec3 LightColor;
 
 	// Transform proberties
-	Transform* Transform;
+	Transform* transform;
 
 	// Phong properties
 	glm::vec3 Ambient;

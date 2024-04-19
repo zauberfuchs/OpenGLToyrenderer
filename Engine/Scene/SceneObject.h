@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Components/Transform.h"
+#include "Engine/ECS/Entity.h"
 
 class Model;
 class Animation;
@@ -14,24 +15,39 @@ public:
 	~SceneObject();
 
 	std::string GetName();
-
-	void AddModel(Ref<Model> model);
-
-	void AddLight(Ref<Light> light);
-	Ref<Light> GetLight();
 	
 	void AddChildren(Ref<SceneObject> sceneObject);
 	std::unordered_set<Ref<SceneObject>> GetChildren();
 
 	void SetParent(SceneObject* sceneObject);
 	SceneObject* GetParent() const;
-	
-	Transform* GetTransform();
 
 	Animation* GetAnimation();
 	void SetAnimation(Animation* anim);
+	
+	template <typename Component, typename... Args>
+	void AddComponent(Args&&... args) 
+	{
+		m_Entity.AddComponent<Component>(std::forward<Args>(args)...);
+	}
+	
+	template <typename Component>
+	void RemoveComponent() 
+	{
+		m_Entity.RemoveComponent<Component>();
+	}
 
-	Ref<Model> GetModel();
+	template <typename Component>
+	auto& GetComponent() 
+	{
+		return m_Entity.GetComponent<Component>();
+	}
+
+	template <typename Component>
+	bool HasComponent() const 
+	{
+		return m_Entity.HasComponent<Component>();
+	}
 
 private:
 	std::string m_Name;
@@ -39,10 +55,7 @@ private:
 	SceneObject* m_Parent = nullptr; // just to observe the parent
 	std::unordered_set<Ref<SceneObject>> m_Children;
 
-	Transform* m_Transform = nullptr;
-
 	Animation* m_Animation = nullptr;
-
-	Ref<Light> m_Light = nullptr;
-	Ref<Model> m_Model = nullptr;
+	
+	Entity m_Entity;
 };

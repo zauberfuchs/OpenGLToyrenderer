@@ -5,6 +5,7 @@
 
 World::World()
 {
+	m_EntityManager = CreateRef<EntityManager>();
 }
 
 World::~World()
@@ -15,7 +16,6 @@ World::~World()
 		shader = nullptr;
 	}
 }
-
 
 void World::AddShader(Shader* shader)
 {

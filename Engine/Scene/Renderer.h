@@ -25,9 +25,9 @@ struct RendererStorage
 	uint16_t MeshRenderMode;
 
 	Ref<Material> MeshMaterial;
-	Transform* MeshTransform;
+	Transform MeshTransform;
 
-	Ref<Light> ActiveSceneLight;
+	std::unordered_map<EntityID, Light*> activeLights;
 
 	int* MSAA;
 

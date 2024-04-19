@@ -19,7 +19,7 @@ class Transform
 {
 public:
 	Transform();
-
+	Transform& operator=(const Transform& other);
 
 	void Translate(glm::vec3 translation, Space relativeTo = Space::Local);
 	void Rotate(glm::vec3 eulers, Space relativeTo = Space::Local);
@@ -63,7 +63,7 @@ private:
 
 	bool m_TransforMatrixSet;
 
-	Transform* m_Parent = nullptr;
+	Transform* m_Parent;
 
 	bool m_Constraints[3] = { false };
 

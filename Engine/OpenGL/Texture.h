@@ -79,6 +79,8 @@ public:
 	void SetFilter(const TextureFilter& min, const TextureFilter& mag) const;
 	void SetBorderColor(const float* borderColor) const;
 
+	void SaveTextureToCache(void* data);
+	unsigned char* LoadTextureFromCache();
 	
 
 	TextureType GetTextureType() { return m_Type; }

@@ -144,8 +144,8 @@ void Material::SetupTextures()
 void Material::SetupUniforms()
 {
 	Ref<Scene> activeScene = World::Get().GetActiveScene();
-	auto lights = activeScene->GetSceneLightSources();
-
+	auto lights = World::Get().GetEntityManager()->GetActiveComponents<Light>();
+	
 	switch(m_Type)
 	{
 	case MaterialType::Phong :
@@ -176,13 +176,14 @@ void Material::SetupUniforms()
 		break;
 	}
 
+	//for (int i = 0; i < lights.size(); i++)
 	int i = 0;
-	for (auto& l : lights)
+	for(auto& l : lights)
 	{
-		auto light = l.second;
-		
-		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].position", light->GetPosition());
-		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].color", light->GetColor());
+		EntityID eID = lights.begin()->first;
+		Transform& t = World::Get().GetEntityManager()->GetComponent<Transform>(eID);
+		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].position", t.GetLocalPosition());
+		m_Shader->SetUniform3f("light[" + std::to_string(i) + "].color", l.second->GetColor());
 		i++;
 	}
 }

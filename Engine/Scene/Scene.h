@@ -16,9 +16,6 @@ public:
 	
 	void UpdateScene();
 
-	void AddSceneLight(Ref<Light> l);
-	void RemoveSceneLight(const std::string& name);
-	std::unordered_map<std::string, Ref<Light>> GetSceneLightSources();
 
 	Ref<SceneObject> GetRootSceneNode();
 	void AddRootChild(Ref<SceneObject> s);
@@ -48,7 +45,6 @@ private:
 	Ref<SceneObject> m_RootSO = CreateRef<SceneObject>("root");
 	
 	std::unordered_map<std::string, Ref<SceneObject>> m_SceneObjects;
-	std::unordered_map<std::string, Ref<Light>> m_LightSources;
 
 	Ref<ReflectionProbe> m_ReflectionProbe;
 };

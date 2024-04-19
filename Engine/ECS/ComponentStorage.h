@@ -13,55 +13,80 @@ class ComponentStorageBase {
 public:
 	virtual ~ComponentStorageBase() = default;
 
-	virtual void remove_component(EntityID entityid) = 0;
+	virtual void RemoveComponent(EntityID entityid) = 0;
 	virtual void clear() = 0;
 };
 
 template <typename Component>
 struct ComponentStorage : public ComponentStorageBase
 {
+	void AddComponent(EntityID entity_id, Component component) 
+	{
+		assert(m_EntityToIndexMap.find(entity_id) == m_EntityToIndexMap.end() && "Component added to same entity more than once.");
 
-	std::unique_ptr<Component[]> data;
-	//std::unique_ptr<std::array<Component,3>> data;
-	std::size_t size = 0;
-	std::size_t capacity = 0;
+		// Put new entry at end
+		size_t newIndex = m_Size;
+		m_EntityToIndexMap[entity_id] = newIndex;
+		m_IndexToEntityMap[newIndex] = entity_id;
+		m_ComponentArray[newIndex] = component;
+		++m_Size;
+	}
 
+	void RemoveComponent(EntityID entity_id) 
+	{
+		assert(m_EntityToIndexMap.find(entity_id) != m_EntityToIndexMap.end() && "Removing non-existent component.");
 
-	void reserve(std::size_t new_capacity) {
-		if (new_capacity > capacity) {
-			std::unique_ptr<Component[]> new_data(new Component[new_capacity]);
-			if (data) {
-				std::memcpy(new_data.get(), data.get(), sizeof(Component) * size);
-			}
-			data = std::move(new_data);
-			capacity = new_capacity;
+		// Copy element at end into deleted element's place to maintain density
+		size_t indexOfRemovedEntity = m_EntityToIndexMap[entity_id];
+		size_t indexOfLastElement = m_Size - 1;
+		m_ComponentArray[indexOfRemovedEntity] = m_ComponentArray[indexOfLastElement];
+
+		// Update map to point to moved spot
+		EntityID entityOfLastElement = m_IndexToEntityMap[indexOfLastElement];
+		m_EntityToIndexMap[entityOfLastElement] = indexOfRemovedEntity;
+		m_IndexToEntityMap[indexOfRemovedEntity] = entityOfLastElement;
+
+		m_EntityToIndexMap.erase(entity_id);
+		m_IndexToEntityMap.erase(indexOfLastElement);
+
+		--m_Size;
+	}
+
+	Component& GetComponent(EntityID entity_id) 
+	{
+		assert(m_EntityToIndexMap.find(entity_id) != m_EntityToIndexMap.end() && "Retrieving non-existent component.");
+
+		return m_ComponentArray[m_EntityToIndexMap[entity_id]];
+	}
+	
+	
+	bool HasComponent(EntityID entity_id) 
+	{
+		return m_EntityToIndexMap.find(entity_id) != m_EntityToIndexMap.end();
+	}
+	
+	std::array<Component, MAX_ENTITIES>& GetComponentArray()
+	{
+		return m_ComponentArray;
+	}
+	
+	std::unordered_map<EntityID, Component*> GetActiveComponents()
+	{
+		std::unordered_map<EntityID, Component*> activeComponents;
+		for(int i = 0; i < m_Size; i++)
+		{
+			activeComponents.insert({ m_IndexToEntityMap.at(i), &m_ComponentArray.at(i) });
 		}
+		return activeComponents;
 	}
-
-	void add_component(EntityID entity_id, Component component) {
-		reserve(entity_id + 1);
-		data[entity_id] = std::move(component);
-		size = std::max(size, entity_id + 1);
+	
+	void clear() 
+	{
+		
 	}
-
-	void remove_component(EntityID entity_id) {
-		if (entity_id < size) {
-			data[entity_id] = Component{};
-		}
-	}
-
-	Component& get_component(EntityID entity_id) {
-		assert(entity_id < size);
-		return data[entity_id];
-	}
-
-	bool has_component(EntityID entity_id) const {
-		return entity_id < size && data[entity_id] != Component{};
-	}
-
-	void clear() {
-		data.reset();
-		size = 0;
-		capacity = 0;
-	}
+	
+	std::array<Component, MAX_ENTITIES> m_ComponentArray;
+	std::unordered_map<EntityID, size_t> m_EntityToIndexMap;
+	std::unordered_map<size_t, EntityID> m_IndexToEntityMap;
+	size_t m_Size{};
 };

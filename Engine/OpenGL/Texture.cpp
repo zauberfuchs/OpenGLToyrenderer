@@ -4,13 +4,14 @@
 
 
 Texture::Texture(const std::string& path, const TextureTarget& tt)
-	: m_FilePath(path), m_Target(tt), m_ID(0)
+	: m_FilePath(path), m_Target(tt), m_ID(0), m_MipMapLevel(0)
 {
+	m_Name = std::filesystem::path(m_FilePath).stem().string();
 	Load();
 }
 
 Texture::Texture(const TextureTarget& tt)
-	: m_Target(tt), m_ID(0)
+	: m_Target(tt), m_ID(0), m_MipMapLevel(0)
 {
 	//glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 }
@@ -20,20 +21,96 @@ Texture::~Texture()
 	glDeleteTextures(1, &m_ID);
 }
 
+void Texture::SaveTextureToCache(void* data) 
+{
+	if (data) {
+		// Open the output file stream
+		std::string materialName = std::filesystem::path(m_FilePath).parent_path().filename().string();
+
+
+		std::ofstream outputFile("../Data/Textures/Loaded/" + materialName + m_Name + ".fTex", std::ios::out | std::ios::binary);
+		
+		outputFile.write((char*)&m_Width, sizeof(int));
+		outputFile.write((char*)&m_Height, sizeof(int));
+		outputFile.write((char*)&m_Components, sizeof(int));
+
+		int dataSize = m_Width * m_Height * m_Components;
+		// Write the image data to the file
+		outputFile.write((char*)data, dataSize);
+		
+		// Close the output file stream
+		outputFile.close();
+	}
+	else {
+		std::cerr << "Error loading image: " << stbi_failure_reason() << std::endl;
+	}
+}
+
+unsigned char* Texture::LoadTextureFromCache()
+{
+	// Open the input file stream
+	std::string materialName = std::filesystem::path(m_FilePath).parent_path().filename().string();
+	std::ifstream inputFile("../Data/Textures/Loaded/" + materialName + m_Name + ".fTex", std::ios::in | std::ios::binary);
+
+	if (inputFile) {
+
+		// Read the image metadata from the file
+		inputFile.read((char*)&m_Width, sizeof(int));
+		inputFile.read((char*)&m_Height, sizeof(int));
+		inputFile.read((char*)&m_Components, sizeof(int));
+
+		/// Move the read pointer to the start of the image data
+		inputFile.seekg(sizeof(int) * 3, std::ios::beg);
+
+		// Calculate the size of the image data
+		int dataSize = m_Width * m_Height * m_Components;
+
+		// Allocate memory for the image data
+		unsigned char* imageData = new unsigned char[dataSize];
+
+		// Read the image data from the file
+		inputFile.read(reinterpret_cast<char*>(imageData), dataSize);
+
+		// Close the input file stream
+		inputFile.close();
+
+
+		// Return the image data
+		return imageData;
+	}
+	else 
+	{
+		std::cerr << "Error opening file: " << m_Name << std::endl;
+		return nullptr;
+	}
+}
+
 void Texture::Load()
 {
 	void* data;
 	GLenum dataFormat;
-	if(m_FilePath.find_first_of(".hdr"))
+
+	std::string materialName = std::filesystem::path(m_FilePath).parent_path().filename().string();
+	if (std::filesystem::exists("../Data/Textures/Loaded/" + materialName + m_Name + ".fTex")) 
 	{
-		data = stbi_loadf(m_FilePath.c_str(), &m_Width, &m_Height, &m_Components, 0);
-		dataFormat = GL_FLOAT;
-	}
-	else
-	{
-		data = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_Components, 0);
+		data = LoadTextureFromCache();
 		dataFormat = GL_UNSIGNED_BYTE;
 	}
+	else 
+	{
+		if (m_FilePath.find_first_of(".hdr"))
+		{
+			data = stbi_loadf(m_FilePath.c_str(), &m_Width, &m_Height, &m_Components, 0);
+			dataFormat = GL_FLOAT;
+		}
+		else
+		{
+			data = stbi_load(m_FilePath.c_str(), &m_Width, &m_Height, &m_Components, 0);
+			dataFormat = GL_UNSIGNED_BYTE;
+		}
+		SaveTextureToCache(data);
+	}
+
 	stbi_set_flip_vertically_on_load(1);
 
 	glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
@@ -78,6 +155,7 @@ void Texture::Load()
 
 void Texture::Load(const std::string& path, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped)
 {
+	m_Name = std::filesystem::path(path).stem().string();
 	stbi_set_flip_vertically_on_load(isFlipped); // flipt die Texture damit es von unten anfängt
 	float* data = stbi_loadf(path.c_str(), &m_Width, &m_Height, &m_Components, 0);
 

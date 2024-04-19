@@ -11,15 +11,17 @@ enum class LightSourceType
 class Light
 {
 public:
-
+	
+	//TODO ECS brauch default konstruktor why??
+	Light() = default;
 	Light(const std::string& name);
 	~Light();
 
 	void CreateDirectionalDepthMap(const unsigned int& width, const unsigned int& height);
 	void CreatePointDepthMap(const unsigned int& width, const unsigned int& height);
 
-	std::vector<glm::mat4> CreateShadowTransformMatrices(const float& nearPlane, const float& farPlane);
-	glm::mat4 CreateLightSpaceMatrix(const float& nearPlane, const float& farPlane);
+	std::vector<glm::mat4> CreateShadowTransformMatrices(const float& nearPlane, const float& farPlane, const glm::vec3 position);
+	glm::mat4 CreateLightSpaceMatrix(const float& nearPlane, const float& farPlane, const glm::vec3 position);
 
 	inline LightSourceType GetType() { return m_Type; }
 	inline void SetType(const LightSourceType& type) { m_Type = type; }
@@ -29,9 +31,6 @@ public:
 
 	inline glm::vec3 GetDirection() { return m_Direction; }
 	inline void SetDirection(const glm::vec3& direction) { m_Direction = direction; }
-
-	inline glm::vec3 GetPosition() { return m_Position; }
-	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
 
 	inline glm::vec3 GetColor() { return m_Color; }
 	inline void SetColor(const glm::vec3& color) { m_Color = color; }
@@ -57,7 +56,6 @@ public:
 	inline Framebuffer* GetFramebuffer() { return m_FBO; }
 	inline Ref<Texture> GetDepthmap() { return m_Depthmap; }
 
-
 	inline float GetNearPlane() { return m_NearPlane; }
 	inline void SetNearPlane(const float& nearPlane) { m_NearPlane = nearPlane; }
 
@@ -71,7 +69,6 @@ private:
 	LightSourceType m_Type;
 
 	glm::vec3 m_Direction;
-	glm::vec3 m_Position;
 	glm::vec3 m_Color;
 
 	float m_Constant;
@@ -85,7 +82,7 @@ private:
 	float m_FarPlane;
 
 	Framebuffer* m_FBO;
-	Ref<Texture> m_Depthmap;
+	Ref<Texture> m_Depthmap = nullptr;
 
 
 	std::string m_Name = "noname";

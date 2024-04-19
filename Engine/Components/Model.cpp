@@ -36,6 +36,7 @@ Ref<Mesh> Model::GetMesh(const std::string& name)
 	return m_Meshes.at(name);
 };
 
+//Todo erzeugt kopie?? ricthig kacke
 std::unordered_map<std::string, Ref<Mesh>> Model::GetMeshes()
 {
 	return m_Meshes;

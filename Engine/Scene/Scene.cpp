@@ -27,16 +27,6 @@ void Scene::AddSceneObject(Ref<SceneObject> s)
 	m_SceneObjects.insert({ s->GetName(), s });
 }
 
-void Scene::AddSceneLight(Ref<Light> l)
-{
-	m_LightSources.insert( {l->GetName(), l} );
-}
-
-void Scene::RemoveSceneLight(const std::string& name)
-{
-	m_LightSources.erase("name");
-}
-
 void Scene::RemoveRootChild(const std::string& name)
 {
 	m_SceneObjects.erase("name");
@@ -67,7 +57,6 @@ Ref<ReflectionProbe> Scene::GetReflectionProbe()
 	return m_ReflectionProbe;
 }
 
-
 std::unordered_map<std::string, Ref<SceneObject>> Scene::GetSceneObjects()
 {
 	return m_SceneObjects;
@@ -76,11 +65,6 @@ std::unordered_map<std::string, Ref<SceneObject>> Scene::GetSceneObjects()
 Ref<SceneObject> Scene::GetSceneObject(const std::string& name)
 {
 	return m_SceneObjects.at(name);
-}
-
-std::unordered_map<std::string, Ref<Light>> Scene::GetSceneLightSources()
-{
-	return m_LightSources;
 }
 
 Ref<SceneObject> Scene::GetRootSceneNode()

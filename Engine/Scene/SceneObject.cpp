@@ -6,34 +6,20 @@
 
 
 SceneObject::SceneObject(std::string name)
-	: m_Name(name), m_Transform(new Transform())
+	: m_Name(name), m_Entity(World::Get().GetEntityManager()->create_entity())
 {
+	m_Entity.AddComponent<Transform>();
 }
 
 SceneObject::~SceneObject()
 {
 }
 
-void SceneObject::AddModel(Ref<Model> model)
-{
-	m_Model = model;
-}
-
-void SceneObject::AddLight(Ref<Light> light)
-{
-	m_Light = light;
-}
-
-Ref<Light> SceneObject::GetLight()
-{
-	return m_Light;
-}
-
 void SceneObject::AddChildren(Ref<SceneObject> sceneObject)
 {
 	World::Get().GetActiveScene()->AddSceneObject(sceneObject);
 	m_Children.insert(sceneObject);
-	sceneObject->GetTransform()->SetParent(this->GetTransform());
+	sceneObject->GetComponent<Transform>().SetParent(&this->GetComponent<Transform>());
 	sceneObject->SetParent(this);
 }
 
@@ -57,11 +43,6 @@ std::string SceneObject::GetName()
 	return m_Name;
 }
 
-Ref<Model> SceneObject::GetModel()
-{
-	return m_Model;
-}
-
 Animation* SceneObject::GetAnimation()
 {
 	return m_Animation;
@@ -70,10 +51,4 @@ Animation* SceneObject::GetAnimation()
 void SceneObject::SetAnimation(Animation* anim)
 {
 	m_Animation = anim;
-}
-
-
-Transform* SceneObject::GetTransform()
-{
-	return m_Transform;
 }

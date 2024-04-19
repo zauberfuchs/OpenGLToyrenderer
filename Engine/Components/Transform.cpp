@@ -11,8 +11,30 @@ Transform::Transform() :
 	m_LocalScale(glm::vec3(1.0f)),
 	m_Axis(glm::mat4(1.0f)),
 	m_TransformationMatrix(glm::mat4(1.0f)),
-	m_TransforMatrixSet(false)
+	m_TransforMatrixSet(false),
+	m_Parent(nullptr)
 {
+}
+
+Transform& Transform::operator=(const Transform& other)
+{
+	if (this != &other) {
+		// Copy member variables from the other Transform object
+		m_WorldPosition = other.m_WorldPosition;
+		m_WorldEulerAngles = other.m_WorldEulerAngles;
+		m_WorldScale = other.m_WorldScale;
+		m_LocalPosition = other.m_LocalPosition;
+		m_LocalEulerAngles = other.m_LocalEulerAngles;
+		m_LocalScale = other.m_LocalScale;
+		m_Axis = other.m_Axis;
+		m_TransformationMatrix = other.m_TransformationMatrix;
+		m_TransforMatrixSet = other.m_TransforMatrixSet;
+		m_Parent = other.m_Parent;
+		m_Constraints[0] = other.m_Constraints[0];
+		m_Constraints[1] = other.m_Constraints[1];
+		m_Constraints[2] = other.m_Constraints[2];
+	}
+	return *this;
 }
 
 void Transform::Translate(glm::vec3 translation, Space relativeTo)
