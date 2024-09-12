@@ -21,23 +21,15 @@ Model::~Model()
 
 void Model::AddMesh(Ref<Mesh> mesh)
 {
-	m_Meshes.insert({mesh->GetName(), mesh});
+	m_Meshes.push_back(mesh);
 }
 
-Ref<Mesh> Model::GetMesh(const int& index)
+Ref<Mesh> Model::GetMesh(int index)
 {
-	auto it = m_Meshes.begin();
-	std::advance(it, index);
-	return it->second;
+	return m_Meshes[index];
 }
 
-Ref<Mesh> Model::GetMesh(const std::string& name)
-{
-	return m_Meshes.at(name);
-};
-
-//Todo erzeugt kopie?? ricthig kacke
-std::unordered_map<std::string, Ref<Mesh>> Model::GetMeshes()
+std::vector<Ref<Mesh>> Model::GetMeshes()
 {
 	return m_Meshes;
 }
@@ -71,7 +63,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		m_Meshes.insert( { node->mName.C_Str() + std::to_string(j), ProcessMesh(mesh, scene)});
+		m_Meshes.emplace_back(ProcessMesh(mesh, scene));
 		j++;
 	}
 	// then do the same for each of its children
@@ -152,7 +144,7 @@ Ref<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 
-	Ref<Mesh> _mesh = CreateRef<Mesh>(mesh->mName.C_Str(), vertices, indices);
+	Ref<Mesh> _mesh = CreateRef<Mesh>(vertices, indices);
 
 	_mesh->SetMaterial(m);
 	_mesh->GetMaterial()->SetShader(World::Get().GetShader("simpleMaterialShader"));

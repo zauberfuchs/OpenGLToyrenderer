@@ -2,10 +2,10 @@
 #include "ImGuiWindow.h"
 
 
+#include "Engine/Scene/World.h"
 #include "Window.h"
 #include "Engine/OpenGL/Texture.h"
-#include "Engine/Scene/World.h"
-#include "Engine/Scene/Renderer.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Components/Animation.h"
 #include "Engine/Components/Model.h"
 
@@ -62,7 +62,7 @@ void ImGuiWindow::RenderScenePanel()
 				current_item = name.c_str();
 				s_ImGuiData.CurrentSceneObject = sceneObjects.at(current_item);
 				s_ImGuiData.transform = &s_ImGuiData.CurrentSceneObject->GetComponent<Transform>();
-				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes().begin()->second->GetMaterial()->GetColor();
+				s_ImGuiData.MaterialColor = s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes()[0]->GetMaterial()->GetColor();
 
 			}
 			if (is_selected)
@@ -112,9 +112,9 @@ void ImGuiWindow::RenderMeshComponent()
 		ImGui::Dummy(ImVec2(20, 20));
 		ImGui::Text("Material Component", 20);
 		AddUnderLine(ImColor(255, 255, 255, 255));
-		for(auto m : meshes)
+		for(const Ref<Mesh>& m : meshes)
 		{
-			auto material = m.second->GetMaterial();
+			Ref<Material> material = m->GetMaterial();
 			s_ImGuiData.materials.insert(material);
 
 			ImGui::Dummy(ImVec2(1, 1));
@@ -125,7 +125,7 @@ void ImGuiWindow::RenderMeshComponent()
 			{
 			case MaterialType::Phong:
 				ImGui::Dummy(ImVec2(10, 10));
-				ImGui::Text(m.first.c_str(), 20);
+				//ImGui::Text(m.first.c_str(), 20);
 				glm::vec3 color = material->GetColor();
 				ImGui::ColorEdit3("Model Color", (float*)&color);
 				material->SetColor(color);
@@ -200,7 +200,7 @@ void ImGuiWindow::RenderMeshComponent()
 			case MaterialType::TexturedPhysicallyBased :
 				if(ImGui::ImageButton((ImTextureID)(intptr_t)material->GetTexture(TextureType::AlbedoMap)->GetTextureID(), { 100, 100 }, { 0, 1 }, { 1, 0 }))
 				{
-					s_ImGuiData.SelectedMesh = m.second;
+					s_ImGuiData.SelectedMesh = m;
 					s_ImGuiData.MaterialWindowState = true;
 				}
 			}
@@ -230,9 +230,9 @@ void ImGuiWindow::RenderMeshComponent()
 
 	}
 
-	for (auto [name, mesh] : s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes())
+	for (Ref<Mesh> m : s_ImGuiData.CurrentSceneObject->GetComponent<Model>().GetMeshes())
 	{
-		mesh->GetMaterial()->GetColor() = s_ImGuiData.MaterialColor;
+		m->GetMaterial()->GetColor() = s_ImGuiData.MaterialColor;
 	}
 }
 
@@ -303,10 +303,10 @@ void ImGuiWindow::RenderWireFrameMode()
 void ImGuiWindow::RenderMSAA()
 {
 	ImGui::Dummy(ImVec2(20, 20));
-	ImGui::RadioButton("no Antialiasing", s_Data.MSAA, 1);
-	ImGui::RadioButton("4x MSAA", s_Data.MSAA, 4);
-	ImGui::RadioButton("8x MSAA", s_Data.MSAA, 8);
-	ImGui::RadioButton("16x MSAA", s_Data.MSAA, 16);
+	ImGui::RadioButton("no Antialiasing", &g_RendererContext.MSAA, 1);
+	ImGui::RadioButton("4x MSAA", &g_RendererContext.MSAA, 4);
+	ImGui::RadioButton("8x MSAA", &g_RendererContext.MSAA, 8);
+	ImGui::RadioButton("16x MSAA", &g_RendererContext.MSAA, 16);
 }
 
 void ImGuiWindow::RenderFpsCounter()

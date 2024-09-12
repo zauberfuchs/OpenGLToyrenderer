@@ -1,13 +1,12 @@
 #version 330 core
-// Positions/Coordinates
-layout (location = 0) in vec3 vPos;
-// Texture Coordinates
-layout (location = 1) in vec2 vTex;
 
 out vec2 TexCoords;
 
 void main()
 {
-    gl_Position = vec4(vPos.x, vPos.y, 0.0, 1.0); 
-    TexCoords = vTex;
-} 
+    vec2 uv			= vec2((gl_VertexID >> 1) & 1, gl_VertexID & 1);
+    vec4 position	= vec4(uv * vec2(2.0, -2.0) + vec2(-1.0, 1.0), 0.0, 1.0);
+	
+	gl_Position = position;
+    TexCoords = uv;
+}

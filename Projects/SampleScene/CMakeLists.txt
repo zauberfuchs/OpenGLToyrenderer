@@ -33,9 +33,20 @@ file(GLOB_RECURSE SCENE_FILES
 	"${CORE_SRC}/Scene/*.h"
 	"${CORE_SRC}/Scene/*.cpp"
 	)
+
 file(GLOB_RECURSE COMPONENT_FILES
 	"${CORE_SRC}/Components/*.h"
 	"${CORE_SRC}/Components/*.cpp"
+	)
+
+file(GLOB_RECURSE RENDERER_FILES
+	"${CORE_SRC}/Renderer/*.h"
+	"${CORE_SRC}/Renderer/*.cpp"
+	)
+
+file(GLOB_RECURSE RENDERPASS_FILES
+	"${CORE_SRC}/RenderPasses/*.h"
+	"${CORE_SRC}/RenderPasses/*.cpp"
 	)
 
 file(GLOB_RECURSE WINDOW_FILES
@@ -66,6 +77,8 @@ source_group("Scene" FILES ${SCENE_FILES})
 source_group("Components" FILES ${COMPONENT_FILES})
 source_group("ECS" FILES ${ECS_FILES})
 source_group("Window" FILES ${WINDOW_FILES})
+source_group("Renderer" FILES ${RENDERER_FILES})
+source_group("RenderPasses" FILES ${RENDERPASS_FILES})
 source_group("Utils" FILES ${UTIL_FILES})
 
 set(OPEN_GL_FILES 	
@@ -90,6 +103,8 @@ add_executable(
 	${SCENE_FILES}
 	${OPENGL_FILES}
 	${COMPONENT_FILES}
+	${RENDERER_FILES}
+	${RENDERPASS_FILES}
 	${ECS_FILES}
 	${UTIL_FILES}
 	../../Engine/utils/glm.natvis

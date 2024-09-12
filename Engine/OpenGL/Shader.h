@@ -28,7 +28,7 @@ public:
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 	void SetUniformMat4f(const std::string& name, glm::mat4 matrix);
 
-	unsigned int GetShaderID();
+	uint GetShaderID() const;
 	void AddUniform(std::string name, GLenum type);
 
 	std::string GetName();

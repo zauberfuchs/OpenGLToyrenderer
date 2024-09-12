@@ -1,7 +1,7 @@
 #include "Engine/Utils/pch.h"
-#include "Camera.h"
 
 #include "Engine/OpenGL/Shader.h"
+#include "Camera.h"
 
 // constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
@@ -13,6 +13,8 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	Pitch = pitch;
 	UpdateCameraVectors();
 }
+
+
 
 // constructor with scalar values
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
@@ -33,7 +35,7 @@ glm::mat4 Camera::GetViewMatrix() const
 
 glm::mat4 Camera::GetProjectionMatrix() const
 {
-	return glm::perspective(glm::radians(Zoom), (float)width / (float)height, 0.1f, 200.0f);
+	return glm::perspective(glm::radians(Zoom), Viewport.Width / Viewport.Height, 0.1f, 200.0f);
 }
 
 // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -55,7 +57,7 @@ void Camera::ProcessKeyboard(CameraMovement direction, const double& deltaTime)
 }
 
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-void Camera::ProcessMouseMovement(const double& xoffset, const double& yoffset, const GLboolean& constrainPitch)
+void Camera::ProcessMouseMovement(const double& xoffset, const double& yoffset, const bool& constrainPitch)
 {
 
 	Yaw += xoffset * MouseSensitivity;
@@ -86,8 +88,8 @@ void Camera::ProcessMouseScroll(const double& yoffset)
 
 void Camera::UpdateCameraWindow(int& width, int& height)
 {
-	this->width = width;
-	this->height = height;
+	this->Viewport.Width = width;
+	this->Viewport.Height = height;
 }
 
 void Camera::UpdateMatrix(Shader* shader)

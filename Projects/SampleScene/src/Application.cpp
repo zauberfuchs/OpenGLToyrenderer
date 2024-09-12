@@ -1,9 +1,10 @@
 #include "Engine/Utils/pch.h"
 
+
 #include "Engine/Components/Model.h"
 #include "Engine/Geometry/Cube.h"
 #include "Engine/Geometry/Sphere.h"
-#include "Engine/Scene/Renderer.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Window/Window.h"
 #include "Engine/Window/ImGuiWindow.h"
 #include "Engine/ECS/EntityManager.h"
@@ -36,18 +37,15 @@ int main() {
 	const auto whiteMaterial = CreateRef<Material>("white");
 	whiteMaterial->SetType(MaterialType::Phong);
 	whiteMaterial->SetAmbient(glm::vec3(1.0f, 1.0f, 1.0f));
-	whiteMaterial->SetDiffuse(glm::vec3(0.5f, 0.5f, 0.5f));
-	whiteMaterial->SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
-	whiteMaterial->SetShininess(32.0f);
 	whiteMaterial->SetReflections(ReflectionType::Phong);
-	whiteMaterial->SetColor(glm::vec3(1.0f));\
+	whiteMaterial->SetColor(glm::vec3(1.0f));
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Create geometry
 	///////////////////////////////////////////////////////////////////////////////
 
-	const unsigned int maxRows = 3;
-	const unsigned int maxColumns = 3;
+	const uint maxRows = 3;
+	const uint maxColumns = 3;
 
 	//TODO AddComponent<Mesh> im model laden / hinzufügen zusammen mit der Entity. ?? kann man mehrere MeshComponents haben?
 	
@@ -90,7 +88,7 @@ int main() {
 	auto ground = CreateRef<SceneObject>("ground");
 
 	ground->AddComponent<Model>(std::string("ground"));
-	ground->GetComponent<Model>().AddMesh(CreateRef<Cube>("ground"));
+	ground->GetComponent<Model>().AddMesh(CreateRef<Mesh>(Mesh::CreateUnitCube()));
 
 	ground->GetComponent<Model>().GetMesh()->SetMaterial(World::Get().GetMaterial("ceramictile"));
 
@@ -105,9 +103,8 @@ int main() {
 	auto lightSphere = CreateRef<SceneObject>("lightSphere");
 
 	lightSphere->AddComponent<Model>(std::string("lightSphere"));
-	lightSphere->GetComponent<Model>().AddMesh(CreateRef<Sphere>("Sphere", 32));
+	lightSphere->GetComponent<Model>().AddMesh(CreateRef<Mesh>(Mesh::CreateUnitCube()));
 	lightSphere->GetComponent<Model>().GetMesh()->SetMaterial(whiteMaterial);
-
 	lightSphere->GetComponent<Transform>().Translate({ 10.2f, 4.0f, 2.0f }, Space::Local);
 	lightSphere->GetComponent<Transform>().Scale(glm::vec3(0.2f), Space::Local);
 
@@ -141,9 +138,9 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
-
+	Renderer r;
 	ImGuiWindow::Init();
-	Renderer::Init();
+	r.Init();
 
 	///////////////////////////////////////////////////////////////////////////////
 	// main Rendering loop
@@ -157,11 +154,11 @@ int main() {
 
 		Renderer::DepthPrePath();
 		
-		Renderer::GeometryPath();
+		r.GeometryPath();
 
-		Renderer::SkyboxPath();
+		r.SkyboxPath();
 
-		Renderer::PostFxPath();
+		r.PostFxPath();
 
 		ImGuiWindow::RenderScenePanel();
 		

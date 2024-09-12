@@ -1,4 +1,4 @@
-#version 330
+#version 450 core
 
 // required by GLSL spec Sect 4.5.3 (though nvidia does not, amd does)
 precision highp float;
@@ -27,7 +27,6 @@ struct Light {
 
 uniform Light light[4];
 uniform samplerCube depthMap;
-uniform float farPlane;
 
 vec3 gridSamplingDisk[20] = vec3[]
 (
@@ -54,7 +53,14 @@ in vec4 fragPosLightSpace;
 ///////////////////////////////////////////////////////////////////////////////
 // Input uniform variables
 ///////////////////////////////////////////////////////////////////////////////
-uniform vec3 camPos;
+layout (std140, binding = 1) uniform ForwardConstants
+{
+    mat4 view;
+    mat4 projection;
+	vec3 cameraPos;
+	float farPlane;
+	float nearPlane;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Output color
@@ -73,7 +79,7 @@ float ShadowCalculation(vec3 fragPos)
     float shadow = 0.0;
     float bias = 0.15;
     int samples = 20;
-    float viewDistance = length(camPos - fragPos);
+    float viewDistance = length(cameraPos - fragPos);
     float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
     for(int i = 0; i < samples; ++i)
     {
@@ -161,7 +167,7 @@ void main()
 
   //  vec3 N = normalize(normal);
     vec3 N = getNormalFromMap();
-    vec3 V = normalize(camPos - fragPos);
+    vec3 V = normalize(cameraPos - fragPos);
     vec3 R = reflect(-V, N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 

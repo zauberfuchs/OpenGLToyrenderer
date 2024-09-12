@@ -103,7 +103,7 @@ public:
 	std::string GetUniformLocation() { return m_UniformLocation; }
 	void SetUniformLocation(const std::string& uniformLocation) { m_UniformLocation = uniformLocation; }
 
-	void Bind(const unsigned int& slot) const;
+	void Bind(const unsigned int& slot = 0) const;
 	void Unbind() const;
 
 	std::string GetFilePath() { return m_FilePath; }

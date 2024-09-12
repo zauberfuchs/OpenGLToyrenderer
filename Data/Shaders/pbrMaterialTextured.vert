@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input vertex attributes
@@ -19,15 +19,20 @@ out vec4 fragPosLightSpace;
 // Input uniform variables
 ///////////////////////////////////////////////////////////////////////////////
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 uniform mat4 lightSpaceMatrix;
 // ändern
 //uniform mat4 normalMatrix;
 //uniform mat4 modelViewMatrix;
 //uniform mat4 modelViewProjectionMatrix;
 
-
+layout (std140, binding = 1) uniform ForwardConstants
+{
+    mat4 view;
+    mat4 projection;
+	vec3 cameraPos;
+	float farPlane;
+	float nearPlane;
+};
 
 void main() 
 {

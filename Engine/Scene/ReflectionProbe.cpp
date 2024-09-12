@@ -1,7 +1,7 @@
 #include "Engine/Utils/pch.h"
 #include "ReflectionProbe.h"
 
-#include "Renderer.h"
+#include "Engine/Renderer/Renderer.h"
 #include "World.h"
 
 
@@ -157,6 +157,7 @@ void ReflectionProbe::CreateBRDFLookUpTexture()
     m_BrdfShader->Bind();
     
     glViewport(0, 0, 512, 512);
+	
     Renderer::RenderQuad();
     m_BrdfShader->Unbind();
 }

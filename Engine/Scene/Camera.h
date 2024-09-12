@@ -1,9 +1,5 @@
 #pragma once
 
-#include <GL/glew.h> 
-
-
-class Shader;
 
 enum class CameraMovement {
 	FORWARD,
@@ -27,6 +23,14 @@ const int HEIGHT = 600;
 class Camera
 {
 public:
+	struct CameraViewport
+	{
+		float Left;
+		float Top;
+		float Width;
+		float Height;
+	};
+	
 	// camera Attributes
 	glm::vec3 Position;
 	glm::vec3 Front;
@@ -40,9 +44,11 @@ public:
 	float MovementSpeed;
 	float MouseSensitivity;
 	float Zoom;
-	// Stores the width and height of the window
-	int width;
-	int height;
+	CameraViewport Viewport;
+	
+	float m_NearPlane = 0.1f;
+	float m_FarPlane = 50.0f;
+	
 
 	// constructor with vectors
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
@@ -58,13 +64,19 @@ public:
 	void ProcessKeyboard(CameraMovement direction, const double& deltaTime);
 
 	// processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-	void ProcessMouseMovement(const double& xoffset, const double& yoffset, const GLboolean& constrainPitch = true);
+	void ProcessMouseMovement(const double& xoffset, const double& yoffset, const bool& constrainPitch = true);
 
 	// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 	void ProcessMouseScroll(const double& offset);
 
 	void UpdateCameraWindow(int& width, int& height);
+  
 
+	inline float GetFarPlane() { return m_FarPlane; }
+	inline void SetFarPlane(const float& farPlane) { m_FarPlane = farPlane; }
+	
+	inline float GetNearPlane() { return m_NearPlane; }
+	inline void SetNearPlane(const float& nearPlane) { m_NearPlane = nearPlane; }
 	// update camera view + projection matrix
 	void UpdateMatrix(Shader* shader);
 private:

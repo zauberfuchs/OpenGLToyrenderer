@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+#include "Engine/OpenGL/Shader.h"
 #include "Engine/Scene/Camera.h"
 
 class Window

@@ -77,7 +77,7 @@ void Shader::SetUniformMat4f(const std::string& name, glm::mat4 matrix)
  	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
 }
 
-unsigned int Shader::GetShaderID()
+uint Shader::GetShaderID() const
 {
 	return m_ID;
 }

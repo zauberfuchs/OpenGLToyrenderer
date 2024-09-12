@@ -41,7 +41,7 @@ public:
 	void SetDrawBuffer(const FramebufferColorBuffer& fc);
 	void SetReadBuffer(const FramebufferColorBuffer& fc);
 	void AttachRenderBuffer(const GLuint& rbo_ID, const FramebufferAttachment& attachment);
-	void SetSampleSize(const unsigned int& samples) { m_SampleSize = samples; }
+	void SetSampleSize(uint samples) { m_SampleSize = samples; }
 	unsigned int GetSampleSize() { return m_SampleSize; }
 
 private:

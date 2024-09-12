@@ -8,33 +8,34 @@
 class Mesh
 {
 public:
-	Mesh(const std::string& name);
-	Mesh(const std::string& name, const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices);
+	Mesh();
+	Mesh(std::vector<Vertex>vertices, std::vector<GLuint> indices);
+	Mesh(std::vector<Vertex>vertices, std::vector<GLuint> indices, Ref<Material> material);
 	virtual ~Mesh();
 
-	void SetupMesh();
+	static Mesh CreateUnitCube(const Material& material = Material());
+//    static Mesh CreateUnitCubeInsides(const Material &material = Material());
+//    static Mesh CreateHorizontalPlane(const Material &material = Material());
 
-	void SetName(const std::string& name);
-	std::string GetName();
 
-	void SetMaterial(Ref<Material> material);
-	Ref<Material> GetMaterial();
+	void SetMaterial(Ref<Material> material) { m_Material = material; };
 
-	Ref<VertexArray> GetVAO() { return m_VAO; }
-	uint16_t GetRenderMode() { return m_RenderMode; }
-	uint32_t GetIndicesSize() { return static_cast<uint32_t>(m_Indices.size()); }
-
+	Ref<Material> 		GetMaterial() 		{ return m_Material; };
+	Ref<VertexArray> 	GetVAO() 			{ return m_VAO; }
+	uint16_t 			GetRenderMode() 	{ return m_RenderMode; }
+	uint32_t 			GetIndexCount() 	{ return m_IndexCount; }
+	uint32_t 			GetVertexCount() 	{ return m_VertexCount; }
+	
+	void Draw();
 
 
 protected:
-	std::string m_Name;
-	std::vector <Vertex> m_Vertices;
-	std::vector <GLuint> m_Indices;
-
+	uint32	m_VertexCount;
+    uint32 	m_IndexCount;
 	
-	Ref<VertexArray> m_VAO;
-	Ref<IndexBuffer> m_IBO;
-	Ref<VertexBuffer> m_VBO;
+	Ref<VertexArray> 	m_VAO;
+	Ref<IndexBuffer> 	m_IBO;
+	Ref<VertexBuffer> 	m_VBO;
 	
 	uint16_t m_RenderMode = GL_TRIANGLES;
 

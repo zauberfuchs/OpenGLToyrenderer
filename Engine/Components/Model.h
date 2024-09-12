@@ -20,9 +20,8 @@ public:
 	~Model();
 	
 	void AddMesh(Ref<Mesh> mesh);
-	Ref<Mesh> GetMesh(const int& index = 0);
-	Ref<Mesh> GetMesh(const std::string& name);
-	std::unordered_map<std::string, Ref<Mesh>> GetMeshes();
+	Ref<Mesh> GetMesh(int index = 0);
+	std::vector<Ref<Mesh>> GetMeshes();
 
 private:
 	void LoadModel(std::string path);
@@ -35,7 +34,7 @@ private:
 
 	// model data
 	std::vector<Texture> m_TexturesLoaded;
-	std::unordered_map<std::string, Ref<Mesh>> m_Meshes;
+	std::vector<Ref<Mesh>> m_Meshes;
 	std::string m_Directory;
 
 	std::string m_Name;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Scene.h"
 #include "Engine/OpenGL/Shader.h"
+#include "Scene.h"
 
 class Material;
 class Window;
@@ -31,7 +31,7 @@ public:
 	void SetActiveWindow(Ref<Window> w) { m_Window = w; }
 	Ref<Window> GetActiveWindow() { return m_Window; };
 
-	static auto& Get() {
+	static World& Get() {
 		static World world;
 		return world;
 	}
