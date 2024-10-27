@@ -1,27 +1,18 @@
 #pragma once
+#include "Engine/Scene/World.h"
 
 class VertexArray;
-#include "Engine/Scene/World.h"
-struct RendererContext
+
+struct ForwardRenderContext
 {
-
-
-	Ref<Scene> ActiveScene;
-	Shader* ActiveShader;
-	Shader* PostFXShader;
-	Ref<Camera> ActiveSceneCamera;
-
-	Ref<Texture> SceneSkybox;
-
-	Ref<VertexArray> MeshVAO;
-
-	uint32_t MeshIndexCount;
-	uint16_t MeshRenderMode;
-
-	Ref<Material> MeshMaterial;
-	Transform MeshTransform;
-
-	std::unordered_map<EntityID, Light*> activeLights;
+	Ref<Scene> 			ActiveScene;
+	Ref<Camera> 		ActiveSceneCamera;
+	Ref<Texture> 		SceneSkybox;
+	Ref<Texture> 		ViewportTexture;
+	
+	Ref<Framebuffer> 	ForwardFrameBuffer;
+	
+	std::unordered_map<EntityID, Light*> ActiveLights;
 
 	int MSAA;
 

@@ -148,7 +148,6 @@ Ref<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 	_mesh->SetMaterial(m);
 	_mesh->GetMaterial()->SetShader(World::Get().GetShader("simpleMaterialShader"));
-
 	return _mesh;
 }
 
@@ -168,7 +167,7 @@ Ref<Material> Model::LoadMaterial(aiMaterial* mat) {
 
 	mat->Get(AI_MATKEY_SHININESS, shininess);
 	material->SetShininess(shininess);
-
+	
 	return material;
 }
 

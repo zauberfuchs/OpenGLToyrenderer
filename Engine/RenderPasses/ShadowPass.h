@@ -2,12 +2,12 @@
 #include "Engine/Renderer/RendererData.h"
 #include "Engine/Renderer/RenderPass.h"
 
-class ShadowPass : RenderPass
+class ShadowPass : public RenderPass
 {
 public:
 	ShadowPass();
 	void Init() override;
-	void Execute(RendererContext& rendererContext) override;
+	void Execute(ForwardRenderContext& rendererContext) override;
 	
 	void SetViewportTexture(Ref<Texture> viewportTexture) { m_ViewportTexture = viewportTexture; };
 private:

@@ -3,14 +3,13 @@
 #include "Engine/Renderer/RenderPass.h"
 
 
-class PostFXPass : RenderPass
+class PostFXPass : public RenderPass
 {
 public:
 	PostFXPass();
 	void Init() override;
-	void Execute(RendererContext& rendererContext) override;
+	void Execute(ForwardRenderContext& rendererContext) override;
 	
-	void RenderQuad();
 	void SetViewportTexture(Ref<Texture> viewportTexture) { m_ViewportTexture = viewportTexture; };
 private:
 	

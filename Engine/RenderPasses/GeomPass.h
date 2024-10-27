@@ -9,33 +9,36 @@ struct ForwardConstants
 {
 	glm::mat4 View;
 	glm::mat4 Projection;
+	
 	glm::vec3 CameraPos;
+	
 	float FarPlane;
 	float NearPlane;
 };
 
-class ForwardGeomPass : RenderPass
+class ForwardGeomPass : public RenderPass
 {
 public:
 	ForwardGeomPass();
 	void Init() override;
-	void Execute(RendererContext& rendererContext) override;
+	void Execute(ForwardRenderContext& rendererContext) override;
 	
-	inline Ref<Texture> GetViewportTexture() { return ViewportTexture; };
+	inline Ref<Texture> 	GetViewportTexture() 	{ return m_ViewportTexture; };
+	Ref<Framebuffer> 		GetRenderTarget() 		{ return m_RenderTarget; }
 	
-	Framebuffer* ForwardGeomFB;
 private:
 	
-	Renderbuffer* ForwardGeomRB;
+	Ref<Framebuffer> m_RenderTarget;
+	Renderbuffer* m_Renderbuffer;
 	
 	UniformBuffer* m_ConstantBuffer;
 	
-	//Shader m_ActiveShader;
-	Ref<Texture> ViewportTexture;
+	Ref<Texture> m_ViewportTexture;
 	Ref<VertexArray> m_MeshVAO;
 	uint32_t m_MeshIndexCount;
 	uint16_t m_MeshRenderMode;
 	
+	Shader* m_Geomshader;
 	ForwardConstants m_Constants;
 	
 };

@@ -13,17 +13,17 @@ ForwardGeomPass::ForwardGeomPass()
 void ForwardGeomPass::Init()
 {
 	m_ConstantBuffer = new UniformBuffer(sizeof(ForwardConstants), 1);
-	ForwardGeomFB = new Framebuffer();
-	ForwardGeomRB = new Renderbuffer();
-	ForwardGeomFB->AttachRenderBuffer(ForwardGeomRB->GetId(), FramebufferAttachment::DepthStencil);
+	m_RenderTarget = CreateRef<Framebuffer>();
+	m_Renderbuffer = new Renderbuffer();
+	m_RenderTarget->AttachRenderBuffer(m_Renderbuffer->GetId(), FramebufferAttachment::DepthStencil);
 	
-	ViewportTexture = CreateRef<Texture>(TextureTarget::Texture2DMultiSample);
-	ViewportTexture->SetTexture2DSize(0, 0);
-	ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, 1);
+	m_ViewportTexture = CreateRef<Texture>(TextureTarget::Texture2DMultiSample);
+	m_ViewportTexture->SetTexture2DSize(0, 0);
+	m_ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, 1);
 
 }
 
-void ForwardGeomPass::Execute(RendererContext& rendererContext)
+void ForwardGeomPass::Execute(ForwardRenderContext& rendererContext)
 {
 	m_Constants.View = rendererContext.ActiveSceneCamera->GetViewMatrix();
 	m_Constants.Projection = rendererContext.ActiveSceneCamera->GetProjectionMatrix();
@@ -37,32 +37,34 @@ void ForwardGeomPass::Execute(RendererContext& rendererContext)
 	
 	
 	// wenn der viewport sich verändert oder die samplesize
-	if (ViewportTexture->GetWidth() != newViewportWidth || ViewportTexture->GetHeight() != newViewportHeight || ForwardGeomFB->GetSampleSize() != rendererContext.MSAA)
+	if (m_ViewportTexture->GetWidth() != newViewportWidth || m_ViewportTexture->GetHeight() != newViewportHeight || m_RenderTarget->GetSampleSize() != rendererContext.MSAA)
 	{
 		// setzt die anzahl der Samples pro Pixel
-		ForwardGeomFB->SetSampleSize(rendererContext.MSAA);
-		ForwardGeomRB->SetSampleSize(rendererContext.MSAA);
+		m_RenderTarget->SetSampleSize(rendererContext.MSAA);
+		m_Renderbuffer->SetSampleSize(rendererContext.MSAA);
 
 		// fügt die textur als color attachment dem framebuffer hinzu
-		ViewportTexture->SetTexture2DSize(newViewportWidth, newViewportHeight);
-		ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, rendererContext.MSAA);
-		ForwardGeomFB->AttachColorTexture2D(ViewportTexture);
+		m_ViewportTexture->SetTexture2DSize(newViewportWidth, newViewportHeight);
+		m_ViewportTexture->CreateTexture2DStorage(TextureInternalFormat::Rgb16, false, rendererContext.MSAA);
+		m_RenderTarget->AttachColorTexture2D(m_ViewportTexture);
 
 		// fügt den Renderbuffer als Depth/stencil attachment dem Framebuffer hinzu da wir die depth informationen brauchen
-		ForwardGeomRB->CreateRenderBufferStorage(newViewportWidth, newViewportHeight, FramebufferTextureFormat::Depth32Stencil8);
+		m_Renderbuffer->CreateRenderBufferStorage(newViewportWidth, newViewportHeight, FramebufferTextureFormat::Depth32Stencil8);
 	}
 
-	ForwardGeomFB->Bind();
+	m_RenderTarget->Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	for (const auto& [name, SceneObj] : rendererContext.ActiveScene->GetSceneObjects())
 	{
-		rendererContext.MeshTransform = SceneObj->GetComponent<Transform>();
 		if (SceneObj->HasComponent<Model>())
 		{
 			for (const Ref<Mesh>& mesh : SceneObj->GetComponent<Model>().GetMeshes())
 			{
-				Renderer::DrawMesh(mesh, true);
+				mesh->GetMaterial()->GetShader()->Bind();
+				mesh->GetMaterial()->SetTexture(rendererContext.ActiveLights.begin()->second->GetDepthmap());
+				mesh->GetMaterial()->GetShader()->SetUniformMat4f("model", SceneObj->GetComponent<Transform>().GetTransformMatrix());
+				Renderer::DrawMesh(mesh, false);
 			}
 		}
 
@@ -73,9 +75,11 @@ void ForwardGeomPass::Execute(RendererContext& rendererContext)
 			for (const Ref<Mesh>& m : m2.GetMeshes()) 
 			{
 				// TODO camera is component
-				Renderer::DrawMesh(m, true);
+				Renderer::DrawMesh(m, false);
 			}
 		}
 	}
-	
+	m_RenderTarget->Unbind();
+	rendererContext.ForwardFrameBuffer = m_RenderTarget;
+	rendererContext.ViewportTexture = m_ViewportTexture;
 }

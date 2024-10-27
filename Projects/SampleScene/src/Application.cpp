@@ -138,9 +138,28 @@ int main() {
 	///////////////////////////////////////////////////////////////////////////////
 	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
-	Renderer r;
+	
+	Renderer ForwardRenderer;
 	ImGuiWindow::Init();
-	r.Init();
+	
+	ForwardRenderContext FRenderContext;
+	FRenderContext.ActiveScene = activeScene;
+	FRenderContext.ActiveSceneCamera = g_Camera;
+	FRenderContext.SceneSkybox = probeOne->GetReflectionTexture();
+	FRenderContext.ActiveLights = World::Get().GetEntityManager()->GetActiveComponents<Light>();
+	FRenderContext.MSAA = 1;
+	
+	
+	Ref<RenderPipeline> ForwardRenderPipeline = CreateRef<RenderPipeline>(FRenderContext);
+	ForwardRenderPipeline->AddRenderPass(new ShadowPass());
+	ForwardRenderPipeline->AddRenderPass(new ForwardGeomPass());
+	ForwardRenderPipeline->AddRenderPass(new SkyboxPass());
+	ForwardRenderPipeline->AddRenderPass(new PostFXPass());
+	
+	ForwardRenderer.AddRenderPipeline(ForwardRenderPipeline);
+	
+	ForwardRenderer.Init();
+	
 
 	///////////////////////////////////////////////////////////////////////////////
 	// main Rendering loop
@@ -151,16 +170,10 @@ int main() {
 		window->WindowRendering();
 
 		ImGuiWindow::NewFrame();
-
-		Renderer::DepthPrePath();
 		
-		r.GeometryPath();
+		ForwardRenderer.Render();
 
-		r.SkyboxPath();
-
-		r.PostFxPath();
-
-		ImGuiWindow::RenderScenePanel();
+		ImGuiWindow::RenderScenePanel(FRenderContext);
 		
 		glfwSwapBuffers(window->m_Window);
 		glfwPollEvents();

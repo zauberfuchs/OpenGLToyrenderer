@@ -1,22 +1,14 @@
 #pragma once
+#include "Engine/Renderer/RenderPass.h"
 
-#include <GL/glew.h>
-
-#include "Framebuffer.h"
-
-class Renderbuffer
+class SkyboxPass : public RenderPass
 {
 public:
-	Renderbuffer();
-	~Renderbuffer();
-
-	void CreateRenderBufferStorage(int width, int height, FramebufferTextureFormat format);
-	void Bind() const;
-	void Unbind() const;
-	GLuint GetId() const;
-	void SetSampleSize(int samples);
-
+	SkyboxPass();
+	void Init() override;
+	void Execute(ForwardRenderContext& rendererContext) override;
+	
 private:
-	GLuint m_ID;
-	int m_SampleSize = 1;
+	
+	Shader* m_SkyboxShader;
 };

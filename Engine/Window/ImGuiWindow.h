@@ -1,6 +1,6 @@
 #pragma once
 #include <imgui.h>
-
+#include "Engine/Renderer/RendererData.h"
 
 
 class Mesh;
@@ -55,13 +55,13 @@ public:
 	static void NewFrame();
 	static void Shutdown();
 
-	static void RenderScenePanel();
+	static void RenderScenePanel(ForwardRenderContext& rendererContext);
 	static void RenderTransformComponent();
 	static void RenderMeshComponent();
 	static void RenderLightComponent();
 	static void RenderAnimationComponent();
 	static void RenderWireFrameMode();
-	static void RenderMSAA();
+	static void RenderMSAA(ForwardRenderContext& rendererContext);
 	static void RenderFpsCounter();
 
 	static void AddUnderLine(ImColor color);

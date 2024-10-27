@@ -6,25 +6,23 @@
 
 class Mesh;
 
-inline RendererContext g_RendererContext;
-
-
-
-
 
 #include "Engine/RenderPasses/PostFXPass.h"
 #include "Engine/RenderPasses/GeomPass.h"
+#include "Engine/RenderPasses/ShadowPass.h"
+#include "Engine/RenderPasses/SkyboxPass.h"
+#include "Engine/Renderer/RenderPipeline.h"
 
 class Renderer
 {
 public:
+	Renderer(); 
 	void Init();
 	static void Shutdown();
-
-	void SkyboxPath();
-	static void DepthPrePath();
-	void GeometryPath();
-	void PostFxPath();
+	
+	void Render();
+	
+	void AddRenderPipeline(Ref<RenderPipeline> renderPipeline) { m_RenderPipeline = renderPipeline; }
 
 	static void DrawMesh(Ref<Mesh> mesh, bool ShadowPass);
 
@@ -39,8 +37,8 @@ public:
 	static void RenderQuad();
 	static void RenderSkyBox();
 	static void RenderCube();
-
 	
-	ForwardGeomPass FGP;
-	PostFXPass PFXP;
+	
+
+	Ref<RenderPipeline> m_RenderPipeline;\
 };

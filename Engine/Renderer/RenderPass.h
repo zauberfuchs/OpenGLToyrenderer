@@ -9,7 +9,7 @@ public:
 	
 	virtual void Init() = 0;
 	
-	virtual void Execute(RendererContext& rendererContext) = 0;
+	virtual void Execute(ForwardRenderContext& rendererContext) = 0;
 	
 	
 	std::vector<RenderPass*> m_Dependencys;

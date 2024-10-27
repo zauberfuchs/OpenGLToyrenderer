@@ -37,7 +37,7 @@ void ImGuiWindow::AddUnderLine(ImColor color)
 		min, max, color, 1.0f);
 }
 
-void ImGuiWindow::RenderScenePanel()
+void ImGuiWindow::RenderScenePanel(ForwardRenderContext& rendererContext)
 {
 	ImGui::Begin("Scene Panel");
 	std::string name;
@@ -82,7 +82,7 @@ void ImGuiWindow::RenderScenePanel()
 		RenderAnimationComponent();
 	}
 	RenderWireFrameMode();
-	RenderMSAA();
+	RenderMSAA(rendererContext);
 	RenderFpsCounter();
 
 	ImGui::End();
@@ -300,13 +300,13 @@ void ImGuiWindow::RenderWireFrameMode()
 	
 }
 
-void ImGuiWindow::RenderMSAA()
+void ImGuiWindow::RenderMSAA(ForwardRenderContext& rendererContext)
 {
 	ImGui::Dummy(ImVec2(20, 20));
-	ImGui::RadioButton("no Antialiasing", &g_RendererContext.MSAA, 1);
-	ImGui::RadioButton("4x MSAA", &g_RendererContext.MSAA, 4);
-	ImGui::RadioButton("8x MSAA", &g_RendererContext.MSAA, 8);
-	ImGui::RadioButton("16x MSAA", &g_RendererContext.MSAA, 16);
+	ImGui::RadioButton("no Antialiasing", &rendererContext.MSAA, 1);
+	ImGui::RadioButton("4x MSAA", &rendererContext.MSAA, 4);
+	ImGui::RadioButton("8x MSAA", &rendererContext.MSAA, 8);
+	ImGui::RadioButton("16x MSAA", &rendererContext.MSAA, 16);
 }
 
 void ImGuiWindow::RenderFpsCounter()
