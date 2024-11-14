@@ -39,6 +39,7 @@ void ImGuiWindow::AddUnderLine(ImColor color)
 
 void ImGuiWindow::RenderScenePanel(ForwardRenderContext& rendererContext)
 {
+	Renderer::BeginEvent("ImGui");
 	ImGui::Begin("Scene Panel");
 	std::string name;
 	static std::string current_item = "";
@@ -89,6 +90,7 @@ void ImGuiWindow::RenderScenePanel(ForwardRenderContext& rendererContext)
 	ImGui::Render();
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	Renderer::EndEvent();
 }
 
 void ImGuiWindow::RenderTransformComponent()
@@ -140,40 +142,6 @@ void ImGuiWindow::RenderMeshComponent()
 				DrawVec3Control("Specular", s_ImGuiData.Specular, 0, 0.01f, 0, 100, true);
 				ImGui::Dummy(ImVec2(1, 1));
 				ImGui::DragFloat("Shininess", &s_ImGuiData.Shininess, 1, 1, 256);
-
-				s_ImGuiData.HasAmbientReflection = material->GetHasAmbient();
-				s_ImGuiData.HasDiffuseReflection = material->GetHasDiffuse();
-				s_ImGuiData.HasSpecularReflection = material->GetHasSpecular();
-
-				ImGui::Checkbox("Toggle Ambient Reflection", &s_ImGuiData.HasAmbientReflection);
-				if (s_ImGuiData.HasAmbientReflection)
-				{
-					material->SetHasAmbient(true);
-				}
-				else
-				{
-					material->SetHasAmbient(false);
-				}
-
-				ImGui::Checkbox("Toggle Diffuse Reflection", &s_ImGuiData.HasDiffuseReflection);
-				if (s_ImGuiData.HasDiffuseReflection)
-				{
-					material->SetHasDiffuse(true);
-				}
-				else
-				{
-					material->SetHasDiffuse(false);
-				}
-
-				ImGui::Checkbox("Toggle Specular Reflection", &s_ImGuiData.HasSpecularReflection);
-				if (s_ImGuiData.HasSpecularReflection)
-				{
-					material->SetHasSpecular(true);
-				}
-				else
-				{
-					material->SetHasSpecular(false);
-				}
 
 				material->SetAmbient(s_ImGuiData.Ambient);
 				material->SetDiffuse(s_ImGuiData.Diffuse);

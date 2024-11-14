@@ -12,5 +12,6 @@ public:
 	virtual void Execute(ForwardRenderContext& rendererContext) = 0;
 	
 	
+	
 	std::vector<RenderPass*> m_Dependencys;
 };

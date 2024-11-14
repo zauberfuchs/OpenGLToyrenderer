@@ -15,8 +15,9 @@ void ShadowPass::Init()
 
 void ShadowPass::Execute(ForwardRenderContext& rendererContext)
 {
+	Renderer::BeginEvent("Depth Pass"); // what is a depth prepass
 	// safes the current viewport size.
-	int ViewportWidth = rendererContext.ActiveSceneCamera->Viewport.Width;
+	uint ViewportWidth = rendererContext.ActiveSceneCamera->Viewport.Width;
 	uint ViewportHeight = rendererContext.ActiveSceneCamera->Viewport.Height;
 
 	rendererContext.ActiveLights.begin()->second->GetFramebuffer()->Bind();
@@ -70,4 +71,5 @@ void ShadowPass::Execute(ForwardRenderContext& rendererContext)
 
 	// restore old Viewport size
 	Renderer::SetViewport(0, 0, ViewportWidth, ViewportHeight);
+	Renderer::EndEvent();
 }

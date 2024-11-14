@@ -4,8 +4,7 @@
 #include <stb_image.h>
 
 
-
-enum class TextureType
+enum class TextureType : uint32
 {
 	SpecularMap,
 	AmbientOcclusionMap,
@@ -23,19 +22,21 @@ enum class TextureType
 	PrefilterMap
 };
 
-enum class TextureInternalFormat
+enum class TextureInternalFormat : uint32
 {
-	Rgb = GL_RGB,
 	R8 = GL_R8,
+	Rgb = GL_RGB,
 	Rgb8 = GL_RGB8,
-	Rgba8 = GL_RGBA8,
 	Rgb16 = GL_RGB16,
 	Rg16F = GL_RG16F,
 	Rgb16F = GL_RGB16F,
-	DepthComponent16 = GL_DEPTH_COMPONENT16
+	Rgb32 = GL_RGB32I,
+	Rgb32F = GL_RGB32F,
+	Rgba8 = GL_RGBA8,
+	D16 = GL_DEPTH_COMPONENT16
 };
 
-enum class TextureTarget
+enum class TextureTarget : uint32
 {
 	Texture2D = GL_TEXTURE_2D,
 	Texture2DMultiSample = GL_TEXTURE_2D_MULTISAMPLE,
@@ -57,6 +58,18 @@ enum class TextureFilter
 	MipMapLinear = GL_LINEAR_MIPMAP_LINEAR
 };
 
+struct TextureDesc
+{
+	TextureType 				Type;
+	TextureTarget 				Target;
+	TextureInternalFormat 		Format;
+	uint32						Width;
+	uint32						Height;
+	uint32 						MipLevels;
+	uint32						DepthOrArraySize;
+	uint32						SampleCount;
+	const char*					DebugName;
+};
 
 class Texture
 {
@@ -64,12 +77,14 @@ class Texture
 public:
 	Texture() = default;
 	Texture(const TextureTarget& tt);
+	Texture(const TextureDesc& descTexture);
 	Texture(const std::string& path, const TextureTarget& tt);
 	~Texture();
-
+	
 	void Load();
 	void Load(const std::string& path, const TextureWrap& tw, const TextureFilter& tf, bool isFlipped = true);
 	void LoadCubemap(const std::string& path);
+	void CreateTextureStorage();
 	void CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false, const uint16_t& samples = 0);
 	void CreateTextureCubeMapStorage(const TextureInternalFormat& tif, const bool& hasMipMap = false);
 	void GenerateMipMap() const;
@@ -78,6 +93,7 @@ public:
 	void SetWrapMode(const TextureWrap& s, const TextureWrap& t, const TextureWrap& r) const;
 	void SetFilter(const TextureFilter& min, const TextureFilter& mag) const;
 	void SetBorderColor(const float* borderColor) const;
+	void SetTexture2DByteData(const char* byteArray) const;
 
 	void SaveTextureToCache(void* data);
 	unsigned char* LoadTextureFromCache();
@@ -112,6 +128,7 @@ private:
 	GLuint m_ID;
 	TextureType m_Type;
 	TextureTarget m_Target;
+	TextureDesc m_Desc;
 
 	std::string m_Name;
 	std::string m_FilePath;

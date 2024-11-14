@@ -38,10 +38,6 @@ struct ImGuiWindowStorage
 	std::unordered_set<Ref<Material>> materials;
 
 	std::unordered_map<std::string, Texture*> ButtonTextures;
-
-	bool HasAmbientReflection;
-	bool HasDiffuseReflection;
-	bool HasSpecularReflection;
 	
 	bool WireMode;
 };
@@ -53,7 +49,7 @@ class ImGuiWindow
 public:
 	static void Init();
 	static void NewFrame();
-	static void Shutdown();
+	static void Shutdown();	
 
 	static void RenderScenePanel(ForwardRenderContext& rendererContext);
 	static void RenderTransformComponent();

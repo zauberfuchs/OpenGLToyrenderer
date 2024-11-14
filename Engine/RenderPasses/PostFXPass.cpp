@@ -14,6 +14,8 @@ void PostFXPass::Init()
 
 void PostFXPass::Execute(ForwardRenderContext& rendererContext)
 {
+	Renderer::BeginEvent("Postprocessing Pass");
+	
 	m_PostFXShader->Bind();
 	m_PostFXShader->SetUniform1i("sampleSize", rendererContext.MSAA);
 	m_PostFXShader->SetUniform1i("screenTexture", 0);
@@ -21,4 +23,6 @@ void PostFXPass::Execute(ForwardRenderContext& rendererContext)
 	rendererContext.ViewportTexture->Bind();
 	Renderer::RenderQuad();
 	rendererContext.ViewportTexture->Unbind();
+	
+	Renderer::EndEvent();
 }

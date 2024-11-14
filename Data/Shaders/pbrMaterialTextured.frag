@@ -1,4 +1,4 @@
-#version 450 core
+#version 460 core 
 
 // required by GLSL spec Sect 4.5.3 (though nvidia does not, amd does)
 precision highp float;
@@ -238,10 +238,10 @@ void main()
    // vec3 color = (ambient - shadow) + Lo;
     vec3 color = ambient + Lo;
 
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
+//    // HDR tonemapping
+//    color = color / (color + vec3(1.0));
+//    // gamma correct
+//    color = pow(color, vec3(1.0/2.2)); 
 
     fragmentColor = vec4(color , 1.0);
 }

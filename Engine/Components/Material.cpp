@@ -78,17 +78,6 @@ Ref<Texture> Material::GetTexture(const TextureType& channelMap) const
 	return m_Textures.at(channelMap);
 }
 
-void Material::SetReflections(ReflectionType r)
-{
-	switch (r)
-	{
-	case ReflectionType::Ambient: m_HasAmbient = 1; break;
-	case ReflectionType::Diffuse: m_HasDiffuse = 1; break;
-	case ReflectionType::Specular: m_HasSpecular = 1; break;
-	case ReflectionType::Phong: m_HasDiffuse = 1; m_HasAmbient = 1; m_HasSpecular = 1; break;
-	}
-}
-
 void Material::SetReflectionProbe(Ref<ReflectionProbe> probe)
 {
 	m_Probe = probe;
@@ -149,9 +138,6 @@ void Material::SetupUniforms()
 	switch(m_Type)
 	{
 	case MaterialType::Phong :
-		m_Shader->SetUniform1i("hasAmbient", m_HasAmbient);
-		m_Shader->SetUniform1i("hasDiffuse", m_HasDiffuse);
-		m_Shader->SetUniform1i("hasSpecular", m_HasSpecular);
 		m_Shader->SetUniform1i("hasTexture", m_HasTexture);
 
 		m_Shader->SetUniform3f("material.ambient", m_Ambient);

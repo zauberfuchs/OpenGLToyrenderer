@@ -49,14 +49,14 @@ uniform vec3 camPos;
 
 void main() 
 {
-    vec4 tex = vec4(1.0f);
-	int test = 1 * hasTexture;
-    // texture
-    if(hasTexture == 1)
-    {
-        tex = texture(material.albedoMap, texCoord);
-    }
-	FragColor = vec4(test);
+    //vec4 tex = vec4(1.0f);
+//
+    //// texture
+    //if(hasTexture == 1)
+    //{
+    //    tex = texture(material.albedoMap, texCoord);
+    //}
+    //
     //vec3 L = normalize(light[0].position - FragPos);
     //vec3 N = normalize(Normal);
     //vec3 V = normalize(camPos - FragPos);
@@ -70,6 +70,8 @@ void main()
     //float band = floor(diffuse * NUM_BANDS) / NUM_BANDS;
     //vec3 color = mix(material.ambient, material.diffuse, band) * light[0].color;
     //color += mix(vec3(0.0), material.specular, specular);
-//
+
     //FragColor = vec4(color, 1.0);
+   // FragColor = tex * vec4(result, 1.0);
+	FragColor = vec4(1.0);
 }

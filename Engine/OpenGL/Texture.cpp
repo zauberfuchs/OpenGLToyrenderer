@@ -3,6 +3,23 @@
 #include "Texture.h"
 
 
+uint32 GetNumComponents( TextureInternalFormat format )
+{
+	switch ( format )
+	{
+		case TextureInternalFormat::Rgb			: return 1;
+		case TextureInternalFormat::Rg16F		: return 2;
+		case TextureInternalFormat::Rgb8		: return 3;
+		case TextureInternalFormat::Rgb16		: return 3;
+		case TextureInternalFormat::Rgb16F		: return 3;
+		case TextureInternalFormat::Rgb32		: return 3;
+		case TextureInternalFormat::Rgb32F		: return 3;
+		case TextureInternalFormat::Rgba8		: return 4;
+		case TextureInternalFormat::D16			: return 1;
+	}
+	return 0;
+}
+
 Texture::Texture(const std::string& path, const TextureTarget& tt)
 	: m_FilePath(path), m_Target(tt), m_ID(0), m_MipMapLevel(0)
 {
@@ -13,8 +30,19 @@ Texture::Texture(const std::string& path, const TextureTarget& tt)
 Texture::Texture(const TextureTarget& tt)
 	: m_Target(tt), m_ID(0), m_MipMapLevel(0)
 {
-	//glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
+	glCreateTextures(static_cast<GLenum>(m_Target), 1, &m_ID);
 }
+
+Texture::Texture(const TextureDesc& descTexture)
+: m_Desc(descTexture)
+{
+	glCreateTextures(static_cast<GLenum>(m_Desc.Target), 1, &m_ID);
+	m_Target = m_Desc.Target;
+	glObjectLabel(GL_TEXTURE, m_ID, -1, descTexture.DebugName);
+	m_Desc = descTexture;
+	CreateTextureStorage();
+}
+
 
 Texture::~Texture()
 {
@@ -240,6 +268,26 @@ void Texture::LoadCubemap(const std::string& path)
 	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
+void Texture::CreateTextureStorage() 
+{
+	if (m_Desc.MipLevels > 1)
+	{
+		const auto mipmapLevels = static_cast<unsigned int>(glm::floor(glm::log2(glm::max(m_Desc.Width, m_Desc.Height))));
+		glTextureStorage2D(m_ID, mipmapLevels, static_cast<GLenum>(m_Desc.Format), m_Desc.Width, m_Desc.Height);
+	}
+	else
+	{
+		if (m_Desc.SampleCount > 1)
+		{
+			glTextureStorage2DMultisample(m_ID, m_Desc.SampleCount, static_cast<GLenum>(m_Desc.Format), m_Desc.Width, m_Desc.Height, GL_TRUE);
+		}
+		else
+		{
+			glTextureStorage2D(m_ID, 1, static_cast<GLenum>(m_Desc.Format), m_Desc.Width, m_Desc.Height);
+		}
+	}
+}
+
 void Texture::CreateTexture2DStorage(const TextureInternalFormat& tif, const bool& hasMipMap, const uint16_t& samples) 
 {
 	if(m_ID)
@@ -314,6 +362,10 @@ void Texture::SetBorderColor(const float* borderColor) const
 	glTextureParameterfv(m_ID, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
+void Texture::SetTexture2DByteData(const char* byteArray) const
+{
+	glTextureSubImage2D(m_ID, 0, 0, 0, m_Desc.Width, m_Desc.Height, GL_RED, GL_UNSIGNED_BYTE, byteArray);
+}
 
 void Texture::Bind(const unsigned int& slot) const
 {

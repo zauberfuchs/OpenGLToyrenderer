@@ -16,10 +16,10 @@ public:
 	void CreateReflectionMapFromHDR(const std::string& path);
 	void SetReflectionMap(Ref<Texture> texture);
 
-	inline Ref<Texture> GetIrradianceTexture() { return m_IrradianceTexture; }
-	inline Ref<Texture> GetPrefilterTexture() { return m_PrefilterTexture; }
-	inline Ref<Texture> GetBrdfLookUpTexture() { return m_BrdfLookUpTexture; }
-	inline Ref<Texture> GetReflectionTexture() { return m_ReflectionTexture; }
+	inline Ref<Texture> GetIrradianceTexture() 	{ return m_IrradianceTexture; }
+	inline Ref<Texture> GetPrefilterTexture() 	{ return m_PrefilterTexture; }
+	inline Ref<Texture> GetBrdfLookUpTexture() 	{ return m_BrdfLookUpTexture; }
+	inline Ref<Texture> GetReflectionTexture() 	{ return m_ReflectionTexture; }
 
 private:
 

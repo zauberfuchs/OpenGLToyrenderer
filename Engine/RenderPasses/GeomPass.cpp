@@ -25,14 +25,16 @@ void ForwardGeomPass::Init()
 
 void ForwardGeomPass::Execute(ForwardRenderContext& rendererContext)
 {
+	Renderer::BeginEvent("Forward Pass");
 	m_Constants.View = rendererContext.ActiveSceneCamera->GetViewMatrix();
 	m_Constants.Projection = rendererContext.ActiveSceneCamera->GetProjectionMatrix();
 	m_Constants.CameraPos = rendererContext.ActiveSceneCamera->Position;
 	m_Constants.FarPlane = rendererContext.ActiveSceneCamera->GetFarPlane();
 	m_Constants.NearPlane = rendererContext.ActiveSceneCamera->GetNearPlane();
+	m_Constants.lights[0] = *rendererContext.ActiveLights.begin()->second;
 	m_ConstantBuffer->SetData(&m_Constants);
 	
-	int newViewportWidth = rendererContext.ActiveSceneCamera->Viewport.Width;
+	uint newViewportWidth = rendererContext.ActiveSceneCamera->Viewport.Width;
 	uint newViewportHeight = rendererContext.ActiveSceneCamera->Viewport.Height;
 	
 	
@@ -82,4 +84,6 @@ void ForwardGeomPass::Execute(ForwardRenderContext& rendererContext)
 	m_RenderTarget->Unbind();
 	rendererContext.ForwardFrameBuffer = m_RenderTarget;
 	rendererContext.ViewportTexture = m_ViewportTexture;
+	
+	Renderer::EndEvent();
 }

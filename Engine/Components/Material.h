@@ -11,12 +11,6 @@ enum class MaterialType
 	TexturedPhysicallyBased
 };
 
-enum class ReflectionType
-{
-	None = 0, Ambient, Diffuse, Specular, Phong
-};
-
-
 class Material
 {
 public:
@@ -74,17 +68,6 @@ public:
 	void SetShininess(const float& shininess) { m_Shininess = shininess; }
 	float GetShininess() { return m_Shininess; }
 
-	void SetHasAmbient(const bool& hasAmbient) { m_HasAmbient = hasAmbient; }
-	bool GetHasAmbient() { return m_HasAmbient; }
-
-	void SetHasDiffuse(const bool& hasDiffuse) { m_HasDiffuse = hasDiffuse; }
-	bool GetHasDiffuse() { return m_HasDiffuse; }
-
-	void SetHasSpecular(const bool& hasSpecular) { m_HasSpecular = hasSpecular; }
-	bool GetHasSpecular() { return m_HasSpecular; }
-
-	void SetReflections(ReflectionType r);
-
 private:
 
 	std::string m_Name;
@@ -100,10 +83,6 @@ private:
 	float m_Shininess;
 
 	int m_HasTexture;
-	int m_HasAmbient;
-	int m_HasDiffuse;
-	int m_HasSpecular;
-
 
 	// Physically Based Rendering properties
 	glm::vec3 m_Albedo;
@@ -114,7 +93,6 @@ private:
 	Ref<ReflectionProbe> m_Probe = nullptr;
 
 	std::unordered_map<TextureType, Ref<Texture>> m_Textures;
-
 };
 
 

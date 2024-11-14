@@ -27,8 +27,8 @@ public:
 	{
 		float Left;
 		float Top;
-		float Width;
-		float Height;
+		uint Width;
+		uint Height;
 	};
 	
 	// camera Attributes

@@ -14,6 +14,7 @@ struct ForwardConstants
 	
 	float FarPlane;
 	float NearPlane;
+	Light lights[];
 };
 
 class ForwardGeomPass : public RenderPass

@@ -141,11 +141,11 @@ void main()
     vec3 ambient = vec3(0.03) * material.albedo * material.ao;
 
     vec3 color = ambient + Lo;
-
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
+//
+//    // HDR tonemapping
+//    color = color / (color + vec3(1.0));
+//    // gamma correct
+//    color = pow(color, vec3(1.0/2.2)); 
 
     fragmentColor = vec4(color, 1.0);
 }

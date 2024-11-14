@@ -14,6 +14,7 @@ public:
 	virtual ~Mesh();
 
 	static Mesh CreateUnitCube(const Material& material = Material());
+	static Mesh CreateUnitSphere(const Material& material = Material(), uint16_t segments = 16);
 //    static Mesh CreateUnitCubeInsides(const Material &material = Material());
 //    static Mesh CreateHorizontalPlane(const Material &material = Material());
 

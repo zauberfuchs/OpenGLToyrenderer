@@ -46,7 +46,7 @@ void Light::CreateDirectionalDepthMap(const unsigned int& width, const unsigned 
 	m_Depthmap = CreateRef<Texture>(TextureTarget::Texture2D);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 	m_Depthmap->SetTexture2DSize(m_ShadowWidth, m_ShadowHeight);
-	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::DepthComponent16);
+	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::D16);
 	m_Depthmap->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 	m_Depthmap->SetWrapMode(TextureWrap::ClampToBorder, TextureWrap::ClampToBorder);
 	m_Depthmap->SetBorderColor(borderColor);
@@ -69,7 +69,7 @@ void Light::CreatePointDepthMap(const unsigned int& width, const unsigned int& h
 	m_Depthmap = CreateRef<Texture>(TextureTarget::TextureCubeMap);
 	m_Depthmap->SetTextureType(TextureType::DepthMap);
 	m_Depthmap->SetTexture2DSize(m_ShadowWidth, m_ShadowHeight);
-	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::DepthComponent16);
+	m_Depthmap->CreateTextureCubeMapStorage(TextureInternalFormat::D16);
 	m_Depthmap->SetFilter(TextureFilter::Nearest, TextureFilter::Nearest);
 	m_Depthmap->SetWrapMode(TextureWrap::ClampToEdge, TextureWrap::ClampToEdge, TextureWrap::ClampToEdge);
 	m_Depthmap->SetUniformLocation("depthMap");

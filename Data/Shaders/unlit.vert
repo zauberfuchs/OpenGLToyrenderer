@@ -1,5 +1,5 @@
 #version 450 core
-#include math.glsl
+
 ///////////////////////////////////////////////////////////////////////////////
 // Input vertex attributes
 ///////////////////////////////////////////////////////////////////////////////
@@ -19,11 +19,6 @@ out vec2 texCoord;
 ///////////////////////////////////////////////////////////////////////////////
 uniform mat4 model;
 
-struct Light {
-    vec3 position;
-    vec3 color;
-};
-
 layout (std140, binding = 1) uniform ForwardConstants
 {
     mat4 view;
@@ -31,7 +26,6 @@ layout (std140, binding = 1) uniform ForwardConstants
 	vec3 cameraPos;
 	float farPlane;
 	float nearPlane;
-	Light light[];
 };
 
 void main() 

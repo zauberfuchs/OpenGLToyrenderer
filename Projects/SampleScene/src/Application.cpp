@@ -13,7 +13,7 @@
 #define FPS 30
 
 int main() {
-	const auto window = CreateRef<Window>(1600, 1200);
+	Ref<Window> window = CreateRef<Window>(1600, 1200);
 	World::Get().SetActiveWindow(window);
 	const int error = window->InitOpenGLContext();
 
@@ -31,13 +31,12 @@ int main() {
 	ShaderLoader::LoadShaderFolder("../Data/Shaders/");
 	MaterialLoader::LoadMaterialFolder("../Data/Textures/Materials/");
 
-	const auto skyBoxTexture = CreateRef<Texture>(TextureTarget::TextureCubeMap);
+	Ref<Texture> skyBoxTexture = CreateRef<Texture>(TextureTarget::TextureCubeMap);
 	skyBoxTexture->LoadCubemap("../Data/Textures/Skybox/darkish");
 	
-	const auto whiteMaterial = CreateRef<Material>("white");
+	Ref<Material> whiteMaterial = CreateRef<Material>("white");
 	whiteMaterial->SetType(MaterialType::Phong);
 	whiteMaterial->SetAmbient(glm::vec3(1.0f, 1.0f, 1.0f));
-	whiteMaterial->SetReflections(ReflectionType::Phong);
 	whiteMaterial->SetColor(glm::vec3(1.0f));
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -85,7 +84,7 @@ int main() {
 	// ground
 	///////////////////////////////////////////////////////////////////////////////
 
-	auto ground = CreateRef<SceneObject>("ground");
+	Ref<SceneObject> ground = CreateRef<SceneObject>("ground");
 
 	ground->AddComponent<Model>(std::string("ground"));
 	ground->GetComponent<Model>().AddMesh(CreateRef<Mesh>(Mesh::CreateUnitCube()));
@@ -100,10 +99,10 @@ int main() {
 	// Light
 	///////////////////////////////////////////////////////////////////////////////
 	
-	auto lightSphere = CreateRef<SceneObject>("lightSphere");
+	Ref<SceneObject> lightSphere = CreateRef<SceneObject>("lightSphere");
 
 	lightSphere->AddComponent<Model>(std::string("lightSphere"));
-	lightSphere->GetComponent<Model>().AddMesh(CreateRef<Mesh>(Mesh::CreateUnitCube()));
+	lightSphere->GetComponent<Model>().AddMesh(CreateRef<Mesh>(Mesh::CreateUnitSphere()));
 	lightSphere->GetComponent<Model>().GetMesh()->SetMaterial(whiteMaterial);
 	lightSphere->GetComponent<Transform>().Translate({ 10.2f, 4.0f, 2.0f }, Space::Local);
 	lightSphere->GetComponent<Transform>().Scale(glm::vec3(0.2f), Space::Local);
@@ -112,7 +111,6 @@ int main() {
 	
 	Light& pointLight = lightSphere->GetComponent<Light>();
 	pointLight.SetType(LightSourceType::PointLight);
-	//pointLight.SetPosition(glm::vec3(10.2f, 4.0f, 2.0f));
 	pointLight.SetConstant(1.0f);
 	pointLight.SetLinear(0.9f);
 	pointLight.SetQuadratic(0.032f);
@@ -125,7 +123,7 @@ int main() {
 
 	Ref<ReflectionProbe> probeOne = CreateRef<ReflectionProbe>(1024, 1024);
 	probeOne->CreateReflectionMapFromHDR("../Data/Textures/Hdr/Newport_Loft_Ref.hdr");
-	//probeOne.SetReflectionMap(*skyBoxTexture);
+	probeOne->SetReflectionMap(skyBoxTexture);
 	probeOne->Create();
 
 	activeScene->AddRootChild(ground);
@@ -139,8 +137,9 @@ int main() {
 	// Init Window & Rendering
 	///////////////////////////////////////////////////////////////////////////////
 	
-	Renderer ForwardRenderer;
 	ImGuiWindow::Init();
+	
+	Renderer ForwardRenderer;
 	
 	ForwardRenderContext FRenderContext;
 	FRenderContext.ActiveScene = activeScene;
@@ -151,10 +150,10 @@ int main() {
 	
 	
 	Ref<RenderPipeline> ForwardRenderPipeline = CreateRef<RenderPipeline>(FRenderContext);
-	ForwardRenderPipeline->AddRenderPass(new ShadowPass());
-	ForwardRenderPipeline->AddRenderPass(new ForwardGeomPass());
-	ForwardRenderPipeline->AddRenderPass(new SkyboxPass());
-	ForwardRenderPipeline->AddRenderPass(new PostFXPass());
+	ForwardRenderPipeline->AddRenderPass( new ShadowPass()			);
+	ForwardRenderPipeline->AddRenderPass( new ForwardGeomPass()		);
+	ForwardRenderPipeline->AddRenderPass( new SkyboxPass()			);
+	ForwardRenderPipeline->AddRenderPass( new PostFXPass()			);
 	
 	ForwardRenderer.AddRenderPipeline(ForwardRenderPipeline);
 	

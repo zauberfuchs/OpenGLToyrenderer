@@ -38,6 +38,8 @@ public:
 	static void RenderSkyBox();
 	static void RenderCube();
 	
+	static void BeginEvent(const char* eventName);
+	static void EndEvent();
 	
 
 	Ref<RenderPipeline> m_RenderPipeline;\
